@@ -351,6 +351,19 @@ html,body,#app{background:#020308!important}
 .v104-home:not(.room-v114-dark) .room-v115-lamp::after{box-shadow:0 0 7px #fff4cf66!important}
 /* Small pearly indicator on the switchable lamp in both illuminated states. */
 .v104-home:not(.room-v114-dark) .room-v115-lamp{background:radial-gradient(circle at 50% 52%,rgba(248,253,255,.70) 0 4px,rgba(255,255,255,.23) 5px,transparent 11px)!important}
+</style><style id="room-v127-original-lamp-and-gentle-motion">
+/* Keep only the photographed lamp; no second CSS-drawn fixture. */
+.v104-home .room-v115-lamp::before{content:none!important;display:none!important}
+.v104-home .room-v115-lamp::after{content:''!important;display:block!important;position:absolute!important;left:50%!important;top:40%!important;transform:translate(-50%,-50%)!important;width:10px!important;height:10px!important;border:1px solid rgba(255,255,255,.68)!important;border-radius:50%!important;clip-path:none!important;background:rgba(255,255,255,.48)!important;box-shadow:0 0 9px 3px rgba(255,255,255,.24)!important;pointer-events:none!important;animation:none!important}
+.v104-home.room-v114-dark .room-v115-lamp::after{background:rgba(255,255,255,.55)!important;box-shadow:0 0 10px 3px rgba(255,255,255,.30)!important}
+/* Reveal a small, feathered window in the blackout at the original lamp's coordinates. */
+.v104-home.room-v114-dark .v107-world::before,
+.v104-home.room-v122-first-paint .v107-world::before{
+ -webkit-mask-image:radial-gradient(ellipse 6.5% 13% at 51.5% 8.5%,transparent 0%,transparent 43%,rgba(0,0,0,.15) 65%,#000 100%)!important;
+ mask-image:radial-gradient(ellipse 6.5% 13% at 51.5% 8.5%,transparent 0%,transparent 43%,rgba(0,0,0,.15) 65%,#000 100%)!important;
+}
+.v104-home.room-v114-bright .v107-world::before,.v104-home.room-v114-dim .v107-world::before{-webkit-mask-image:none!important;mask-image:none!important}
+.v104-home .room-v116-narration{top:23%!important}
 </style></head><body><main id="app"></main><div id="toast" class="toast hide"></div><script>
 const $=s=>document.querySelector(s), app=$('#app');
 const base={done:[],cards:[],selected:null,ach:[],musicBest:0};let S;try{S={...base,...JSON.parse(localStorage.getItem('playerone_cute_v1')||'{}')}}catch{S={...base}}
@@ -482,7 +495,7 @@ document.addEventListener('click',function(e){
 function v107InitPan(){
  const view=document.getElementById('v107-viewport'),world=document.getElementById('v107-world'),thumb=document.getElementById('v107-thumb');if(!view||!world)return;
  let x=0,active=false,startX=0,origin=0,moved=false,pid=null,suppressClick=false;
- let gyroOn=false,gyroBase=null,gyroLast=null,gyroFrame=0,gyroY=0,gyroTargetY=0,gyroTargetX=0;
+ let gyroOn=false,gyroBase=null,gyroLast=null,gyroFrame=0,gyroY=0,gyroTargetY=0,gyroTargetX=0,gyroAnchorX=0;
  const extent=()=>Math.max(0,world.offsetWidth-view.clientWidth);
  const farScale=()=>Math.min(1,view.clientWidth/world.offsetWidth,view.clientHeight/world.offsetHeight);
  const render=()=>{
@@ -496,17 +509,17 @@ function v107InitPan(){
  const motionBtn=document.createElement('button');motionBtn.type='button';motionBtn.className='room-v123-motion';motionBtn.textContent='📱 開啟體感探索';motionBtn.setAttribute('aria-label','開啟或關閉手機方向感測探索');view.appendChild(motionBtn);
  const onOrientation=e=>{if(!gyroOn||room114Light===0||!Number.isFinite(e.gamma)||!Number.isFinite(e.beta))return;
   gyroLast={gamma:e.gamma,beta:e.beta};if(!gyroBase)gyroBase={...gyroLast};
-  const dx=Math.max(-70,Math.min(70,e.gamma-gyroBase.gamma));
-  const dy=Math.max(-45,Math.min(45,e.beta-gyroBase.beta));
-  gyroTargetX=Math.max(-extent(),Math.min(0,-extent()*.5-dx/70*extent()*.5));
-  gyroTargetY=-dy/45*18;
+  const dx=Math.max(-85,Math.min(85,e.gamma-gyroBase.gamma));
+  const dy=Math.max(-65,Math.min(65,e.beta-gyroBase.beta));
+  gyroTargetX=Math.max(-extent(),Math.min(0,gyroAnchorX-dx/85*extent()*.055));
+  gyroTargetY=-dy/65*4;
  };
  const gyroTick=()=>{if(!gyroOn||!world.isConnected){gyroFrame=0;return}
-  if(room114Light!==0&&!active&&room116Exploring){x+=(gyroTargetX-x)*.055;gyroY+=(gyroTargetY-gyroY)*.055;render()}
+  if(room114Light!==0&&!active&&room116Exploring){x+=(gyroTargetX-x)*.012;gyroY+=(gyroTargetY-gyroY)*.012;render()}
   gyroFrame=requestAnimationFrame(gyroTick);
  };
  const stopGyro=()=>{gyroOn=false;gyroBase=null;gyroLast=null;gyroY=0;world.classList.remove('room-v123-gyro');window.removeEventListener('deviceorientation',onOrientation);if(gyroFrame)cancelAnimationFrame(gyroFrame);gyroFrame=0;motionBtn.textContent='📱 開啟體感探索';render()};
- const startGyro=()=>{if(gyroOn||!world.isConnected)return;gyroOn=true;gyroBase=null;gyroTargetX=x;gyroTargetY=0;gyroY=0;room116Exploring=true;world.classList.add('room-v123-gyro');window.addEventListener('deviceorientation',onOrientation,{passive:true});motionBtn.textContent='📱 關閉體感探索';render();gyroFrame=requestAnimationFrame(gyroTick)};
+ const startGyro=()=>{if(gyroOn||!world.isConnected)return;gyroOn=true;gyroBase=null;gyroAnchorX=x;gyroTargetX=x;gyroTargetY=0;gyroY=0;room116Exploring=true;world.classList.add('room-v123-gyro');window.addEventListener('deviceorientation',onOrientation,{passive:true});motionBtn.textContent='📱 關閉體感探索';render();gyroFrame=requestAnimationFrame(gyroTick)};
  const requestGyro=()=>{
   if(!('DeviceOrientationEvent' in window))return;
   try{
@@ -524,7 +537,7 @@ function v107InitPan(){
  lamp.addEventListener('pointerdown',e=>e.stopPropagation());
  let lastLampPress=0;const activateLamp=e=>{e.preventDefault();e.stopPropagation();const now=performance.now();if(now-lastLampPress<320)return;lastLampPress=now;lamp.style.filter='drop-shadow(0 0 28px #ffe49d) brightness(1.6)';setTimeout(()=>{if(lamp.isConnected)lamp.style.filter=''},220);if(room114Light===0&&!gyroOn)requestGyro();room113Open('light')};lamp.addEventListener('pointerup',activateLamp);lamp.addEventListener('click',e=>{if(performance.now()-lastLampPress>320)activateLamp(e);else{e.preventDefault();e.stopPropagation()}});
  const narration=document.createElement('div');narration.className='room-v116-narration';narration.textContent='漆黑的房間裡……\n似乎有一盞燈，正等著你點亮。';narration.style.whiteSpace='pre-line';view.appendChild(narration);
- const hint=document.createElement('div');hint.className='room-v116-hint';hint.hidden=true;hint.textContent='雙擊縮放・左右滑動或開啟體感探索';view.appendChild(hint);
+ const hint=document.createElement('div');hint.className='room-v116-hint';hint.hidden=true;hint.textContent='雙擊縮放・手指滑動探索房間';view.appendChild(hint);
  const updateUi=()=>{
   const dark=room114Light===0;
   narration.hidden=!dark;
@@ -536,7 +549,7 @@ function v107InitPan(){
  window.room116OnLight=()=>{
   if(!view.isConnected)return;
   if(room114Light!==0)room116HasOpened=true;
-  if(gyroOn&&room114Light!==0){gyroBase=gyroLast?{...gyroLast}:null;gyroTargetX=x;}
+  if(gyroOn&&room114Light!==0){gyroBase=gyroLast?{...gyroLast}:null;gyroAnchorX=x;gyroTargetX=x;}
   updateUi();
  };
  const zoomIn=()=>{
@@ -557,7 +570,7 @@ function v107InitPan(){
   if(!room116Exploring||!active||e.pointerId!==pid)return;
   const dx=e.clientX-startX;
   if(Math.abs(dx)>9&&!moved){moved=true;view.classList.add('is-dragging');try{view.setPointerCapture(pid)}catch(_){}}
-  if(moved){x=origin+Math.max(-view.clientWidth*.48,Math.min(view.clientWidth*.48,dx));if(gyroOn){gyroTargetX=x;gyroBase=gyroLast?{...gyroLast}:gyroBase}render()}
+  if(moved){x=origin+Math.max(-view.clientWidth*.48,Math.min(view.clientWidth*.48,dx));if(gyroOn){gyroAnchorX=x;gyroTargetX=x;gyroBase=gyroLast?{...gyroLast}:gyroBase}render()}
  },{passive:true});
  const end=e=>{if(!active||e.pointerId!==pid)return;active=false;view.classList.remove('is-dragging');if(moved){suppressClick=true;setTimeout(()=>suppressClick=false,180)}try{if(view.hasPointerCapture(pid))view.releasePointerCapture(pid)}catch(_){}};
  view.addEventListener('pointerup',end);view.addEventListener('pointercancel',end);
