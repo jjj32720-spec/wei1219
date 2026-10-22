@@ -287,6 +287,22 @@ body{background:#e8e7f4;color:#39334c}#app{max-width:780px;padding:12px 12px 55p
 .v107-world .room-v113-hit:not(.room-v113-light):focus-visible::after{box-shadow:0 0 0 5px rgba(255,226,169,.20),0 0 12px rgba(255,226,169,.65)}
 @keyframes room117breathe{50%{opacity:.55;filter:brightness(1.12)}}
 @media(prefers-reduced-motion:reduce){.v107-world .v104-hit::after,.v107-world .room-v113-hit::after{animation:none!important}}
+</style><style id="room-v118-immersive">
+html:has(.v104-home),body:has(.v104-home){margin:0!important;padding:0!important;overflow:hidden!important;background:#07080d!important}
+body:has(.v104-home) #app,body:has(.v104-home) .app,body:has(.v104-home) main.v104-home{width:100vw!important;max-width:none!important;height:100dvh!important;min-height:100dvh!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:hidden!important}
+.v104-home .v104-stage{position:absolute!important;inset:0!important;width:100vw!important;height:100dvh!important;max-width:none!important;aspect-ratio:auto!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+.v104-home .v104-title,.v104-home .v104-prompt{display:none!important}
+.v104-home .v107-world::before{content:'';position:absolute;inset:0;z-index:9;pointer-events:none;background:#030409!important;opacity:0;transition:opacity .65s ease!important}
+.v104-home.room-v114-dark .v107-world::before{opacity:.975!important;background:#030409!important}
+.v104-home.room-v114-dim .v107-world::before{opacity:.45!important;background:#030409!important}
+.v104-home.room-v114-bright .v107-world::before{opacity:0!important;background:#030409!important}
+.v104-home .room-v115-lamp{z-index:65!important;min-width:72px;min-height:72px;touch-action:manipulation}
+.v104-home .room-v116-narration{top:24%!important;left:50%!important;transform:translateX(-50%)!important;width:80%;max-width:340px;z-index:56!important}
+.v104-home .room-v116-hint{bottom:5%!important;z-index:55!important;background:#10101588;border-radius:30px;padding:7px 15px;white-space:nowrap}
+.v104-home .v107-ui{z-index:54!important}
+.v104-home .v107-bottom{z-index:54!important}
+.v104-home .v107-world.room-v116-far .room-v113-light{pointer-events:auto!important}
+.v104-home .room-v115-lamp:active{filter:drop-shadow(0 0 12px #ffe6a0)}
 </style></head><body><main id="app"></main><div id="toast" class="toast hide"></div><script>
 const $=s=>document.querySelector(s), app=$('#app');
 const base={done:[],cards:[],selected:null,ach:[],musicBest:0};let S;try{S={...base,...JSON.parse(localStorage.getItem('playerone_cute_v1')||'{}')}}catch{S={...base}}
@@ -340,7 +356,7 @@ function room113Open(kind){
    if(room114Light===1 && !window.room117MusicStarted && localStorage.getItem('playerone_audio_pref')!=='off'){window.room117MusicStarted=true;if(!audioOn)toggleAudio();}
    room114ApplyLight();
    if(typeof window.room116OnLight==='function')window.room116OnLight();
-   toast(['🌑 燈關上了','💡 房間亮起來了！','🌙 柔和的夜燈'][room114Light]);return;
+   return;
  }
  if(kind==='mole'){
    room113.mole=(room113.mole||0)+1;room113Save();
@@ -386,7 +402,7 @@ let room116Exploring=false;
 let room116HasOpened=false;
 function room114ApplyLight(){
  const home=document.querySelector('.v104-home');if(!home)return;
- home.classList.remove('room-v114-dark','room-v114-dim','room-v113-night');
+ home.classList.remove('room-v114-dark','room-v114-dim','room-v114-bright','room-v113-night');
  home.classList.add(room114Light===0?'room-v114-dark':room114Light===2?'room-v114-dim':'room-v114-bright');
 }
 document.addEventListener('click',function(e){
@@ -411,13 +427,13 @@ function v107InitPan(){
  const lamp=document.createElement('button');lamp.type='button';lamp.className='room-v115-lamp';lamp.setAttribute('aria-label','切換房間燈光：全暗、全亮、微亮');view.appendChild(lamp);
  const positionLamp=()=>{if(!lamp.isConnected)return;const r=world.getBoundingClientRect(),v=view.getBoundingClientRect();lamp.style.left=(r.left-v.left+r.width*.515)+'px';lamp.style.top=(r.top-v.top+r.height*.085)+'px';};
  lamp.addEventListener('pointerdown',e=>e.stopPropagation());
- lamp.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();room113Open('light')});
+ let lastLampPress=0;const activateLamp=e=>{e.preventDefault();e.stopPropagation();const now=performance.now();if(now-lastLampPress<320)return;lastLampPress=now;room113Open('light')};lamp.addEventListener('pointerup',activateLamp);lamp.addEventListener('click',e=>{if(performance.now()-lastLampPress>320)activateLamp(e);else{e.preventDefault();e.stopPropagation()}});
  const narration=document.createElement('div');narration.className='room-v116-narration';narration.textContent='漆黑的房間裡……\n似乎有一盞燈，正等著你點亮。';narration.style.whiteSpace='pre-line';view.appendChild(narration);
- const hint=document.createElement('div');hint.className='room-v116-hint';hint.hidden=true;hint.textContent='👆 在房間裡快速點兩下，靠近探索';view.appendChild(hint);
+ const hint=document.createElement('div');hint.className='room-v116-hint';hint.hidden=true;hint.textContent='輕點兩下可縮放・左右滑動探索';view.appendChild(hint);
  const updateUi=()=>{
   const dark=room114Light===0;
   narration.hidden=!dark;
-  hint.hidden=dark||room116Exploring;
+  hint.hidden=dark;
   const home=view.closest('.v104-home');home?.classList.toggle('room-v116-not-exploring',!room116Exploring);
   lamp.style.pointerEvents='auto';
   positionLamp();
@@ -434,6 +450,7 @@ function v107InitPan(){
   render();updateUi();
   toast('← 左右滑動，探索房間 →');
  };
+ const toggleZoom=()=>{if(room114Light===0)return;if(room116Exploring){room116Exploring=false;render();updateUi()}else zoomIn()};
  let lastTap=0,lastTapX=0,lastTapY=0;
  view.addEventListener('pointerdown',e=>{
   if(e.target.closest('.room-v115-lamp')||e.target.closest('.room-v113-modal'))return;
@@ -450,14 +467,14 @@ function v107InitPan(){
  view.addEventListener('pointerup',end);view.addEventListener('pointercancel',end);
  view.addEventListener('click',e=>{
   if(suppressClick){e.preventDefault();e.stopImmediatePropagation();suppressClick=false;return}
-  if(!room116Exploring && room114Light!==0 && !e.target.closest('.room-v115-lamp')){
+  if(room114Light!==0 && !e.target.closest('.room-v115-lamp,.v104-hit,.room-v113-hit,.room-easter,button')){
     e.preventDefault();e.stopImmediatePropagation();
-    const now=Date.now();if(now-lastTap<520&&Math.abs(e.clientX-lastTapX)<75&&Math.abs(e.clientY-lastTapY)<75){zoomIn();lastTap=0}else{lastTap=now;lastTapX=e.clientX;lastTapY=e.clientY;}
+    const now=Date.now();if(now-lastTap<520&&Math.abs(e.clientX-lastTapX)<75&&Math.abs(e.clientY-lastTapY)<75){toggleZoom();lastTap=0}else{lastTap=now;lastTapX=e.clientX;lastTapY=e.clientY;}
   }
  },true);
  // iOS double-tap should not trigger browser zoom while inside the room.
- view.addEventListener('dblclick',e=>{if(!room116Exploring&&room114Light!==0){e.preventDefault();zoomIn()} });
- room116Exploring=room116HasOpened;
+ view.addEventListener('dblclick',e=>{if(room114Light!==0){e.preventDefault();toggleZoom()} });
+ room116Exploring=true;
  if(room116Exploring)x=-extent()*.5;
  render();room114ApplyLight();updateUi();
  window.addEventListener('resize',()=>{if(document.getElementById('v107-world')===world)render()},{passive:true});
