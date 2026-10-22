@@ -316,6 +316,17 @@ body:has(.v104-home) #app,body:has(.v104-home) .app,body:has(.v104-home) main.v1
 .v104-home .v107-world .room-v119-ambient-art{transition:opacity 1.65s cubic-bezier(.25,.48,.25,1)!important}
 .v104-home .room-v115-lamp:active{filter:brightness(1.3) drop-shadow(0 0 20px #ffe5a3)!important}
 @media(prefers-reduced-motion:reduce){.v104-home .v107-world::before,.v104-home .v107-world .room-v119-ambient-art{transition:none!important}}
+</style><style id="room-v121-definitive-light">
+/* Explicit three-image-layer compositing: keep the artwork itself unchanged. */
+.v104-home .v107-world .room-v119-ambient-art{opacity:0!important;visibility:visible!important;z-index:3!important;transition:opacity 3.2s ease-in-out!important;will-change:opacity}
+.v104-home.room-v114-dim .v107-world .room-v119-ambient-art{opacity:1!important}
+.v104-home .v107-world::before{z-index:9!important;opacity:0!important;background:#020308!important;transition:opacity 5.5s cubic-bezier(.32,.05,.16,1)!important;will-change:opacity}
+.v104-home.room-v114-dark .v107-world::before{opacity:.993!important;background:#020308!important}
+.v104-home.room-v114-bright .v107-world::before,.v104-home.room-v114-dim .v107-world::before{opacity:0!important}
+.v104-home .room-v115-lamp{transition:filter .12s ease!important}
+.v104-home .room-v115-lamp:active{filter:drop-shadow(0 0 26px #ffdc87) brightness(1.5)!important}
+/* Ensure the actual reference photo is never covered by a second dim filter. */
+.v104-home.room-v114-dim .v107-world .v106-art{filter:none!important}
 </style></head><body><main id="app"></main><div id="toast" class="toast hide"></div><script>
 const $=s=>document.querySelector(s), app=$('#app');
 const base={done:[],cards:[],selected:null,ach:[],musicBest:0};let S;try{S={...base,...JSON.parse(localStorage.getItem('playerone_cute_v1')||'{}')}}catch{S={...base}}
@@ -367,7 +378,15 @@ function room113Open(kind){
  try{playEffect('click')}catch(e){}
  if(kind==='light'){
    room114Light=(room114Light+1)%3;
-   if(room114Light===1 && !window.room117MusicStarted && localStorage.getItem('playerone_audio_pref')!=='off'){window.room117MusicStarted=true;if(!audioOn)toggleAudio();}
+   if(room114Light===1){
+     // The lamp tap is a trusted user gesture: unlock Web Audio here, not in a timer.
+     if(localStorage.getItem('playerone_audio_pref')!=='off'){
+       window.room117MusicStarted=true;
+       if(!audioOn){audioOn=true;try{ensureAudio();restartAudio()}catch(err){audioOn=false}}
+       else {try{ensureAudio();if(!audioTimer)restartAudio()}catch(err){}}
+       document.querySelectorAll('.audio-toggle').forEach(b=>b.textContent=audioOn?'🔊 音樂開':'🔇 開啟音樂');
+     }
+   }
    room114ApplyLight();
    if(typeof window.room116OnLight==='function')window.room116OnLight();
    return;
@@ -441,7 +460,7 @@ function v107InitPan(){
  const lamp=document.createElement('button');lamp.type='button';lamp.className='room-v115-lamp';lamp.setAttribute('aria-label','切換房間燈光：全暗、全亮、微亮');view.appendChild(lamp);
  const positionLamp=()=>{if(!lamp.isConnected)return;const r=world.getBoundingClientRect(),v=view.getBoundingClientRect();lamp.style.left=(r.left-v.left+r.width*.515)+'px';lamp.style.top=(r.top-v.top+r.height*.085)+'px';};
  lamp.addEventListener('pointerdown',e=>e.stopPropagation());
- let lastLampPress=0;const activateLamp=e=>{e.preventDefault();e.stopPropagation();const now=performance.now();if(now-lastLampPress<320)return;lastLampPress=now;room113Open('light')};lamp.addEventListener('pointerup',activateLamp);lamp.addEventListener('click',e=>{if(performance.now()-lastLampPress>320)activateLamp(e);else{e.preventDefault();e.stopPropagation()}});
+ let lastLampPress=0;const activateLamp=e=>{e.preventDefault();e.stopPropagation();const now=performance.now();if(now-lastLampPress<320)return;lastLampPress=now;lamp.style.filter='drop-shadow(0 0 28px #ffe49d) brightness(1.6)';setTimeout(()=>{if(lamp.isConnected)lamp.style.filter=''},220);room113Open('light')};lamp.addEventListener('pointerup',activateLamp);lamp.addEventListener('click',e=>{if(performance.now()-lastLampPress>320)activateLamp(e);else{e.preventDefault();e.stopPropagation()}});
  const narration=document.createElement('div');narration.className='room-v116-narration';narration.textContent='漆黑的房間裡……\n似乎有一盞燈，正等著你點亮。';narration.style.whiteSpace='pre-line';view.appendChild(narration);
  const hint=document.createElement('div');hint.className='room-v116-hint';hint.hidden=true;hint.textContent='輕點兩下可縮放・左右滑動探索';view.appendChild(hint);
  const updateUi=()=>{
@@ -764,7 +783,7 @@ const audioThemes={
  electric:{tempo:280,mel:[48,55,60,63,60,55,51,58,63,67,63,58],bass:[36,39,41,43],wave:'triangle'},
  finale:{tempo:360,mel:[60,60,62,60,65,64,60,60,62,60,67,65,60,60,72,69,65,64,62,70,70,69,65,67,65],bass:[48,53,55,48],wave:'sine'}
 };
-function ensureAudio(){try{if(!audioCtx){audioCtx=new (window.AudioContext||window.webkitAudioContext)();master=audioCtx.createGain();master.gain.value=.17;master.connect(audioCtx.destination)}if(audioCtx.state==='suspended')audioCtx.resume();return true}catch(e){toast('此瀏覽器無法播放音樂');return false}}
+function ensureAudio(){try{if(!audioCtx){audioCtx=new (window.AudioContext||window.webkitAudioContext)();master=audioCtx.createGain();master.gain.value=.36;master.connect(audioCtx.destination)}if(audioCtx.state==='suspended')audioCtx.resume();return true}catch(e){toast('此瀏覽器無法播放音樂');return false}}
 function tone(midi,duration=.18,type='sine',vol=.3,when=0){if(!audioCtx||!audioOn)return;let t=audioCtx.currentTime+when,osc=audioCtx.createOscillator(),env=audioCtx.createGain();osc.type=type;osc.frequency.setValueAtTime(440*Math.pow(2,(midi-69)/12),t);env.gain.setValueAtTime(.0001,t);env.gain.exponentialRampToValueAtTime(Math.max(.001,vol),t+.015);env.gain.exponentialRampToValueAtTime(.0001,t+duration);osc.connect(env);env.connect(master);osc.start(t);osc.stop(t+duration+.02)}
 function playEffect(type){if(!audioOn||!ensureAudio())return;const notes=type==='win'?[72,76,79,84]:type==='hit'?[79,83]:type==='miss'?[47,44]:[72];notes.forEach((n,i)=>tone(n,type==='win'?.24:.09,type==='miss'?'sawtooth':'sine',type==='miss'?.09:.23,i*(type==='win'?.115:.05)))}
 function audioTick(){if(!audioOn||!audioCtx)return;let t=audioThemes[audioTheme]||audioThemes.home,i=audioStep++,m=t.mel[i%t.mel.length];tone(m,.16,t.wave,.24);if(i%4===0)tone(t.bass[Math.floor(i/4)%t.bass.length],.32,'triangle',.18);if(audioTheme==='soccer'&&i%2===0)tone(36,.055,'sine',.10);if(audioTheme==='electric'&&i%2===1)tone(84,.045,'square',.055)}
