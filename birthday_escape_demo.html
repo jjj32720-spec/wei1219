@@ -766,7 +766,7 @@ function soccerPack(){
   playEffect('win');
  }
 }
-function soccerClosePack(){document.getElementById('soccer-pack-overlay')?.remove();if(document.querySelector('.foot-pack'))soccerLobby()}
+function soccerClosePack(){const overlay=document.getElementById('soccer-pack-overlay');overlay?.remove();if(overlay&&soccerNavigationActive)soccerLobby()}
 function soccerAce(){ensureFootball();if(S.aceUnlocked){if(!S.footballOwned.includes(5)){S.footballOwned.push(5);save()}frame('💗 ACE · 99','SECRET LEGEND · PLAYER 006',`<div class="foot-pack"><div style="font-size:64px">💗</div><h2 style="color:white">ACE · #99</h2><p>王牌救援 · 特別助攻</p><p>「還好有我吧 ♡」</p></div><div class="center"><button class="btn" onclick="soccerLobby()">返回</button></div>`);return}if(S.done.includes('coffee')&&S.done.includes('music')&&S.done.includes('travel')){S.aceUnlocked=true;if(!S.footballOwned.includes(5))S.footballOwned.push(5);save();playEffect('win');soccerAce()}else toast('神祕球員尚未解鎖 · 探索其他世界尋找線索')}
 function soccer(){cleanup();soccerRound=1;if(!Array.isArray(S.footballSquad)||S.footballSquad.length!==3||S.footballSquad.some((id,i)=>!soccerPlayers[id]||soccerPlayers[id].role!==['ST','MID','DEF'][i])){ensureFootball();save()}soccerLobby()}
 function soccerLobby(){
