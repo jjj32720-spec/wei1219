@@ -7,14 +7,61 @@ const audio=$('audio'); audio.remove();
 const AC=window.AudioContext||window.webkitAudioContext;
 let ctx=null, buffers=new Map(), sources=[], roundIndex=0,tries=0,hintLevel=0,passed=false,playing=false,startAt=0,offset=0,rounds=[];
 const DURATION=17;
+// 音量分析：以人耳較容易辨識的中頻為主，避免低音厚的歌掩蓋較柔和的人聲。
+function perceivedLevel(buffer){
+ let count=0,sum=0;
+ const stride=Math.max(1,Math.floor(buffer.sampleRate/11025));
+ const end=Math.min(buffer.length,Math.floor(buffer.sampleRate*DURATION));
+ for(let ch=0;ch<Math.min(2,buffer.numberOfChannels);ch++){
+   const a=buffer.getChannelData(ch);
+   let prev=0;
+   for(let i=0;i<end;i+=stride){
+     const v=a[i],focus=v-prev*.72;
+     sum+=focus*focus;count++;prev=v;
+   }
+ }
+ return Math.sqrt(sum/Math.max(1,count));
+}
 function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
-function newGame(){let picked=shuffle(library).slice(0,10);rounds=[{songs:picked.slice(0,3),need:2},{songs:picked.slice(3,6),need:2},{songs:picked.slice(6,10),need:3}];roundIndex=0;render()}
+function newGame(){
+ // 每輪先選不同歌手；全局十首不重複。若題庫不足才放寬歌手限制。
+ const unused=shuffle(library), chosen=[];
+ const groups=[3,3,4];
+ for(const size of groups){
+   let group=[],artists=new Set();
+   for(const song of unused){
+     if(group.length===size)break;
+     if(!artists.has(song.artist)){group.push(song);artists.add(song.artist)}
+   }
+   if(group.length<size){for(const song of unused){if(group.length===size)break;if(!group.includes(song))group.push(song)}}
+   group.forEach(song=>unused.splice(unused.indexOf(song),1));
+   chosen.push({songs:shuffle(group),need:size===4?3:2});
+ }
+ rounds=chosen;roundIndex=0;render()
+}
 function normalize(s){return (s||'').toLowerCase().normalize('NFKC').replace(/[《》「」『』·．.,，。!！?？\s\-_]/g,'').replace(/为/g,'為').replace(/泪/g,'淚').replace(/杰/g,'傑').replace(/伦/g,'倫').replace(/几/g,'幾').replace(/写/g,'寫').replace(/钟/g,'鐘').replace(/阳/g,'陽').replace(/长/g,'長').replace(/执/g,'執').replace(/从/g,'從').replace(/苏/g,'蘇').replace(/着/g,'著')}
 async function getBuffer(song){if(!ctx)ctx=new AC();if(buffers.has(song.name))return buffers.get(song.name);let bytes=Uint8Array.from(atob(song.audio.split(',')[1]),c=>c.charCodeAt(0));let b=await ctx.decodeAudioData(bytes.buffer);buffers.set(song.name,b);return b}
 function stop(){if(playing){offset=Math.min(DURATION,ctx.currentTime-startAt);playing=false}for(let s of sources){try{s.stop()}catch(e){}try{s.disconnect()}catch(e){}}sources=[];$('play').textContent='▶ 播放混合音軌';$('wave').classList.remove('playing')}
-async function toggle(){if(playing){stop();return}let r=rounds[roundIndex];$('play').disabled=true;$('play').textContent='載入音訊中…';try{if(!ctx)ctx=new AC();await ctx.resume();let bs=await Promise.all(r.songs.map(getBuffer));if(offset>=DURATION-.1)offset=0;let start=ctx.currentTime+.08;startAt=start-offset;let gain=ctx.createGain();gain.gain.value=1/Math.sqrt(bs.length)*.73;gain.connect(ctx.destination);sources=bs.map(b=>{let s=ctx.createBufferSource();s.buffer=b;s.connect(gain);s.start(start,offset,Math.max(.01,Math.min(DURATION,b.duration)-offset));return s});playing=true;$('play').textContent='Ⅱ 暫停播放';$('wave').classList.add('playing')}catch(e){stop();alert('音訊無法播放，請使用 Safari 開啟並再試一次。')}finally{$('play').disabled=false}}
+async function toggle(){if(playing){stop();return}let r=rounds[roundIndex];$('play').disabled=true;$('play').textContent='載入音訊中…';try{if(!ctx)ctx=new AC();await ctx.resume();let bs=await Promise.all(r.songs.map(getBuffer));if(offset>=DURATION-.1)offset=0;let start=ctx.currentTime+.08;startAt=start-offset;// 個別歌曲先做感知音量校準，再用輕微左右分離及壓縮器保留細節。
+ const levels=bs.map(perceivedLevel);
+ const target=Math.exp(levels.reduce((a,v)=>a+Math.log(Math.max(v,.0001)),0)/levels.length);
+ const compressor=ctx.createDynamicsCompressor();
+ compressor.threshold.value=-19;compressor.knee.value=16;compressor.ratio.value=3;
+ compressor.attack.value=.012;compressor.release.value=.23;
+ const master=ctx.createGain();master.gain.value=.78/Math.sqrt(bs.length);
+ compressor.connect(master);master.connect(ctx.destination);
+ const pans=bs.length===3?[-.34,0,.34]:[-.42,-.14,.14,.42];
+ sources=bs.map((b,i)=>{
+   const s=ctx.createBufferSource();s.buffer=b;
+   const g=ctx.createGain();g.gain.value=Math.max(.65,Math.min(1.75,target/Math.max(.0001,levels[i])));
+   s.connect(g);
+   if(ctx.createStereoPanner){const pan=ctx.createStereoPanner();pan.pan.value=pans[i];g.connect(pan);pan.connect(compressor)}
+   else g.connect(compressor);
+   s.start(start,offset,Math.max(.01,Math.min(DURATION,b.duration)-offset));
+   return s
+ });playing=true;$('play').textContent='Ⅱ 暫停播放';$('wave').classList.add('playing')}catch(e){stop();alert('音訊無法播放，請使用 Safari 開啟並再試一次。')}finally{$('play').disabled=false}}
 function updateTime(){let t=playing?Math.max(0,ctx.currentTime-startAt):offset;if(playing&&t>=DURATION){offset=0;stop();t=0} $('clock').textContent=`00:${String(Math.floor(t)).padStart(2,'0')} / 00:17`;$('fill').style.width=`${Math.min(100,t/DURATION*100)}%`;requestAnimationFrame(updateTime)}
-function render(){let r=rounds[roundIndex];stop();offset=0;tries=0;hintLevel=0;passed=false;$('roundlabel').textContent=`ROUND 0${roundIndex+1} / 03`;$('stage').textContent=['STAGE 01 · FIRST SIGNAL','STAGE 02 · DEEP FREQUENCY','STAGE 03 · FINAL MIX'][roundIndex];$('trackCount').textContent=r.songs.length;$('question').textContent=`你聽出了哪 ${r.songs.length===4?'四':'三'} 首歌？`;$('rule').textContent=`歌曲同時播放，直接輸入歌名，答對至少 ${r.need} 首過關。每局隨機抽題，順序不限。`;$('inputs').innerHTML=r.songs.map((_,i)=>`<div class="inputrow"><span class="number">0${i+1}</span><input maxlength="40" autocomplete="off" aria-label="第${i+1}首歌名" placeholder="輸入第 ${i+1} 首歌名"></div>`).join('');$('feedback').className='feedback hidden';$('hints').className='hintbox hidden';$('hint').disabled=false;$('hint').textContent='💡 提示（可選）';$('next').classList.add('hidden');$('next').textContent=roundIndex===2?'重新挑戰 ↻':'下一輪 →';$('submit').disabled=false;$('submit').textContent='提交答案';$('dots').innerHTML=[0,1,2].map(i=>`<span class="dot ${i<=roundIndex?'on':''}"></span>`).join('')}
+function render(){let r=rounds[roundIndex];stop();offset=0;tries=0;hintLevel=0;passed=false;$('roundlabel').textContent=`ROUND 0${roundIndex+1} / 03`;$('stage').textContent=['STAGE 01 · FIRST SIGNAL','STAGE 02 · DEEP FREQUENCY','STAGE 03 · FINAL MIX'][roundIndex];$('trackCount').textContent=r.songs.length;$('question').textContent=`你聽出了哪 ${r.songs.length===4?'四':'三'} 首歌？`;$('rule').textContent=`歌曲同時播放，直接輸入歌名，答對至少 ${r.need} 首過關。每局隨機抽題，盡量不重複歌手；音量已平衡，順序不限。`;$('inputs').innerHTML=r.songs.map((_,i)=>`<div class="inputrow"><span class="number">0${i+1}</span><input maxlength="40" autocomplete="off" aria-label="第${i+1}首歌名" placeholder="輸入第 ${i+1} 首歌名"></div>`).join('');$('feedback').className='feedback hidden';$('hints').className='hintbox hidden';$('hint').disabled=false;$('hint').textContent='💡 提示（可選）';$('next').classList.add('hidden');$('next').textContent=roundIndex===2?'重新挑戰 ↻':'下一輪 →';$('submit').disabled=false;$('submit').textContent='提交答案';$('dots').innerHTML=[0,1,2].map(i=>`<span class="dot ${i<=roundIndex?'on':''}"></span>`).join('')}
 $('wave').innerHTML=Array.from({length:57},(_,i)=>`<span class="bar" style="height:${10+Math.round(Math.abs(Math.sin(i*1.7)*Math.cos(i*.29))*68)}px;--delay:${(i%11)*-.12}s"></span>`).join('');
 $('play').onclick=toggle;
 $('submit').onclick=()=>{let r=rounds[roundIndex],inputs=[...$('inputs').querySelectorAll('input')],unique=[...new Set(inputs.map(x=>normalize(x.value)).filter(Boolean))],matched=r.songs.filter(x=>unique.includes(normalize(x.name)));tries++;let win=matched.length>=r.need;passed=win;let f=$('feedback');f.className='feedback '+(win?'good':'bad');f.textContent=`${win?'✓ 辨識成功！':'還差一點！'}\n本次答對 ${matched.length} / ${r.songs.length} 首（過關需要 ${r.need} 首）。${matched.length?'\n已猜中：'+matched.map(x=>'《'+x.name+'》').join('、'):''}${win?'\n\n完整曲目：'+r.songs.map(x=>'《'+x.name+'》').join('、'):'\n\n可以繼續聽，修改答案後再提交。'}`;if(win){stop();offset=0;$('next').classList.remove('hidden');$('submit').disabled=true;$('submit').textContent='已通關 ✓'}else if(!hintLevel){$('hint').textContent='💡 解鎖提示'}};
