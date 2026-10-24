@@ -15,7 +15,7 @@ function renderTracks(){ $('tracks').innerHTML=SONGS.map((s,i)=>`<button class="
 renderTracks();
 $('choose').onclick=()=>{$('readyName').textContent=SONGS[selected].name;show('ready');drawIdle()};
 $('back').onclick=()=>{cancelAnimationFrame(micFrame);show('select')};
-async function initMic(){try{if(!navigator.mediaDevices?.getUserMedia)throw Error('此瀏覽器不支援麥克風，請使用 HTTPS 的 Safari');micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();await ctx.resume();if(micSource)micSource.disconnect();micSource=ctx.createMediaStreamSource(micStream);analyser=ctx.createAnalyser();analyser.fftSize=2048;analyser.smoothingTimeConstant=0;micSource.connect(analyser);$('micStatus').textContent='✅ 麥克風已連線，試著唱一個長音';$('startBtn').disabled=false;$('micBtn').textContent='🎙️ 重新啟用麥克風';drawIdle()}catch(e){$('micStatus').textContent='無法啟用麥克風：'+e.message}}
+async function initMic(){try{if(!navigator.mediaDevices?.getUserMedia)throw Error('此瀏覽器不支援麥克風，請使用 HTTPS 的 Safari');micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:true}});ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();await ctx.resume();if(micSource)micSource.disconnect();micSource=ctx.createMediaStreamSource(micStream);analyser=ctx.createAnalyser();analyser.fftSize=4096;analyser.smoothingTimeConstant=0;micSource.connect(analyser);$('micStatus').textContent='✅ 麥克風已連線，試著唱一個長音';$('startBtn').disabled=false;$('micBtn').textContent='🎙️ 重新啟用麥克風';drawIdle()}catch(e){$('micStatus').textContent='無法啟用麥克風：'+e.message}}
 $('micBtn').onclick=initMic;
 function getPitch(){
  if(!analyser||!ctx)return 0;
@@ -24,7 +24,7 @@ function getPitch(){
  const buf=new Float32Array(analyser.fftSize);analyser.getFloatTimeDomainData(buf);
  let power=0;for(let i=0;i<buf.length;i++)power+=buf[i]*buf[i];
  lastRms=Math.sqrt(power/buf.length);
- if(lastRms<.009){lastMicPitch=0;return 0}
+ if(lastRms<.0035){lastMicPitch=0;return 0}
  // Downsample by 4: drastically reduce CPU usage on iPhone.
  const step=4, len=Math.floor(buf.length/step), rate=ctx.sampleRate/step;
  const min=Math.max(8,Math.floor(rate/800)),max=Math.min(Math.floor(rate/95),Math.floor(len*.55));
@@ -35,7 +35,7 @@ function getPitch(){
    const score=1-diff/(energy+1e-8);
    if(score>bestScore){bestScore=score;best=lag}
  }
- lastMicPitch=bestScore>.55&&best?rate/best:0;
+ lastMicPitch=bestScore>.34&&best?rate/best:0;
  return lastMicPitch;
 }
 function midi(hz){return hz>0?69+12*Math.log2(hz/440):0}
@@ -48,10 +48,10 @@ function drawIdle(){
   g.fillStyle='#1b1728';g.fillRect(0,0,c.width,c.height);
   g.strokeStyle='#7ae0c6';g.lineWidth=3;g.beginPath();
   for(let i=0;i<c.width;i+=6){let y=c.height/2+(p?Math.sin(i/16)*Math.min(55,Math.max(8,(p-45)*2)):0);i?g.lineTo(i,y):g.moveTo(i,y)}g.stroke();
-  const volume=Math.min(100,Math.round(lastRms*950));
+  const volume=Math.min(100,Math.round(lastRms*1800));
   $('volumeLabel').textContent=volume+'%';$('volumeBar').style.width=volume+'%';
   $('pitchLabel').textContent='音高：'+(p?noteName(p)+'（'+Math.round(hz)+' Hz）':'—');
-  if(analyser){$('micStatus').textContent=volume<5?'🎙️ 麥克風已連線，請靠近麥克風唱長音':p?'✅ 已偵測到音高 '+noteName(p):'🎙️ 有收到聲音，正在辨識音高（請持續唱「啊」）'}
+  if(analyser){$('micStatus').textContent=volume<3?'🎙️ 麥克風已連線，請靠近麥克風唱長音':p?'✅ 已偵測到音高 '+noteName(p):'🎙️ 有收到聲音，但音高尚未穩定（請持續唱「啊」）'}
   micFrame=requestAnimationFrame(render);
  }
  render();
