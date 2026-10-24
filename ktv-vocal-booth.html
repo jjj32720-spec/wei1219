@@ -4,11 +4,18 @@
 .lyric-tools{margin-top:10px;padding:12px;background:#292036;border:1px solid #59456e;border-radius:12px}.lyric-tools .row{justify-content:center}.lyric-tools button{font-size:12px;padding:9px 10px}.lyric-tools .tiny{text-align:center;display:block;margin-top:8px}
 </style><style id="timelineStyle">
 .timeline-editor{margin:12px 0;padding:14px;border:1px solid #6e5785;background:#241c33;border-radius:17px}.timeline-editor h3{font-size:15px;margin:0 0 6px;color:#eedcff}.timeline-editor .edrow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin:8px 0}.timeline-editor select,.timeline-editor button{background:#453358;color:#fff;border:1px solid #79638c;border-radius:9px;padding:9px;font-size:13px}.timeline-editor .edline{font-size:18px;line-height:2;letter-spacing:1px;word-break:break-all;color:#fff}.timeline-editor .edline span{padding:1px 2px;border-radius:5px;cursor:pointer}.timeline-editor .edline span.edactive{background:#ac83ea;color:#161020}.timeline-editor .edtrack{position:relative;height:90px;margin:16px 7px 8px;border-radius:10px;background:linear-gradient(#30253e,#21182d);border:1px solid #6e5785;touch-action:none;user-select:none}.timeline-editor .edtrack:before{content:'';position:absolute;left:0;right:0;top:45px;border-top:1px solid #66567c}.timeline-editor .ednode{position:absolute;top:15px;transform:translateX(-50%);width:27px;height:56px;border:0;background:transparent;padding:0;touch-action:none;cursor:grab;display:flex;flex-direction:column;align-items:center;justify-content:space-between;color:#fff;font-size:12px}.timeline-editor .ednode:before{content:'';position:absolute;top:22px;height:23px;border-left:2px solid #b69aff}.timeline-editor .ednode b{position:relative;z-index:1;border-radius:7px;background:#6d4c9d;min-width:23px;padding:3px 0;text-align:center}.timeline-editor .ednode.selected b{background:#efbf60;color:#241624}.timeline-editor .ednode i{font-style:normal;font-size:9px;color:#b7a5d0}.timeline-editor .edreadout{font-size:12px;color:#e8d3ff}.timeline-editor .edhint{font-size:11px;color:#c8b6d7;line-height:1.7}.timeline-editor input[type=range]{accent-color:#b995fa}
+</style><style id="directLyricScrubStyle">
+.lyric-tools,#timelineEditor,#play .help:has(#wordTarget),#play .help:has(#lyricSync){display:none!important}
+.lyric{margin-top:20px;padding:22px 10px 14px;border-radius:20px;background:linear-gradient(135deg,#332743,#201a2e);touch-action:none;user-select:none;-webkit-user-select:none;cursor:ew-resize;min-height:145px}
+.lyric .current{width:100%;font-size:clamp(21px,5.5vw,29px);line-height:1.8;letter-spacing:.025em;overflow-wrap:anywhere;touch-action:none}
+.lyric .highlight{display:inline;pointer-events:none}
+.lyric .next{margin-top:6px}.scrub-hint{font-size:11px;color:#d3b6f0;text-align:center;line-height:1.6;margin:9px 0}
+.lyric.scrubbing{outline:2px solid #d6adff;background:#352744}.scrub-readout{font-size:12px;text-align:center;color:#f3d9ff;min-height:19px}
 </style></head><body><div class="shell"><div class="top"><span>🎮 PLAYER ONE · MUSIC WORLD</span><span>🎤 VOCAL BOOTH</span></div><div class="panel"><h1>🎙️ KTV 錄音室</h1><div class="inner">
 <section id="select"><div class="sub">SELECT YOUR SONG</div><p class="note">先選歌，測試麥克風後開始演唱。這是獨立試玩版，不會更動正式網站進度。</p><div id="tracks"></div><p class="hint">第二首會在《缺口》完成一次有效演唱測試後解鎖；正式版將改用校正後的音準通關。</p><button class="primary" id="choose">進入麥克風測試 →</button></section>
 <section id="ready" class="hidden"><div class="row"><button class="ghost" id="back">← 選歌</button><span class="pill">MIC CHECK</span></div><h2 id="readyName"></h2><div class="status" id="micStatus">尚未啟用麥克風</div><div class="note" style="color:#d9c5f4">收音音量 <b id="volumeLabel">0%</b>　<span id="pitchLabel">音高：—</span></div><div class="progress"><div id="volumeBar"></div></div><canvas class="canvas" id="micCanvas" width="600" height="160"></canvas><button class="primary" id="micBtn">🎙️ 啟用麥克風</button><div class="help">音訊延遲校準（若音高線比聲音慢，可調整）<br><input id="latency" type="range" min="-400" max="400" value="0" step="25"><span id="latencyLabel">0 ms</span></div><button class="primary" id="startBtn" disabled>▶ 開始 40 秒演唱</button><p class="hint">建議使用耳機，避免伴奏聲被麥克風收進去。iPhone 請在 Safari 的 HTTPS 網頁開啟並允許麥克風。</p></section>
 <section id="play" class="hidden"><div class="row"><span class="pill" id="playName"></span><span id="clock">00:00 / 00:40</span></div><div class="row" style="margin:14px 0;gap:8px"><button class="ghost" id="vocalToggle" type="button" aria-pressed="false">🎙️ 導唱 OFF</button><span class="pill" id="vocalState">純伴奏 · 計分測試</span></div><div class="stat"><div><b id="pitchNow">—</b><small>目前音高</small></div><div><b id="liveScore">—</b><small>音準狀態</small></div><div><b id="singCoverage">0%</b><small>偵測到演唱</small></div></div><canvas class="canvas" id="pitchCanvas" width="600" height="190"></canvas><div class="row" style="margin-top:7px"><span class="tiny">🟣 目標旋律尚未校正</span><span class="tiny">🟢 麥克風音高</span></div><div class="help" style="margin-top:12px"><div class="row"><b>🎼 歌詞同步校正</b><span id="lyricSyncValue">+0.0 秒</span></div><p class="hint" style="margin:6px 0">先調整整體偏移；下方也能逐句校時。此版不會假稱已完成粵語語音辨識。</p><input id="lyricSync" type="range" min="-8" max="8" step="0.1" value="0"><div class="row tiny"><span>提前 8 秒</span><span>延後 8 秒</span></div></div><div class="lyric-tools"><div class="row"><button class="ghost" type="button" id="lineEarlier">← 本句提前 0.2 秒</button><button class="ghost" type="button" id="lineMark">🎯 現在開始唱這句</button><button class="ghost" type="button" id="lineLater">本句延後 0.2 秒 →</button></div><span class="tiny" id="lineTimingStatus">每句可獨立校時；調整會自動保存</span></div>
-<div class="help" style="margin-top:12px"><b>🎯 逐字打點校時 · 已內建兩首歌的校時紀錄</b><p class="hint">先開啟導唱 ON，聽到下方指定的字開始發音時，按「記錄這個字」。會記下歌曲播放的實際秒數並自動跳下一字。可以重播、倒退一字重新記錄。</p><div class="row" style="margin:10px 0;align-items:center"><span class="pill" id="wordTarget">準備校時</span><span class="tiny" id="wordCount">0 / 0</span></div><div class="row" style="gap:7px;flex-wrap:wrap"><button class="ghost" id="wordBack" type="button">↶ 上一字</button><button class="primary" id="wordMark" type="button" style="width:auto;flex:1">● 記錄這個字</button><button class="ghost" id="wordSkip" type="button">跳下一字 →</button></div><div class="row" style="margin-top:8px;gap:7px;flex-wrap:wrap"><button class="ghost" id="wordReplay" type="button">↺ 重播本句</button><button class="ghost" id="wordExport" type="button">↓ 匯出校時紀錄</button><button class="ghost" id="wordReset" type="button">清除此歌紀錄</button></div><p class="hint" id="wordStatus">校時資料儲存在目前瀏覽器；匯出 JSON 後可傳給我整合進正式字幕。</p></div><div class="timeline-editor" id="timelineEditor"><h3>🎚️ 拖曳式逐字校時</h3><div class="edhint">選擇歌詞句子，直接左右拖動每個字的節點；時間會立即儲存並反映在 KTV 掃色。可暫停音樂、慢速聆聽後調整。</div><div class="edrow"><select id="edLine" aria-label="選擇歌詞句子"></select><button type="button" id="edReplay">↺ 播放這句</button><button type="button" id="edPause">⏸ 暫停</button><button type="button" id="edSlow">0.75× 慢速</button></div><div class="edline" id="edWords"></div><div class="edtrack" id="edTrack" aria-label="逐字時間軸"></div><div class="edrow"><span class="edreadout" id="edReadout">點選或拖曳一個字</span><button type="button" id="edRestore">還原本句預設</button></div><div class="edhint">左右邊界是本句與下一句的時間範圍。節點可拖動，放開即儲存；較密集的字可先點選字，再用下方微調。</div><input id="edFine" type="range" min="0" max="40" step="0.01" value="0" aria-label="微調選中字的秒數"/></div><div class="lyric"><div class="current"><span class="highlight" id="currentLyric">♪ 跟著旋律演唱 ♪</span></div><div class="next" id="nextLyric">歌詞可逐句校時，尚非自動語音辨識</div></div><div class="progress"><div id="progressFill"></div></div><button class="ghost" id="stopBtn">■ 提前結束</button><p class="hint">同步字幕支援逐字進度；導唱 ON 播放原唱供練習；導唱 OFF 播放伴奏。切換時保留進度。</p></section>
+<div class="help" style="margin-top:12px"><b>🎯 逐字打點校時 · 已內建兩首歌的校時紀錄</b><p class="hint">先開啟導唱 ON，聽到下方指定的字開始發音時，按「記錄這個字」。會記下歌曲播放的實際秒數並自動跳下一字。可以重播、倒退一字重新記錄。</p><div class="row" style="margin:10px 0;align-items:center"><span class="pill" id="wordTarget">準備校時</span><span class="tiny" id="wordCount">0 / 0</span></div><div class="row" style="gap:7px;flex-wrap:wrap"><button class="ghost" id="wordBack" type="button">↶ 上一字</button><button class="primary" id="wordMark" type="button" style="width:auto;flex:1">● 記錄這個字</button><button class="ghost" id="wordSkip" type="button">跳下一字 →</button></div><div class="row" style="margin-top:8px;gap:7px;flex-wrap:wrap"><button class="ghost" id="wordReplay" type="button">↺ 重播本句</button><button class="ghost" id="wordExport" type="button">↓ 匯出校時紀錄</button><button class="ghost" id="wordReset" type="button">清除此歌紀錄</button></div><p class="hint" id="wordStatus">校時資料儲存在目前瀏覽器；匯出 JSON 後可傳給我整合進正式字幕。</p></div><div class="timeline-editor" id="timelineEditor"><h3>🎚️ 拖曳式逐字校時</h3><div class="edhint">選擇歌詞句子，直接左右拖動每個字的節點；時間會立即儲存並反映在 KTV 掃色。可暫停音樂、慢速聆聽後調整。</div><div class="edrow"><select id="edLine" aria-label="選擇歌詞句子"></select><button type="button" id="edReplay">↺ 播放這句</button><button type="button" id="edPause">⏸ 暫停</button><button type="button" id="edSlow">0.75× 慢速</button></div><div class="edline" id="edWords"></div><div class="edtrack" id="edTrack" aria-label="逐字時間軸"></div><div class="edrow"><span class="edreadout" id="edReadout">點選或拖曳一個字</span><button type="button" id="edRestore">還原本句預設</button></div><div class="edhint">左右邊界是本句與下一句的時間範圍。節點可拖動，放開即儲存；較密集的字可先點選字，再用下方微調。</div><input id="edFine" type="range" min="0" max="40" step="0.01" value="0" aria-label="微調選中字的秒數"/></div><div class="lyric" id="scrubLyrics" aria-label="拖動歌詞變色位置以同步快轉倒退"><div class="current"><span class="highlight" id="currentLyric">♪ 跟著旋律演唱 ♪</span></div><div class="next" id="nextLyric">歌詞可逐句校時，尚非自動語音辨識</div></div><div class="scrub-hint">↔ 直接按住歌詞左右拖動黃色變色位置，音樂同步快轉／倒退；放開自動記錄校時</div><div class="scrub-readout" id="scrubReadout">點住字幕即可校時</div><div class="row" style="justify-content:center;margin:8px 0"><button class="ghost" id="scrubExport" type="button">↓ 匯出逐字校時 JSON</button></div><div class="progress"><div id="progressFill"></div></div><button class="ghost" id="stopBtn">■ 提前結束</button><p class="hint">同步字幕支援逐字進度；導唱 ON 播放原唱供練習；導唱 OFF 播放伴奏。切換時保留進度。</p></section>
 <section id="result" class="hidden"><div class="sub">PERFORMANCE COMPLETE</div><h2 id="resultName"></h2><div class="stat"><div><b id="rScore">—</b><small>音準狀態</small></div><div><b id="rCoverage">—</b><small>演唱覆蓋率</small></div><div><b id="rGrade">—</b><small>測試評級</small></div></div><div class="status" id="resultInfo"></div><button class="primary" id="retry">再唱一次</button><button class="ghost" style="width:100%;margin-top:10px" id="chooseAgain">返回選歌</button></section>
 </div><p class="note" style="color:#655976;margin:16px 5px 0">試玩版：可實際播放伴奏、啟用麥克風、即時追蹤音高與結算測試分數。已加入兩首歌的 LRC 字幕。《缺口》已換用新 KTV 伴唱，歌詞加入兩秒預備時間，依副歌重複段落校準；旋律音高仍待校正，本版不提供正式音準評分。</p></div></div>
 <script>
@@ -71,6 +78,7 @@ $('edSlow').onclick=()=>{if(!audio)return;const slow=audio.playbackRate===1;for(
 $('edRestore').onclick=()=>{const marks=wordMarks();Object.keys(marks).filter(k=>k.startsWith(edLineIndex+':')).forEach(k=>delete marks[k]);localStorage.setItem(wordStorageKey(),JSON.stringify(marks));edRender();if(audio)updateLyric(audio.currentTime)};
 
 function updateLyric(t){
+ if($('scrubLyrics')?.classList.contains('scrubbing'))return;
  const cues=lyricCues();
  if(!cues.length){$('currentLyric').textContent='♪ 跟著伴奏演唱 ♪';$('nextLyric').textContent='準備開始';$('currentLyric').style.setProperty('--pct','0%');return;}
  const ci=cues.findIndex((c,j)=>t>=c.t&&(j===cues.length-1||t<cues[j+1].t));
@@ -119,6 +127,72 @@ function updateLyric(t){
  }
  $('currentLyric').style.setProperty('--pct',Math.max(0,Math.min(100,progress))+'%');
 }
+
+// DIRECT LYRIC SCRUB: the highlighted text itself is the seek surface.
+// Uses the existing manually measured word anchors as a monotone interpolation curve.
+(function setupDirectLyricScrub(){
+ const surface=$('scrubLyrics'),readout=$('scrubReadout');
+ let drag=null;
+ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ function lineInfo(i){
+   const chars=Array.from(BUILTIN_LYRICS[selected][i][1]);
+   const base=edTimes(i);const starts=lyricCues();
+   const cue=starts.find(c=>c.i===i),following=starts.find(c=>c.i===i+1);
+   const lo=clamp(cue?.t??0,0,39.8),hi=clamp(following?.t??40,lo+.2,40);
+   const values=[];let last=lo;
+   for(let k=0;k<chars.length;k++){
+     let v=Number.isFinite(base[k])?base[k]:last;
+     v=clamp(v,lo,hi);v=Math.max(last,v);values.push(v);last=v;
+   }
+   return {chars,values,lo,hi};
+ }
+ function seekForFraction(info,f){
+   const count=info.chars.length;if(!count)return info.lo;
+   const x=clamp(f,0,1)*count,k=Math.min(count-1,Math.floor(x)),part=x-k;
+   const a=k===0?info.lo:info.values[k],b=k+1<count?info.values[k+1]:info.hi;
+   return clamp(a+(b-a)*part,0,39.95);
+ }
+ function pointFraction(e){
+   const rect=surface.querySelector('.current').getBoundingClientRect();
+   return clamp((e.clientX-rect.left)/Math.max(1,rect.width),0,1);
+ }
+ function draw(e){
+   if(!drag||!audio)return;
+   const fraction=pointFraction(e),info=lineInfo(drag.line);
+   const sec=seekForFraction(info,fraction);
+   try{audio.currentTime=sec;if(backingAudio&&backingAudio!==audio)backingAudio.currentTime=sec;if(vocalAudio&&vocalAudio!==audio)vocalAudio.currentTime=sec;}catch(_){}
+   const idx=Math.min(info.chars.length-1,Math.floor(fraction*info.chars.length));
+   drag.fraction=fraction;drag.sec=sec;drag.pos=idx;
+   $('currentLyric').textContent=BUILTIN_LYRICS[selected][drag.line][1];
+   $('currentLyric').style.setProperty('--pct',(fraction*100).toFixed(2)+'%');
+   readout.textContent='「'+(info.chars[idx]||'')+'」 · '+sec.toFixed(2)+' 秒 · 放開記錄';
+ }
+ surface.addEventListener('pointerdown',e=>{
+   if(!playing||!audio)return;
+   const i=activeCueIndex(audio.currentTime);
+   drag={line:i,wasPlaying:!audio.paused,pos:0,sec:audio.currentTime,fraction:0};
+   if(drag.wasPlaying)audio.pause();
+   surface.classList.add('scrubbing');surface.setPointerCapture(e.pointerId);
+   e.preventDefault();draw(e);
+ });
+ surface.addEventListener('pointermove',e=>{if(drag){e.preventDefault();draw(e)}});
+ function release(e){
+   if(!drag)return;
+   const d=drag;drag=null;surface.classList.remove('scrubbing');
+   const info=lineInfo(d.line),pos=d.pos;
+   if(info.chars[pos]&&!/\s/.test(info.chars[pos])){
+     // Save a user-selected anchor in segment-relative seconds.
+     const marks=wordMarks();marks[d.line+':'+pos]={time:Math.round(d.sec*1000)/1000,char:info.chars[pos],line:d.line,pos,source:'vocal',method:'lyric-scrub'};
+     localStorage.setItem(wordStorageKey(),JSON.stringify(marks));
+     readout.textContent='✓ 已記錄「'+info.chars[pos]+'」 '+d.sec.toFixed(2)+' 秒';
+   }
+   updateLyric(audio.currentTime);updateWordPanel();
+   if(d.wasPlaying)audio.play().catch(()=>{});
+ }
+ surface.addEventListener('pointerup',release);surface.addEventListener('pointercancel',release);
+ $('scrubExport').addEventListener('click',()=>$('wordExport').click());
+})();
+
 $('latency').oninput=()=>{$('latencyLabel').textContent=$('latency').value+' ms'};
 renderTracks();loadLyrics();updateWordPanel();edInit();
 $('choose').onclick=()=>{$('readyName').textContent=SONGS[selected].name;show('ready');drawIdle()};
