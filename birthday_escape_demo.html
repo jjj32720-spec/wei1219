@@ -783,7 +783,7 @@ function soccerLobby(){
   ['⚽','點球射手','3 球過關｜5 球全進進階','shooter'],
   ['🧤','點球守門','3 球過關｜5 球全擋進階','keeper']
  ];
- frame('⚽ PLAYER ONE FC','依序挑戰五場比賽，每場開始前先閱讀操作說明。全部通關後解鎖自由選關。',`<div class="v102-stadium"><div class="v102-stadium-glow"></div><div class="v102-pitch"><div class="v102-midline"></div><div class="v102-midcircle"></div><div class="v102-goal v102-goal-left"></div><div class="v102-goal v102-goal-right"></div><span class="v102-player v102-p1">⚽</span><span class="v102-player v102-p2">🏃</span><span class="v102-player v102-p3">🏃</span></div><div class="v102-stadium-title">CHOOSE YOUR MATCH <small>點一下，直接開賽！</small></div></div><div class="center"><button class="btn alt" onclick="soccerMatchMenu()">🏆 五關連戰｜點一下直接開賽 ▶</button></div><div class="v102-club-tools"><button type="button" onclick="soccerPack()">🎁 撕開球員卡包 <b>${S.footballPacks}</b></button><button type="button" onclick="soccerTeam()">🎴 我的球隊</button><button type="button" onclick="soccerAce()">✦ 神祕球員</button></div><div class="v102-footnote">${S.footballOwned.filter(i=>i!==5).length}/17 位球員已收藏 · 全部通關後可自由選關</div>`);
+ frame('⚽ PLAYER ONE FC','依序挑戰五場比賽，每場開始前先閱讀操作說明。全部通關後解鎖自由選關。',`<div class="v102-stadium"><div class="v102-stadium-glow"></div><div class="v102-pitch"><div class="v102-midline"></div><div class="v102-midcircle"></div><div class="v102-goal v102-goal-left"></div><div class="v102-goal v102-goal-right"></div><span class="v102-player v102-p1">⚽</span><span class="v102-player v102-p2">🏃</span><span class="v102-player v102-p3">🏃</span></div><div class="v102-stadium-title">CHOOSE YOUR MATCH <small>點一下，直接開賽！</small></div></div><div class="center"><button class="btn alt" onclick="soccerMatchMenu()">🏆 五關連戰｜點一下直接開賽 ▶</button></div><div class="v102-club-tools"><button type="button" onclick="soccerTeam()">🎴 我的球隊</button></div><div class="v102-footnote">${S.footballOwned.filter(i=>i!==5).length}/17 位球員已收藏 · 全部通關後可自由選關</div>`);
 }
 function soccerMatchMenu(){
  const cleared=soccerFiveCleared();
@@ -1071,12 +1071,33 @@ function playerOneShopShow(html){
  layer.style.display='flex';
 }
 function playerOneCoinShop(){
- ensureFootball();const w=playerOneWallet(),left=Math.max(0,24-w.purchased);
- const owned=new Set(S.footballOwned||[]),publicIds=soccerPlayers.map((p,i)=>i).filter(i=>!soccerPlayers[i].secret);
- const cards=publicIds.map(i=>{const p=soccerPlayers[i],yes=owned.has(i);return `<div style="border:1px solid ${yes?'#9c7cc6':'#4b4359'};border-radius:12px;background:${yes?'#292039':'#17151f'};padding:12px 5px;text-align:center;min-width:0;opacity:${yes?'1':'.65'}"><div style="font-size:28px">${yes?(p.icon||'⚽'):'🔒'}</div><b style="display:block;font-size:12px;overflow-wrap:anywhere">${yes?p.name:'???'}</b><small style="font-size:10px">${yes?(p.role||'CARD'):'未解鎖'}</small></div>`}).join('');
- playerOneShopShow(`<style>#playerone-jersey-shop-overlay .room-v113-action{display:block;width:100%;margin:9px 0;padding:13px;border-radius:12px;border:1px solid #aa8bc9;background:#5e4384;color:#fff;font-weight:700;cursor:pointer}#playerone-jersey-shop-overlay .room-v113-action:disabled{opacity:.5}</style><div class="room-v113-hero">👕 9</div><h2>KANE · 球員卡圖鑑</h2><p>9 號球衣是你的收藏總覽與卡包兌換中心。每張球員卡都可以在這裡查看解鎖狀態。</p><div style="border:1px solid #9b82ba;border-radius:15px;padding:15px;background:#211a2e;margin:12px 0;color:#f7edff"><div style="display:flex;justify-content:space-between;gap:8px"><span>🎴 已收集 <b>${owned.size} / ${publicIds.length}</b></span><span>🪙 <b>${w.coins.toLocaleString()}</b> Coins</span></div><div style="margin-top:10px;height:8px;border-radius:9px;background:#4b3b60;overflow:hidden"><div style="height:100%;background:#ac87ee;width:${Math.min(100,100*owned.size/Math.max(1,publicIds.length))}%"></div></div></div><h3>球員卡收藏圖鑑</h3><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 22px">${cards}</div><h3>🎁 卡包兌換商店</h3><p>每包 200 Coins · 商店剩餘 ${left} / 24 包 · 未開卡包 ${Number(S.footballPacks)||0}</p><button class="room-v113-action" onclick="playerOneBuyPack()" ${w.coins<200||!left?'disabled':''}>🪙 200 Coins 兌換 1 包球員卡</button><button class="room-v113-action" onclick="room113Close();soccerLobby()">⚽ 前往足球世界開包／管理球隊</button><button class="room-v113-action" onclick="room113Close()">← 返回生日房間</button>`);
+ ensureFootball();
+ const w=playerOneWallet(),left=Math.max(0,24-w.purchased);
+ const ids=[...new Set(S.footballOwned||[])].filter(i=>soccerPlayers[i]&&(S.aceUnlocked||!soccerPlayers[i].secret));
+ const cards=ids.map(i=>`<button type="button" class="kane-card" onclick="playerOneCardPreview(${i})" aria-label="查看${soccerPlayers[i].name}球員卡">${soccerPortrait(i,true)}</button>`).join('');
+ playerOneShopShow(`<style>
+ #playerone-jersey-shop-overlay .kane-title{margin:3px 0 18px;text-align:center;letter-spacing:1px}
+ #playerone-jersey-shop-overlay .kane-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px 12px;margin:0 0 28px}
+ #playerone-jersey-shop-overlay .kane-card{display:block;width:100%;min-width:0;aspect-ratio:3/4;padding:0;border:0;background:transparent;cursor:pointer}
+ #playerone-jersey-shop-overlay .kane-card .v139-image{width:100%;height:100%}
+ #playerone-jersey-shop-overlay .kane-card img{width:100%;height:100%;object-fit:contain}
+ #playerone-jersey-shop-overlay .kane-shop{border-top:1px solid #bba9cb;padding-top:19px;text-align:center}
+ #playerone-jersey-shop-overlay .kane-shop h3{margin:0 0 12px}
+ #playerone-jersey-shop-overlay .kane-balance{display:flex;justify-content:space-between;gap:8px;margin-bottom:14px;font-size:13px}
+ #playerone-jersey-shop-overlay .room-v113-action{display:block;width:100%;margin:9px 0;padding:13px;border-radius:12px;border:1px solid #aa8bc9;background:#5e4384;color:#fff;font-weight:700;cursor:pointer}
+ #playerone-jersey-shop-overlay .room-v113-action:disabled{opacity:.5}
+ </style><h2 class="kane-title">🎴 球員卡圖鑑</h2><div class="kane-gallery">${cards||'<p style="grid-column:1/-1;text-align:center">尚未收藏球員卡</p>'}</div><div class="kane-shop"><h3>🎁 卡包兌換・撕卡包</h3><div class="kane-balance"><span>🪙 ${w.coins.toLocaleString()} Coins</span><span>🎁 ${Number(S.footballPacks)||0} 包</span></div><button class="room-v113-action" onclick="playerOneBuyPack()" ${w.coins<200||!left?'disabled':''}>200 Coins 兌換卡包</button><button class="room-v113-action" onclick="room113Close();soccerPack()" ${(Number(S.footballPacks)||0)<1?'disabled':''}>🎁 撕開卡包</button></div>`);
 }
-function playerOneBuyPack(){const w=playerOneWallet();if(w.coins<200||w.purchased>=24){playerOneCoinShop();return}w.coins-=200;w.purchased++;playerOneSaveWallet(w);ensureFootball();S.footballPacks=(Number(S.footballPacks)||0)+1;save();playerOneCoinShop();toast('🎁 已兌換 1 包球員卡！前往足球世界開包。')}
+function playerOneCardPreview(id){
+ const p=soccerPlayers[id];if(!p||!(S.footballOwned||[]).includes(id))return;
+ const overlay=document.getElementById('playerone-jersey-shop-overlay');
+ if(!overlay)return;
+ const modal=overlay.querySelector('section');
+ if(!modal)return;
+ const previous=modal.innerHTML;
+ modal.innerHTML=`<div style="text-align:center"><button type="button" onclick="playerOneCoinShop()" style="display:block;margin-bottom:12px;border:0;background:transparent;color:#4c3768;font-size:16px">← 返回圖鑑</button><div style="width:min(300px,90%);margin:0 auto">${soccerPortrait(id,true)}</div></div>`;
+}
+function playerOneBuyPack(){const w=playerOneWallet();if(w.coins<200||w.purchased>=24){playerOneCoinShop();return}w.coins-=200;w.purchased++;playerOneSaveWallet(w);ensureFootball();S.footballPacks=(Number(S.footballPacks)||0)+1;save();playerOneCoinShop();toast('🎁 已兌換 1 包球員卡！可以直接在這裡撕開。')}
 function musicMixSelect(){const old=document.getElementById('player-one-mix-frame');if(old){old._mixObserver?.disconnect();old.src='about:blank'}cleanup();const unlocked=localStorage.getItem('playerone_mix_advanced_unlocked_v1')==='1'||!!playerOneWallet().claims.mix_main;frame('🎛️ THE MIX LAB','音樂工作室 · 混音控制台',`<div class="ms-select"><div class="ms-select-head">SELECT YOUR SESSION <span>${unlocked?'02 / 02':'01 / 02'}</span></div><div class="ms-song ms-selected" onclick="musicOpenMixLab('main')" style="cursor:pointer"><div class="ms-disc">♫</div><div><b>基礎混音 · MAIN SESSION</b><small>三關 · 每關三首，全部答對才能通關</small><span>● AVAILABLE · 主線獎勵 +200 Coins</span></div><span style="color:#d8c0ff">›</span></div><div class="ms-song ${unlocked?'':'ms-locked'}" ${unlocked?'onclick="musicOpenMixLab(\'advanced\')"':''} style="cursor:${unlocked?'pointer':'not-allowed'};opacity:${unlocked?'1':'.6'}"><div class="ms-disc">${unlocked?'✦':'🔒'}</div><div><b>進階混音 · ADVANCED</b><small>兩關 · 每關四首，答對三首即可通關</small><span>${unlocked?'● AVAILABLE · 每關 +60，全對再 +40':'完成基礎三關後解鎖'}</span></div>${unlocked?'<span style="color:#d8c0ff">›</span>':''}</div><p class="muted">解鎖後可自由選擇基礎或進階 · 重新開始只重置目前模式的闖關進度</p></div>`);musicBackButton('musicStudio()','‹ 音樂工作室')}
 function musicOpenMixLab(mode="main"){
  cleanup();
