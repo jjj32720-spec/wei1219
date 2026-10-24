@@ -45,14 +45,26 @@
 @keyframes vinylTurn{to{transform:rotate(360deg)}}
 @media(max-width:560px){#tracks{gap:9px}#tracks .track{padding:11px 5px;gap:7px}#tracks .vinyl-title{font-size:12px}#tracks .vinyl-artist{font-size:10px}#tracks .vinyl-tag{font-size:9px}}
 @media(prefers-reduced-motion:reduce){#tracks .track.active .record img{animation:none}}
+</style><style id="performanceCompactLayout">
+.performance-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin:5px 0 13px}
+.performance-heading{min-width:0;flex:1}.performance-heading h2{font-size:clamp(28px,7vw,37px);line-height:1.15;margin:0 0 5px;font-weight:850;letter-spacing:.04em}
+.performance-artist{font-size:14px;font-weight:650;color:#ebd9ff;margin-bottom:7px}
+.performance-credits{display:flex;flex-wrap:wrap;column-gap:12px;row-gap:3px;color:#cbbbdc;font-size:11px;line-height:1.55}
+.performance-side{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:9px}#clock{font-size:12px;color:#e8d6ff;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pitch-chip{display:flex;gap:7px;align-items:center;border:1px solid #66507e;border-radius:999px;padding:5px 9px;color:#d5c3e8;font-size:11px;white-space:nowrap}.pitch-chip b{font-size:15px;color:#fff}
+#play .ktv-audio-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;align-items:end;gap:9px;padding:10px 11px;margin:8px 0 10px;border-radius:13px}
+#play .ktv-audio-row{gap:2px}#play .ktv-audio-label{gap:5px;font-size:11px}#play .ktv-audio-label strong{font-size:11px;min-width:28px}
+#play .ktv-audio-row input[type=range]{height:20px}#play .ktv-audio-footer{margin:0;display:flex;align-items:center}#play #vocalToggle{padding:7px 8px;font-size:11px;white-space:nowrap}
+.performance-actions{display:flex;align-items:center;gap:10px;margin:2px 0 10px}.performance-actions #pauseBtn{padding:8px 13px;font-size:12px}.performance-actions .tiny{font-size:10px;color:#a998bf}
+@media(max-width:440px){.performance-head{gap:8px}.performance-credits{font-size:10px;gap:1px 9px}.performance-side{gap:7px}#clock{font-size:11px}#play .ktv-audio-controls{grid-template-columns:1fr 1fr;gap:6px 12px}#play .ktv-audio-footer{grid-column:1/-1;justify-content:flex-end}#play #vocalToggle{padding:6px 10px}}
 </style></head><body><div class="shell"><div class="top"><span>🎮 PLAYER ONE · MUSIC WORLD</span><span>🎤 VOCAL BOOTH</span></div><div class="panel"><h1>🎙️ KTV 錄音室</h1><div class="inner">
 <section id="select"><div class="sub">SELECT YOUR SONG</div><p class="note">先選歌，測試麥克風後開始演唱。這是獨立試玩版，不會更動正式網站進度。</p><div id="tracks"></div><p class="hint">完成《缺口》與《海闊天空》的演唱挑戰，即可解鎖隱藏進階曲《學不會》。音準評分目前仍屬測試版。</p><button class="primary" id="choose">進入麥克風測試 →</button></section>
 <section id="ready" class="hidden"><div class="row"><button class="ghost" id="back">← 選歌</button><span class="pill">MIC CHECK</span></div><h2 id="readyName"></h2><div class="status" id="micStatus">尚未啟用麥克風</div><div class="note" style="color:#d9c5f4">收音音量 <b id="volumeLabel">0%</b>　<span id="pitchLabel">音高：—</span></div><div class="progress"><div id="volumeBar"></div></div><canvas class="canvas" id="micCanvas" width="600" height="160"></canvas><button class="primary" id="micBtn">🎙️ 啟用麥克風</button><div class="help">音訊延遲校準（若音高線比聲音慢，可調整）<br><input id="latency" type="range" min="-400" max="400" value="0" step="25"><span id="latencyLabel">0 ms</span></div><button class="primary" id="startBtn" disabled>▶ 開始演唱（3・2・1）</button><p class="hint">建議使用耳機，避免伴奏聲被麥克風收進去。iPhone 請在 Safari 的 HTTPS 網頁開啟並允許麥克風。</p></section>
-<section id="play" class="hidden" style="position:relative"><div id="countdownOverlay" style="display:none;position:absolute;inset:0;z-index:40;align-items:center;justify-content:center;background:#151021ef;color:#ffd37d;font-size:90px;font-weight:900;border-radius:16px;pointer-events:none">3</div><div class="row"><span class="pill" id="playName"></span><span id="clock">00:00 / 00:00</span></div><div class="ktv-audio-controls">
-  <div class="ktv-audio-row"><div class="ktv-audio-label"><label for="backingVolume">🎹 伴奏音量</label><strong id="backingVolumeText">80%</strong></div><input id="backingVolume" type="range" min="0" max="100" value="80" step="5" aria-label="伴奏音量"></div>
-  <div class="ktv-audio-row"><div class="ktv-audio-label"><label for="guideVolume">🎙️ 導唱音量</label><strong id="guideVolumeText">25%</strong></div><input id="guideVolume" type="range" min="0" max="100" value="25" step="5" aria-label="導唱音量"></div>
+<section id="play" class="hidden" style="position:relative"><div id="countdownOverlay" style="display:none;position:absolute;inset:0;z-index:40;align-items:center;justify-content:center;background:#151021ef;color:#ffd37d;font-size:90px;font-weight:900;border-radius:16px;pointer-events:none">3</div><div class="performance-head"><div class="performance-heading"><h2 id="playName">缺口</h2><div class="performance-artist" id="playArtist">庾澄慶</div><div class="performance-credits"><span id="playLyricist">作詞：九把刀</span><span id="playComposer">作曲：木村充利</span></div></div><div class="performance-side"><span id="clock">00:00 / 00:00</span><div class="pitch-chip"><span>目前音高</span><b id="pitchNow">—</b></div></div></div><div class="ktv-audio-controls">
+  <div class="ktv-audio-row"><div class="ktv-audio-label"><label for="backingVolume">🎹 伴奏</label><strong id="backingVolumeText">80%</strong></div><input id="backingVolume" type="range" min="0" max="100" value="80" step="5" aria-label="伴奏音量"></div>
+  <div class="ktv-audio-row"><div class="ktv-audio-label"><label for="guideVolume">🎙️ 導唱</label><strong id="guideVolumeText">25%</strong></div><input id="guideVolume" type="range" min="0" max="100" value="25" step="5" aria-label="導唱音量"></div>
   <div class="ktv-audio-footer"><button class="ghost" id="vocalToggle" type="button" aria-pressed="false">🎙️ 導唱 OFF</button><span id="vocalState" hidden></span></div>
-</div><div class="stat"><div><b id="pitchNow">—</b><small>目前音高</small></div></div><div hidden aria-hidden="true"><span id="liveScore"></span><span id="singCoverage"></span></div><canvas class="canvas" id="pitchCanvas" width="600" height="260"></canvas><div class="row" style="margin-top:7px"><span class="tiny">🟣 每字目標音符（長音顯示長條）</span><span class="tiny">🟢 準確：重疊紫色　🔵 接近：顯示實際高低　🔴 偏離：顯示實際高低</span></div><div class="help" style="margin-top:12px;display:none"><div class="row"><b>🎼 歌詞同步校正</b><span id="lyricSyncValue">+0.0 秒</span></div><p class="hint" style="margin:6px 0">先調整整體偏移；下方也能逐句校時。此版不會假稱已完成粵語語音辨識。</p><input id="lyricSync" type="range" min="-8" max="8" step="0.1" value="0"><div class="row tiny"><span>提前 8 秒</span><span>延後 8 秒</span></div></div><div class="lyric-tools" style="display:none"><div class="row"><button class="ghost" type="button" id="lineEarlier">← 本句提前 0.2 秒</button><button class="ghost" type="button" id="lineMark">🎯 現在開始唱這句</button><button class="ghost" type="button" id="lineLater">本句延後 0.2 秒 →</button></div><span class="tiny" id="lineTimingStatus">每句可獨立校時；調整會自動保存</span></div>
+</div><div class="performance-actions"><button class="ghost" id="pauseBtn" type="button">⏸ 暫停演唱</button><span id="pauseHint" class="tiny">暫停後可倒數繼續</span></div><div hidden aria-hidden="true"><span id="liveScore"></span><span id="singCoverage"></span></div><canvas class="canvas" id="pitchCanvas" width="600" height="260"></canvas><div class="row" style="margin-top:7px"><span class="tiny">🟣 每字目標音符（長音顯示長條）</span><span class="tiny">🟢 準確：重疊紫色　🔵 接近：顯示實際高低　🔴 偏離：顯示實際高低</span></div><div class="help" style="margin-top:12px;display:none"><div class="row"><b>🎼 歌詞同步校正</b><span id="lyricSyncValue">+0.0 秒</span></div><p class="hint" style="margin:6px 0">先調整整體偏移；下方也能逐句校時。此版不會假稱已完成粵語語音辨識。</p><input id="lyricSync" type="range" min="-8" max="8" step="0.1" value="0"><div class="row tiny"><span>提前 8 秒</span><span>延後 8 秒</span></div></div><div class="lyric-tools" style="display:none"><div class="row"><button class="ghost" type="button" id="lineEarlier">← 本句提前 0.2 秒</button><button class="ghost" type="button" id="lineMark">🎯 現在開始唱這句</button><button class="ghost" type="button" id="lineLater">本句延後 0.2 秒 →</button></div><span class="tiny" id="lineTimingStatus">每句可獨立校時；調整會自動保存</span></div>
 <div class="help" style="margin-top:12px;display:none"><b>🎯 逐字打點校時 · 已內建兩首歌的校時紀錄</b><p class="hint">先開啟導唱 ON，聽到下方指定的字開始發音時，按「記錄這個字」。會記下歌曲播放的實際秒數並自動跳下一字。可以重播、倒退一字重新記錄。</p><div class="row" style="margin:10px 0;align-items:center"><span class="pill" id="wordTarget">準備校時</span><span class="tiny" id="wordCount">0 / 0</span></div><div class="row" style="gap:7px;flex-wrap:wrap"><button class="ghost" id="wordBack" type="button">↶ 上一字</button><button class="primary" id="wordMark" type="button" style="width:auto;flex:1">● 記錄這個字</button><button class="ghost" id="wordSkip" type="button">跳下一字 →</button></div><div class="row" style="margin-top:8px;gap:7px;flex-wrap:wrap"><button class="ghost" id="wordReplay" type="button">↺ 重播本句</button><button class="ghost" id="wordExport" type="button">↓ 匯出校時紀錄</button><button class="ghost" id="wordReset" type="button">清除此歌紀錄</button></div><p class="hint" id="wordStatus">校時資料儲存在目前瀏覽器；匯出 JSON 後可傳給我整合進正式字幕。</p></div><div class="timeline-editor" id="timelineEditor"><h3>舊版節點編輯（已停用）</h3><div class="edhint">選擇歌詞句子，直接左右拖動每個字的節點；時間會立即儲存並反映在 KTV 掃色。可暫停音樂、慢速聆聽後調整。</div><div class="edrow"><select id="edLine" aria-label="選擇歌詞句子"></select><button type="button" id="edReplay">↺ 播放這句</button><button type="button" id="edPause">⏸ 暫停</button><button type="button" id="edSlow">0.75× 慢速</button></div><div class="edline" id="edWords"></div><div class="edtrack" id="edTrack" aria-label="逐字時間軸"></div><div class="edrow"><span class="edreadout" id="edReadout">點選或拖曳一個字</span><button type="button" id="edRestore">還原本句預設</button></div><div class="edhint">左右邊界是本句與下一句的時間範圍。節點可拖動，放開即儲存；較密集的字可先點選字，再用下方微調。</div><input id="edFine" type="range" min="0" max="40" step="0.01" value="0" aria-label="微調選中字的秒數"/></div><div class="music-seek"><div class="row"><b>♫ 音樂播放時間</b><span id="seekReadout">00:00 / 00:00</span></div><input type="range" id="musicSeek" min="0" max="40" step="0.01" value="0" aria-label="拖動音樂播放時間"><div class="seek-help">先拖音樂找到正確發音，再拖下面歌詞的黃色變色位置。放開字幕就會記錄這個字的時間，並立即預覽。</div></div><div class="lyric" id="scrubLyrics" aria-label="拖動歌詞變色位置以同步快轉倒退"><div class="current"><span class="highlight" id="currentLyric">♪ 跟著旋律演唱 ♪</span></div><div class="next" id="nextLyric">跟著旋律一起唱</div></div><div class="scrub-hint">↔ 直接拖動歌詞黃色邊界校時 · 上方音樂時間軸可獨立快轉／倒退 · 放開立即預覽</div><div class="scrub-readout" id="scrubReadout">點住字幕即可校時</div><div class="row" style="justify-content:center;margin:8px 0"><button class="ghost" id="scrubExport" type="button">↓ 匯出逐字校時 JSON</button></div><div class="progress"><div id="progressFill"></div></div><button class="ghost" id="stopBtn">■ 提前結束</button><p class="hint">字幕已套用逐字校時；導唱 ON 播放原唱，導唱 OFF 播放伴奏。切換時保留進度。</p></section>
 <section id="result" class="hidden"><div class="sub">PERFORMANCE COMPLETE</div><h2 id="resultName"></h2><div class="stat"><div><b id="rScore">—</b><small>試算音準</small></div><div><b id="rCoverage">—</b><small>演唱覆蓋率</small></div><div><b id="rGrade">—</b><small>試算評級</small></div></div><div class="status" id="resultInfo"></div><button class="primary" id="retry">再唱一次</button><button class="ghost" style="width:100%;margin-top:10px" id="chooseAgain">返回選歌</button></section>
 </div></div></div>
@@ -445,9 +457,48 @@ function toggleVocal(){
 $('vocalToggle').onclick=toggleVocal;
 function formatTime(sec){const n=Math.max(0,Math.floor(sec));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')}
 let countdownToken=0;
+let performancePaused=false;
+let resumingCountdown=false;
+function refreshPauseButton(){
+ $('pauseBtn').textContent=performancePaused?'▶ 倒數繼續':'⏸ 暫停演唱';
+ $('pauseBtn').disabled=resumingCountdown;
+ $('pauseHint').textContent=resumingCountdown?'即將繼續…':performancePaused?'音樂與評分已暫停':'暫停後可倒數繼續';
+}
+async function pauseOrResume(){
+ if(resumingCountdown)return;
+ if(!performancePaused){
+  if(!playing)return;
+  performancePaused=true;playing=false;cancelAnimationFrame(frame);
+  if(backingAudio)backingAudio.pause();if(vocalAudio)vocalAudio.pause();
+  if(backingGainNode)backingGainNode.gain.setValueAtTime(0,ctx.currentTime);
+  if(vocalGainNode)vocalGainNode.gain.setValueAtTime(0,ctx.currentTime);
+  refreshPauseButton();return;
+ }
+ const token=++countdownToken;resumingCountdown=true;refreshPauseButton();
+ const overlay=$('countdownOverlay');overlay.style.display='flex';
+ try{
+  await ctx.resume();
+  for(let n=3;n>=1;n--){
+   if(token!==countdownToken)return;
+   overlay.textContent=String(n);
+   await new Promise(resolve=>setTimeout(resolve,1000));
+  }
+  if(token!==countdownToken)return;
+  overlay.textContent='GO!';
+  // Start both tracks at their paused position, not at the beginning.
+  const position=backingAudio.currentTime;
+  if(Math.abs(vocalAudio.currentTime-position)>.08)vocalAudio.currentTime=position;
+  await Promise.all([backingAudio.play(),vocalAudio.play()]);
+  if(token!==countdownToken){backingAudio.pause();vocalAudio.pause();return}
+  performancePaused=false;playing=true;updateVolumes();tick();
+ }catch(e){performancePaused=true;$('pauseHint').textContent='繼續失敗，請再試一次';}
+ finally{if(token===countdownToken){overlay.style.display='none';resumingCountdown=false;refreshPauseButton()}}
+}
+$('pauseBtn').onclick=pauseOrResume;
 async function begin(){
  if(!analyser)return;
  const token=++countdownToken;
+ performancePaused=false;resumingCountdown=false;refreshPauseButton();
  try{
   await ctx.resume();
   for(const old of [audio,backingAudio,vocalAudio])if(old)old.pause();
@@ -466,6 +517,9 @@ async function begin(){
   if(token!==countdownToken)return;
   cancelAnimationFrame(micFrame);show('play');loadLyrics();
   $('playName').textContent=SONGS[selected].name;
+  $('playArtist').textContent=['庾澄慶','Beyond','林俊傑'][selected];
+  $('playLyricist').textContent='作詞：'+['九把刀','黃家駒','姚若龍'][selected];
+  $('playComposer').textContent='作曲：'+['木村充利','黃家駒','林俊傑'][selected];
   $('clock').textContent='00:00 / '+formatTime(SONGS[selected].duration);
   const overlay=$('countdownOverlay');overlay.style.display='flex';
   for(let n=3;n>=1;n--){
@@ -486,8 +540,8 @@ async function begin(){
   show('ready');$('micStatus').textContent='音訊啟動失敗：'+e.message;
  }
 }
-$('startBtn').onclick=begin;$('stopBtn').onclick=()=>{countdownToken++;if(!playing){if(backingAudio)backingAudio.pause();if(vocalAudio)vocalAudio.pause();$('countdownOverlay').style.display='none';show('ready')}else finish()};
-function finish(){countdownToken++;if(!playing)return;playing=false;cancelAnimationFrame(frame);if(backingAudio)backingAudio.pause();if(vocalAudio)vocalAudio.pause();const valid=samples.filter(x=>x.match!==null),coverage=samples.length?Math.round(samples.filter(x=>x.p).length/samples.length*100):0,score=valid.length?Math.round(valid.reduce((a,x)=>a+x.match,0)/valid.length*.94):0,refCoverage=samples.length?Math.round(valid.length/samples.length*100):0;$('resultName').textContent=SONGS[selected].name;$('rScore').textContent=valid.length>=8?score+' / 100':'參考不足';$('rCoverage').textContent=coverage+'%';$('rGrade').textContent=valid.length>=8?(score>=94?'S':score>=83?'A':score>=66?'B':score>=46?'C':'D'):'—';let notice='使用最新分離人聲建立的自動估測旋律，可能受和聲、轉音、分離殘留影響。這是測試分數，暫不發放金幣。可評分樣本 '+valid.length+' 個，佔總採樣 '+refCoverage+'%。';if(selected<2&&coverage>=15&&valid.length>=8){
+$('startBtn').onclick=begin;$('stopBtn').onclick=()=>{countdownToken++;resumingCountdown=false;if(!playing&&!performancePaused){if(backingAudio)backingAudio.pause();if(vocalAudio)vocalAudio.pause();$('countdownOverlay').style.display='none';show('ready')}else finish()};
+function finish(){countdownToken++;if(!playing&&!performancePaused)return;playing=false;performancePaused=false;resumingCountdown=false;refreshPauseButton();cancelAnimationFrame(frame);if(backingAudio)backingAudio.pause();if(vocalAudio)vocalAudio.pause();const valid=samples.filter(x=>x.match!==null),coverage=samples.length?Math.round(samples.filter(x=>x.p).length/samples.length*100):0,score=valid.length?Math.round(valid.reduce((a,x)=>a+x.match,0)/valid.length*.94):0,refCoverage=samples.length?Math.round(valid.length/samples.length*100):0;$('resultName').textContent=SONGS[selected].name;$('rScore').textContent=valid.length>=8?score+' / 100':'參考不足';$('rCoverage').textContent=coverage+'%';$('rGrade').textContent=valid.length>=8?(score>=94?'S':score>=83?'A':score>=66?'B':score>=46?'C':'D'):'—';let notice='使用最新分離人聲建立的自動估測旋律，可能受和聲、轉音、分離殘留影響。這是測試分數，暫不發放金幣。可評分樣本 '+valid.length+' 個，佔總採樣 '+refCoverage+'%。';if(selected<2&&coverage>=15&&valid.length>=8){
  safeStorage.setItem('ktv_song_completed_'+selected,'1');
  if(!unlocked&&safeStorage.getItem('ktv_song_completed_0')==='1'&&safeStorage.getItem('ktv_song_completed_1')==='1'){
   unlocked=true;safeStorage.setItem('ktv_advanced_unlocked','1');
