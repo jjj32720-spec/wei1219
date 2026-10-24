@@ -14,6 +14,9 @@ const SONGS=[{"name":"缺口","artist":"庾澄慶","vocal":"data:audio/mpeg;base
 const BUILTIN_LYRICS=[[[4.41, "想和你一起撐傘漫步雨中 默默牽手走過"], [9.47, "你卻將傘拋在風中 擁抱雨和我"], [15.36, "我們完全不同卻難以抗拒 說謊都很透明"], [22.45, "愛情裡需要的證據 矛盾卻美麗"], [28.96, "你就是你 我才能是我"], [35.4, "彼此都是彼此的缺口"]], [[2.87, "原諒我這一生"], [4.77, "不羈放縱愛自由"], [10.23, "也會怕有一天會跌倒"], [16.52, "背棄了理想誰人都可以"], [22.72, "哪會怕有一天只你共我"], [28.98, "背棄了理想誰人都可以"], [35.18, "哪會怕有一天只你共我"]]];
 
 // Manual character timestamps: seconds measured against the currently playing embedded audio.
+let selected=0,unlocked=true,ctx,analyser,micStream,micSource,audio,frame=0,playing=false,startTime=0,history=[],samples=[],lastPitch=0,activeSection='select',micFrame=0,lastMicAt=0,lastMicPitch=0,lastRms=0,vocalOn=false,backingAudio=null,vocalAudio=null;
+const $=id=>document.getElementById(id);
+function show(id){['select','ready','play','result'].forEach(x=>$(x).classList.toggle('hidden',x!==id));activeSection=id}
 let wordCursor=0;
 function wordUnits(){return BUILTIN_LYRICS[selected].flatMap(([t,txt],line)=>Array.from(txt).map((ch,pos)=>({ch,line,pos,t})).filter(x=>!(/\s/.test(x.ch))));}
 function wordStorageKey(){return 'ktv_word_marks_v1_'+selected;}
@@ -28,9 +31,7 @@ $('wordSkip').onclick=()=>moveWord(1);
 $('wordReplay').onclick=()=>{if(!playing||!audio)return;const w=wordUnits()[Math.min(wordCursor,wordUnits().length-1)];if(w){audio.currentTime=Math.max(0,BUILTIN_LYRICS[selected][w.line][0]-1);updateLyric(audio.currentTime)}};
 $('wordReset').onclick=()=>{if(!confirm('確定清除此歌的逐字校時紀錄？'))return;localStorage.removeItem(wordStorageKey());wordCursor=0;updateWordPanel();$('wordStatus').textContent='已清除這首歌的校時紀錄'};
 $('wordExport').onclick=()=>{const obj={format:'ktv-word-timing-v1',song:SONGS[selected].name,segmentStart:SONGS[selected].start,marks:wordMarks(),lines:BUILTIN_LYRICS[selected]};const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='ktv-'+(selected===0?'quekou':'beyond')+'-word-timing.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);$('wordStatus').textContent='已產生 JSON；請將下載的檔案傳給我，才能在新版 HTML 套用逐字時間。'};
-let selected=0,unlocked=true,ctx,analyser,micStream,micSource,audio,frame=0,playing=false,startTime=0,history=[],samples=[],lastPitch=0,activeSection='select',micFrame=0,lastMicAt=0,lastMicPitch=0,lastRms=0,vocalOn=false,backingAudio=null,vocalAudio=null;
-const $=id=>document.getElementById(id);
-function show(id){['select','ready','play','result'].forEach(x=>$(x).classList.toggle('hidden',x!==id));activeSection=id}
+
 function renderTracks(){ $('tracks').innerHTML=SONGS.map((s,i)=>`<button class="track ${selected===i?'active':''}" data-i="${i}" ${i===1&&!unlocked?'disabled style="opacity:.48"':''}><span class="record">${i===1&&!unlocked?'🔒':'♫'}</span><span><b>${s.name}</b><small>${s.artist} · 約 40 秒</small></span><span class="tag">${i===1&&!unlocked?'LOCKED':selected===i?'SELECTED':'▶'}</span></button>`).join('');document.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{if(+b.dataset.i===1&&!unlocked)return;selected=+b.dataset.i;wordCursor=0;renderTracks();loadLyrics();updateWordPanel()})}
 function loadLyrics(){
  const k='ktv_lyric_offset_voice_v5_'+selected;
