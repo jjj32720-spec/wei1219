@@ -709,20 +709,31 @@ function migrateFootballCards(){
 }
 // V14.4: one-time basic/bonus rewards per football mode, kept separately from old save keys.
 const soccerRewardModes=['home','away','defense','shooter','keeper'];
+// Football rewards: one-time 400 Coins for clearing all five basic stages,
+// plus 120 Coins for each of the five original advanced objectives (maximum 1,000).
 function soccerGrantReward(mode,tier){
  if(!soccerRewardModes.includes(mode)||!['basic','bonus'].includes(tier))return false;
- S.footballRewardClaims= S.footballRewardClaims && typeof S.footballRewardClaims==='object' && !Array.isArray(S.footballRewardClaims)?S.footballRewardClaims:{};
+ S.footballRewardClaims=S.footballRewardClaims&&typeof S.footballRewardClaims==='object'&&!Array.isArray(S.footballRewardClaims)?S.footballRewardClaims:{};
  const key=mode+':'+tier;
  if(S.footballRewardClaims[key])return false;
  S.footballRewardClaims[key]=true;
- S.footballPacks=Math.max(0,Number(S.footballPacks)||0)+1;
  save();return true;
+}
+function soccerAwardCoins(key,amount){
+ const w=playerOneWallet();
+ if(w.claims[key])return false;
+ w.claims[key]=true;w.coins+=amount;playerOneSaveWallet(w);return true;
 }
 function soccerRewardSummary(mode,basic,bonus){
  const received=[];
- if(basic&&soccerGrantReward(mode,'basic'))received.push('基本卡包 ×1');
- if(bonus&&soccerGrantReward(mode,'bonus'))received.push('進階卡包 ×1');
- return received.length?'🎁 本次獲得：'+received.join('、'):'🎴 已領過的獎勵不會重複發放';
+ if(basic)soccerGrantReward(mode,'basic');
+ if(bonus&&soccerGrantReward(mode,'bonus')){
+  if(soccerAwardCoins('football:advanced:'+mode,120))received.push('進階達成 +120 Coins');
+ }
+ if(soccerRewardModes.every(m=>!!S.footballRewardClaims?.[m+':basic'])){
+  if(soccerAwardCoins('football:basic:all-five',400))received.push('五關基礎全部通關 +400 Coins');
+ }
+ return received.length?'🪙 '+received.join('、'):'基礎挑戰進度已記錄；獎勵只會領取一次';
 }
 function soccerRandomStarter(role){
  const pool=soccerPlayers.map((p,i)=>({p,i})).filter(x=>!x.p.secret&&x.p.role===role);
@@ -955,7 +966,7 @@ function soccerFinish(win){
  if(basic){S.footballWins=S.footballWins||[];if(!S.footballWins.includes(soccerRound))S.footballWins.push(soccerRound);save()}
  const m=soccerMatches[soccerRound-1],score=st.score,shots=st.shots,passes=st.successfulPasses,tackles=st.tackles,skills=st.skillGoals;
  cleanup();playEffect(basic?'win':'miss');
- frame(basic?'🏆 '+m.name+'｜勝利！':'⚽ '+m.name+'｜再接再厲',basic?'已完成基本目標！進階獎勵可以重玩補領。':'❌ 時限內未達 2 球，可以重新挑戰。',`<div class="foot-results"><div class="foot-trophy">${basic?'🏆🎉':'🥅💪'}</div><h2>${basic?'VICTORY!':'FULL TIME'}</h2><div class="foot-finalscore">${score} <span>:</span> ${st.enemy}</div><div class="foot-stats"><span>⚽ 射門 <b>${shots}</b></span><span>↗ 成功傳球 <b>${passes}</b></span><span>✨ 技能進球 <b>${skills}</b></span><span>🛡️ 遭搶斷 <b>${tackles}</b></span></div><p>${reward}</p><p>進階目標：${mode==='home'?'5 球＋成功傳球 5 次':'5 球＋技能進球 2 次'} ${bonus?'✅':'🔒'}</p><button class="btn alt foot-primary" onclick="${basic?(soccerSeriesActive?'soccerAdvance()':'soccerLobby()'):'soccerStart()'}">${basic?(soccerSeriesActive?'下一關 →':'返回足球首頁'):'↻ 重新挑戰'}</button> <button class="btn soft" onclick="soccerSeriesQuit()">退出連戰</button></div>`);
+ frame(basic?'🏆 '+m.name+'｜勝利！':'⚽ '+m.name+'｜再接再厲',basic?'已完成基本目標！進階目標可以重玩補領 120 Coins。':'❌ 時限內未達 2 球，可以重新挑戰。',`<div class="foot-results"><div class="foot-trophy">${basic?'🏆🎉':'🥅💪'}</div><h2>${basic?'VICTORY!':'FULL TIME'}</h2><div class="foot-finalscore">${score} <span>:</span> ${st.enemy}</div><div class="foot-stats"><span>⚽ 射門 <b>${shots}</b></span><span>↗ 成功傳球 <b>${passes}</b></span><span>✨ 技能進球 <b>${skills}</b></span><span>🛡️ 遭搶斷 <b>${tackles}</b></span></div><p>${reward}</p><p>進階目標：${mode==='home'?'5 球＋成功傳球 5 次':'5 球＋技能進球 2 次'} ${bonus?'✅':'🔒'}</p><button class="btn alt foot-primary" onclick="${basic?(soccerSeriesActive?'soccerAdvance()':'soccerLobby()'):'soccerStart()'}">${basic?(soccerSeriesActive?'下一關 →':'返回足球首頁'):'↻ 重新挑戰'}</button> <button class="btn soft" onclick="soccerSeriesQuit()">退出連戰</button></div>`);
 }
 let coffeeState=null;
 // V8 hands-on coffee simulation: circular grinding and direct-position pouring.
@@ -1066,27 +1077,40 @@ function playerOneShopShow(html){
   layer.addEventListener('click',function(e){if(e.target===layer)room113Close()});
   document.body.appendChild(layer);
  }
- layer.innerHTML='<section style="position:relative;width:min(480px,100%);max-height:90dvh;overflow:auto;border-radius:22px;background:linear-gradient(160deg,#faf5ff,#e8ddf5);color:#352746;padding:24px 18px;box-sizing:border-box;box-shadow:0 24px 80px #0009"><button type="button" onclick="room113Close()" aria-label="關閉圖鑑" style="position:sticky;top:0;float:right;border:0;background:#46325b;color:white;border-radius:50%;width:36px;height:36px;font-size:24px;z-index:2">×</button>'+html+'</section>';
+ layer.innerHTML='<section style="position:relative;width:min(790px,100%);max-height:90dvh;overflow:auto;border-radius:22px;background:linear-gradient(160deg,#faf5ff,#e8ddf5);color:#352746;padding:24px 18px;box-sizing:border-box;box-shadow:0 24px 80px #0009"><button type="button" onclick="room113Close()" aria-label="關閉圖鑑" style="position:sticky;top:0;float:right;border:0;background:#46325b;color:white;border-radius:50%;width:36px;height:36px;font-size:24px;z-index:2">×</button>'+html+'</section>';
  layer.hidden=false;
  layer.style.display='flex';
 }
 function playerOneCoinShop(){
  ensureFootball();
- const w=playerOneWallet(),left=Math.max(0,24-w.purchased);
  const ids=[...new Set(S.footballOwned||[])].filter(i=>soccerPlayers[i]&&(S.aceUnlocked||!soccerPlayers[i].secret));
  const cards=ids.map(i=>`<button type="button" class="kane-card" onclick="playerOneCardPreview(${i})" aria-label="查看${soccerPlayers[i].name}球員卡">${soccerPortrait(i,true)}</button>`).join('');
  playerOneShopShow(`<style>
- #playerone-jersey-shop-overlay .kane-title{margin:3px 0 18px;text-align:center;letter-spacing:1px}
- #playerone-jersey-shop-overlay .kane-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px 12px;margin:0 0 28px}
- #playerone-jersey-shop-overlay .kane-card{display:block;width:100%;min-width:0;aspect-ratio:3/4;padding:0;border:0;background:transparent;cursor:pointer}
- #playerone-jersey-shop-overlay .kane-card .v139-image{width:100%;height:100%}
- #playerone-jersey-shop-overlay .kane-card img{width:100%;height:100%;object-fit:contain}
- #playerone-jersey-shop-overlay .kane-shop{border-top:1px solid #bba9cb;padding-top:19px;text-align:center}
- #playerone-jersey-shop-overlay .kane-shop h3{margin:0 0 12px}
- #playerone-jersey-shop-overlay .kane-balance{display:flex;justify-content:space-between;gap:8px;margin-bottom:14px;font-size:13px}
- #playerone-jersey-shop-overlay .room-v113-action{display:block;width:100%;margin:9px 0;padding:13px;border-radius:12px;border:1px solid #aa8bc9;background:#5e4384;color:#fff;font-weight:700;cursor:pointer}
- #playerone-jersey-shop-overlay .room-v113-action:disabled{opacity:.5}
- </style><h2 class="kane-title">🎴 球員卡圖鑑</h2><div class="kane-gallery">${cards||'<p style="grid-column:1/-1;text-align:center">尚未收藏球員卡</p>'}</div><div class="kane-shop"><h3>🎁 卡包兌換・撕卡包</h3><div class="kane-balance"><span>🪙 ${w.coins.toLocaleString()} Coins</span><span>🎁 ${Number(S.footballPacks)||0} 包</span></div><button class="room-v113-action" onclick="playerOneBuyPack()" ${w.coins<200||!left?'disabled':''}>200 Coins 兌換卡包</button><button class="room-v113-action" onclick="room113Close();soccerPack()" ${(Number(S.footballPacks)||0)<1?'disabled':''}>🎁 撕開卡包</button></div>`);
+ #playerone-jersey-shop-overlay .kane-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:5px 46px 20px 0}
+ #playerone-jersey-shop-overlay .kane-head h2{font-size:22px;margin:0;letter-spacing:1px}
+ #playerone-jersey-shop-overlay .kane-gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px 12px;align-items:start}
+ #playerone-jersey-shop-overlay .kane-card{display:block;min-width:0;width:100%;padding:0;border:0;background:transparent;cursor:pointer;transition:transform .18s}
+ #playerone-jersey-shop-overlay .kane-card:active{transform:scale(.97)}
+ #playerone-jersey-shop-overlay .kane-card img{display:block;width:100%;height:auto;object-fit:contain}
+ #playerone-jersey-shop-overlay .kane-card .v139-image{width:100%;height:auto}
+ #playerone-jersey-shop-overlay .kane-shop-entry{border:1px solid #b5a2d0;border-radius:12px;background:#f2eafb;color:#49325f;padding:10px 15px;font-size:14px;font-weight:800;white-space:nowrap;cursor:pointer}
+ @media(max-width:560px){#playerone-jersey-shop-overlay .kane-gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px}#playerone-jersey-shop-overlay .kane-head h2{font-size:18px}#playerone-jersey-shop-overlay .kane-shop-entry{padding:9px 12px;font-size:13px}}
+ </style><div class="kane-head"><h2>球員卡圖鑑</h2><button class="kane-shop-entry" onclick="playerOnePackShop()">🛍️ 卡包商店 ›</button></div><div class="kane-gallery">${cards||'<p style="grid-column:1/-1;text-align:center;padding:30px 0">尚未收藏球員卡</p>'}</div>`);
+}
+function playerOnePackShop(){
+ ensureFootball();
+ const w=playerOneWallet(),left=Math.max(0,24-w.purchased),packs=Number(S.footballPacks)||0;
+ playerOneShopShow(`<style>
+ #playerone-jersey-shop-overlay .kane-shop-view{max-width:440px;margin:0 auto;padding:10px 0 20px;text-align:center}
+ #playerone-jersey-shop-overlay .kane-shop-back{display:block;background:transparent;border:0;color:#66517e;font-weight:700;padding:6px 0 22px;cursor:pointer}
+ #playerone-jersey-shop-overlay .kane-wallet{background:linear-gradient(145deg,#302044,#574077);color:#fff;border-radius:20px;padding:25px 16px;margin:12px 0 22px;box-shadow:0 12px 25px #39244a22}
+ #playerone-jersey-shop-overlay .kane-wallet-label{font-size:12px;letter-spacing:2px;opacity:.8}
+ #playerone-jersey-shop-overlay .kane-wallet-value{font-size:35px;font-weight:900;line-height:1.5}
+ #playerone-jersey-shop-overlay .kane-pack-count{font-size:14px;color:#776287;margin:0 0 22px}
+ #playerone-jersey-shop-overlay .kane-shop-btn{display:block;width:100%;border:0;border-radius:14px;background:#6b4c9b;color:#fff;font-size:16px;font-weight:800;padding:17px 12px;margin:12px 0;box-shadow:0 5px 0 #47316e;cursor:pointer}
+ #playerone-jersey-shop-overlay .kane-shop-btn.secondary{background:#fff;color:#533875;border:1px solid #b5a2d0;box-shadow:0 4px 0 #d9cce8}
+ #playerone-jersey-shop-overlay .kane-shop-btn:disabled{opacity:.45;cursor:not-allowed}
+ </style><div class="kane-shop-view"><button class="kane-shop-back" onclick="playerOneCoinShop()">← 返回球員卡圖鑑</button><h2>🎁 卡包商店</h2><div class="kane-wallet"><div class="kane-wallet-label">PLAYER COINS</div><div class="kane-wallet-value">🪙 ${w.coins.toLocaleString()}</div></div><p class="kane-pack-count">目前持有 ${packs} 包卡包</p><button class="kane-shop-btn" onclick="playerOneBuyPack()" ${w.coins<200||!left?'disabled':''}>🛒 200 Coins · 兌換一包</button><button class="kane-shop-btn secondary" onclick="room113Close();soccerPack()" ${packs<1?'disabled':''}>🎁 撕開卡包</button></div>`);
 }
 function playerOneCardPreview(id){
  const p=soccerPlayers[id];if(!p||!(S.footballOwned||[]).includes(id))return;
@@ -1094,10 +1118,9 @@ function playerOneCardPreview(id){
  if(!overlay)return;
  const modal=overlay.querySelector('section');
  if(!modal)return;
- const previous=modal.innerHTML;
  modal.innerHTML=`<div style="text-align:center"><button type="button" onclick="playerOneCoinShop()" style="display:block;margin-bottom:12px;border:0;background:transparent;color:#4c3768;font-size:16px">← 返回圖鑑</button><div style="width:min(300px,90%);margin:0 auto">${soccerPortrait(id,true)}</div></div>`;
 }
-function playerOneBuyPack(){const w=playerOneWallet();if(w.coins<200||w.purchased>=24){playerOneCoinShop();return}w.coins-=200;w.purchased++;playerOneSaveWallet(w);ensureFootball();S.footballPacks=(Number(S.footballPacks)||0)+1;save();playerOneCoinShop();toast('🎁 已兌換 1 包球員卡！可以直接在這裡撕開。')}
+function playerOneBuyPack(){const w=playerOneWallet();if(w.coins<200||w.purchased>=24){playerOneCoinShop();return}w.coins-=200;w.purchased++;playerOneSaveWallet(w);ensureFootball();S.footballPacks=(Number(S.footballPacks)||0)+1;save();playerOnePackShop();toast('🎁 已兌換 1 包球員卡！可以直接在這裡撕開。')}
 function musicMixSelect(){const old=document.getElementById('player-one-mix-frame');if(old){old._mixObserver?.disconnect();old.src='about:blank'}cleanup();const unlocked=localStorage.getItem('playerone_mix_advanced_unlocked_v1')==='1'||!!playerOneWallet().claims.mix_main;frame('🎛️ THE MIX LAB','音樂工作室 · 混音控制台',`<div class="ms-select"><div class="ms-select-head">SELECT YOUR SESSION <span>${unlocked?'02 / 02':'01 / 02'}</span></div><div class="ms-song ms-selected" onclick="musicOpenMixLab('main')" style="cursor:pointer"><div class="ms-disc">♫</div><div><b>基礎混音 · MAIN SESSION</b><small>三關 · 每關三首，全部答對才能通關</small><span>● AVAILABLE · 主線獎勵 +200 Coins</span></div><span style="color:#d8c0ff">›</span></div><div class="ms-song ${unlocked?'':'ms-locked'}" ${unlocked?'onclick="musicOpenMixLab(\'advanced\')"':''} style="cursor:${unlocked?'pointer':'not-allowed'};opacity:${unlocked?'1':'.6'}"><div class="ms-disc">${unlocked?'✦':'🔒'}</div><div><b>進階混音 · ADVANCED</b><small>兩關 · 每關四首，答對三首即可通關</small><span>${unlocked?'● AVAILABLE · 每關 +60，全對再 +40':'完成基礎三關後解鎖'}</span></div>${unlocked?'<span style="color:#d8c0ff">›</span>':''}</div><p class="muted">解鎖後可自由選擇基礎或進階 · 重新開始只重置目前模式的闖關進度</p></div>`);musicBackButton('musicStudio()','‹ 音樂工作室')}
 function musicOpenMixLab(mode="main"){
  cleanup();
@@ -1237,7 +1260,7 @@ function challengeEnd(mode,success,score,description,mania=false,perfect=false){
  }
  playEffect(success?'win':'miss');
  const retry=mode==='defense'?`soccerDefense(${mania})`:`soccerPenalty('${mode}')`;
- frame(success?'🏆 挑戰成功！':'⚽ 再挑戰一次',description,`<div class="foot-results"><div class="foot-trophy">${success?'🏆':'💪'}</div><div class="foot-finalscore">${score}</div><p>${success?reward:'調整操作後再試一次！'}</p>${mode==='defense'&&!mania&&success?'<button class="btn alt" onclick="soccerDefense(true)">🔥 挑戰瘋狂模式｜額外卡包</button>':''}<button class="btn alt" onclick="${success&&soccerSeriesActive?`soccerSeriesNext('${mode}')`:retry}">${success&&soccerSeriesActive?'下一關 →':'再玩一次'}</button> <button class="btn soft" onclick="soccerSeriesQuit()">退出連戰</button></div>`);
+ frame(success?'🏆 挑戰成功！':'⚽ 再挑戰一次',description,`<div class="foot-results"><div class="foot-trophy">${success?'🏆':'💪'}</div><div class="foot-finalscore">${score}</div><p>${success?reward:'調整操作後再試一次！'}</p>${mode==='defense'&&!mania&&success?'<button class="btn alt" onclick="soccerDefense(true)">🔥 挑戰瘋狂模式｜進階獎勵 120 Coins</button>':''}<button class="btn alt" onclick="${success&&soccerSeriesActive?`soccerSeriesNext('${mode}')`:retry}">${success&&soccerSeriesActive?'下一關 →':'再玩一次'}</button> <button class="btn soft" onclick="soccerSeriesQuit()">退出連戰</button></div>`);
 }
 
 function soccerDefense(mania=false){
