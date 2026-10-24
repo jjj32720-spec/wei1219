@@ -196,7 +196,7 @@ body{background:#e8e7f4;color:#39334c}#app{max-width:780px;padding:12px 12px 55p
 .v107-world .room-v113-hit:active{opacity:1;background:#ffeaa538}
 .v107-world .room-v113-light{left:46%;top:0%;width:13%;height:21%}
 .v107-world .room-v113-bear{left:36%;top:50%;width:13%;height:25%}
-.v107-world .room-v113-closet{left:9.1%;top:17.0%;width:4.5%;height:22%;z-index:25!important;pointer-events:auto!important}
+.v107-world .room-v113-closet{left:9.1%;top:17.0%;width:4.5%;height:22%;z-index:100!important;pointer-events:auto!important}
 .v107-world .room-v113-star{left:68%;top:15%;width:10%;height:18%}
 .v107-world .room-v113-photos{left:38.8%;top:19%;width:7%;height:21%}
 .v107-world .room-v113-tv{left:89%;top:28%;width:10%;height:30%}
@@ -474,7 +474,7 @@ function home(){soccerNavigationActive=false;cleanup();setMusicTheme('home');app
 <button class="v104-hit v104-music" onclick="v104Enter(this,'musicIntro')" aria-label="點唱片機進入音樂遊戲"><span>♪</span></button><button class="v104-hit v104-travel" onclick="v104Enter(this,'travel')" aria-label="點旅行箱進入旅行遊戲"><span>✦</span></button><button class="v104-hit v104-soccer" onclick="v104Enter(this,'soccer')" aria-label="點足球進入足球遊戲"><span>✦</span></button><button class="v104-hit v104-coffee" onclick="v104Enter(this,'coffee')" aria-label="點磨豆機進入咖啡遊戲"><span>✦</span></button><button class="v104-hit v104-motor" onclick="v104Enter(this,'electric')" aria-label="點馬達進入電機遊戲"><span>✦</span></button><button class="v104-hit v104-secret" onclick="soccerAce()" aria-label="神祕球員線索">99</button>
 <button class="room-v113-hit room-v113-light" onclick="room113Open('light')" aria-label="切換天花板燈光"></button>
 <button class="room-v113-hit room-v113-bear" onclick="room113Open(&quot;bear&quot;)" aria-label="摸摸棕熊娃娃"></button>
-<button class="room-v113-hit room-v113-closet" onclick="playerOneCoinShop()" aria-label="查看Kane九號球衣收藏"></button>
+<button class="room-v113-hit room-v113-closet" type="button" onclick="event.stopPropagation();playerOneCoinShop()" aria-label="查看Kane九號球衣收藏"></button>
 <button class="room-v113-hit room-v113-star" onclick="room113Open('star')" aria-label="對流星許願"></button>
 <button class="room-v113-hit room-v113-photos" onclick="room113Open('photos')" aria-label="翻閱旅行照片"></button>
 <button class="room-v113-hit room-v113-tv" onclick="room113Open(&quot;tv&quot;)" aria-label="電視生日特別節目"></button>
@@ -498,7 +498,7 @@ try{room113={...room113,...JSON.parse(localStorage.getItem(room113Key)||'{}')}}c
 function room113Save(){try{localStorage.setItem(room113Key,JSON.stringify(room113))}catch(e){}}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')room113Close()});
 document.addEventListener('click',e=>{if(e.target?.id==='room-v113-modal')room113Close()});
-function room113Close(){const m=document.getElementById('room-v113-modal');if(m)m.hidden=true;}
+function room113Close(){const m=document.getElementById('room-v113-modal');if(m)m.hidden=true;const shop=document.getElementById('playerone-jersey-shop-overlay');if(shop){shop.hidden=true;shop.style.display='none'}}
 function room113Show(html){const m=document.getElementById('room-v113-modal'),c=document.getElementById('room-v113-content');if(!m||!c)return;c.innerHTML=html;m.hidden=false;const b=m.querySelector('.room-v113-close');if(b)b.focus();}
 function room113Escape(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function room113Open(kind){
@@ -1057,11 +1057,24 @@ const PLAYERONE_MIX_HTML_B64='PCFkb2N0eXBlIGh0bWw+PGh0bWwgbGFuZz0iemgtSGFudCI+PG
 const PLAYERONE_WALLET_KEY='playerone_reward_wallet_v1';
 function playerOneWallet(){try{const w=JSON.parse(localStorage.getItem(PLAYERONE_WALLET_KEY)||'{}');return {coins:Math.max(0,Number(w.coins)||0),claims:w.claims||{},purchased:Math.max(0,Number(w.purchased)||0)}}catch(e){return {coins:0,claims:{},purchased:0}}}
 function playerOneSaveWallet(w){localStorage.setItem(PLAYERONE_WALLET_KEY,JSON.stringify(w))}
+function playerOneShopShow(html){
+ let layer=document.getElementById('playerone-jersey-shop-overlay');
+ if(!layer){
+  layer=document.createElement('div');layer.id='playerone-jersey-shop-overlay';
+  layer.setAttribute('role','dialog');layer.setAttribute('aria-modal','true');layer.setAttribute('aria-label','Kane 球員卡圖鑑與兌換商店');
+  layer.style.cssText='position:fixed;inset:0;z-index:2147483000;background:#100c20d9;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;overflow:auto';
+  layer.addEventListener('click',function(e){if(e.target===layer)room113Close()});
+  document.body.appendChild(layer);
+ }
+ layer.innerHTML='<section style="position:relative;width:min(480px,100%);max-height:90dvh;overflow:auto;border-radius:22px;background:linear-gradient(160deg,#faf5ff,#e8ddf5);color:#352746;padding:24px 18px;box-sizing:border-box;box-shadow:0 24px 80px #0009"><button type="button" onclick="room113Close()" aria-label="關閉圖鑑" style="position:sticky;top:0;float:right;border:0;background:#46325b;color:white;border-radius:50%;width:36px;height:36px;font-size:24px;z-index:2">×</button>'+html+'</section>';
+ layer.hidden=false;
+ layer.style.display='flex';
+}
 function playerOneCoinShop(){
  ensureFootball();const w=playerOneWallet(),left=Math.max(0,24-w.purchased);
  const owned=new Set(S.footballOwned||[]),publicIds=soccerPlayers.map((p,i)=>i).filter(i=>!p.secret);
  const cards=publicIds.map(i=>{const p=soccerPlayers[i],yes=owned.has(i);return `<div style="border:1px solid ${yes?'#9c7cc6':'#4b4359'};border-radius:12px;background:${yes?'#292039':'#17151f'};padding:12px 5px;text-align:center;min-width:0;opacity:${yes?'1':'.65'}"><div style="font-size:28px">${yes?(p.icon||'⚽'):'🔒'}</div><b style="display:block;font-size:12px;overflow-wrap:anywhere">${yes?p.name:'???'}</b><small style="font-size:10px">${yes?(p.role||'CARD'):'未解鎖'}</small></div>`}).join('');
- room113Show(`<div class="room-v113-hero">👕 9</div><h2>KANE · 球員卡圖鑑</h2><p>9 號球衣是你的收藏總覽與卡包兌換中心。每張球員卡都可以在這裡查看解鎖狀態。</p><div style="border:1px solid #9b82ba;border-radius:15px;padding:15px;background:#211a2e;margin:12px 0;color:#f7edff"><div style="display:flex;justify-content:space-between;gap:8px"><span>🎴 已收集 <b>${owned.size} / ${publicIds.length}</b></span><span>🪙 <b>${w.coins.toLocaleString()}</b> Coins</span></div><div style="margin-top:10px;height:8px;border-radius:9px;background:#4b3b60;overflow:hidden"><div style="height:100%;background:#ac87ee;width:${Math.min(100,100*owned.size/Math.max(1,publicIds.length))}%"></div></div></div><h3>球員卡收藏圖鑑</h3><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 22px">${cards}</div><h3>🎁 卡包兌換商店</h3><p>每包 200 Coins · 商店剩餘 ${left} / 24 包 · 未開卡包 ${Number(S.footballPacks)||0}</p><button class="room-v113-action" onclick="playerOneBuyPack()" ${w.coins<200||!left?'disabled':''}>🪙 200 Coins 兌換 1 包球員卡</button><button class="room-v113-action" onclick="room113Close();soccerLobby()">⚽ 前往足球世界開包／管理球隊</button><button class="room-v113-action" onclick="room113Close()">← 返回生日房間</button>`);
+ playerOneShopShow(`<style>#playerone-jersey-shop-overlay .room-v113-action{display:block;width:100%;margin:9px 0;padding:13px;border-radius:12px;border:1px solid #aa8bc9;background:#5e4384;color:#fff;font-weight:700;cursor:pointer}#playerone-jersey-shop-overlay .room-v113-action:disabled{opacity:.5}</style><div class="room-v113-hero">👕 9</div><h2>KANE · 球員卡圖鑑</h2><p>9 號球衣是你的收藏總覽與卡包兌換中心。每張球員卡都可以在這裡查看解鎖狀態。</p><div style="border:1px solid #9b82ba;border-radius:15px;padding:15px;background:#211a2e;margin:12px 0;color:#f7edff"><div style="display:flex;justify-content:space-between;gap:8px"><span>🎴 已收集 <b>${owned.size} / ${publicIds.length}</b></span><span>🪙 <b>${w.coins.toLocaleString()}</b> Coins</span></div><div style="margin-top:10px;height:8px;border-radius:9px;background:#4b3b60;overflow:hidden"><div style="height:100%;background:#ac87ee;width:${Math.min(100,100*owned.size/Math.max(1,publicIds.length))}%"></div></div></div><h3>球員卡收藏圖鑑</h3><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 22px">${cards}</div><h3>🎁 卡包兌換商店</h3><p>每包 200 Coins · 商店剩餘 ${left} / 24 包 · 未開卡包 ${Number(S.footballPacks)||0}</p><button class="room-v113-action" onclick="playerOneBuyPack()" ${w.coins<200||!left?'disabled':''}>🪙 200 Coins 兌換 1 包球員卡</button><button class="room-v113-action" onclick="room113Close();soccerLobby()">⚽ 前往足球世界開包／管理球隊</button><button class="room-v113-action" onclick="room113Close()">← 返回生日房間</button>`);
 }
 function playerOneBuyPack(){const w=playerOneWallet();if(w.coins<200||w.purchased>=24){playerOneCoinShop();return}w.coins-=200;w.purchased++;playerOneSaveWallet(w);ensureFootball();S.footballPacks=(Number(S.footballPacks)||0)+1;save();playerOneCoinShop();toast('🎁 已兌換 1 包球員卡！前往足球世界開包。')}
 function musicMixSelect(){const old=document.getElementById('player-one-mix-frame');if(old){old._mixObserver?.disconnect();old.src='about:blank'}cleanup();const unlocked=localStorage.getItem('playerone_mix_advanced_unlocked_v1')==='1'||!!playerOneWallet().claims.mix_main;frame('🎛️ THE MIX LAB','音樂工作室 · 混音控制台',`<div class="ms-select"><div class="ms-select-head">SELECT YOUR SESSION <span>${unlocked?'02 / 02':'01 / 02'}</span></div><div class="ms-song ms-selected" onclick="musicOpenMixLab('main')" style="cursor:pointer"><div class="ms-disc">♫</div><div><b>基礎混音 · MAIN SESSION</b><small>三關 · 每關三首，全部答對才能通關</small><span>● AVAILABLE · 主線獎勵 +200 Coins</span></div><span style="color:#d8c0ff">›</span></div><div class="ms-song ${unlocked?'':'ms-locked'}" ${unlocked?'onclick="musicOpenMixLab(\'advanced\')"':''} style="cursor:${unlocked?'pointer':'not-allowed'};opacity:${unlocked?'1':'.6'}"><div class="ms-disc">${unlocked?'✦':'🔒'}</div><div><b>進階混音 · ADVANCED</b><small>兩關 · 每關四首，答對三首即可通關</small><span>${unlocked?'● AVAILABLE · 每關 +60，全對再 +40':'完成基礎三關後解鎖'}</span></div>${unlocked?'<span style="color:#d8c0ff">›</span>':''}</div><p class="muted">解鎖後可自由選擇基礎或進階 · 重新開始只重置目前模式的闖關進度</p></div>`);musicBackButton('musicStudio()','‹ 音樂工作室')}
