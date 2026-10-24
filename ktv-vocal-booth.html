@@ -71,11 +71,33 @@ function updateLyric(t){
    // Keep displayed character order stable if user re-records a few timestamps.
    const times=raw.slice();for(let j=1;j<times.length;j++)times[j]=Math.max(times[j],times[j-1]);
    const offset=cue.t-line.start;
-   let current=0;
-   for(let j=0;j<times.length;j++)if(t>=times[j]+offset)current=j+1;
-   const length=Array.from(cue.txt).length;
-   const charPos=current?line.chars[current-1]+1:0;
-   progress=100*charPos/Math.max(1,length);
+   // Timing marks are anchors, not abrupt colour-switch boundaries.
+   // Smoothly interpolate within sung syllables; reserve a short pause at long gaps.
+   const adjusted=times.map(x=>x+(cue.t-line.start));
+   const chars=line.chars;
+   const n=adjusted.length;
+   const length=Math.max(1,Array.from(cue.txt).length);
+   const clamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
+   const smooth=u=>{u=clamp(u,0,1);return u*u*(3-2*u)};
+   let fill=0;
+   if(t<adjusted[0])fill=0;
+   else if(t>=adjusted[n-1]){
+     // The final character starts at its recorded onset, not at its end.
+     // Let it sustain naturally, but avoid sweeping through a long instrumental break.
+     const available=Math.max(.25,end-adjusted[n-1]);
+     const tailDuration=clamp(available*.72,.42,1.65);
+     fill=(chars[n-1]+smooth((t-adjusted[n-1])/tailDuration))/length;
+   }else{
+     let k=0;while(k<n-1&&t>=adjusted[k+1])k++;
+     const gap=Math.max(.04,adjusted[k+1]-adjusted[k]);
+     const u=clamp((t-adjusted[k])/gap,0,1);
+     // In unusually long gaps, hold the finished syllable briefly instead of
+     // treating the entire silence as a long drawn-out vowel.
+     const travel=gap>1.05 ? clamp(.65/gap,.25,.88) : 1;
+     const fraction=smooth(u/travel);
+     fill=(chars[k]+(chars[k+1]-chars[k])*fraction)/length;
+   }
+   progress=100*fill;
  }
  $('currentLyric').style.setProperty('--pct',Math.max(0,Math.min(100,progress))+'%');
 }
