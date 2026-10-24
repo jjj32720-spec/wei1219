@@ -24,7 +24,7 @@
 </style></head><body><div class="shell"><div class="top"><span>🎮 PLAYER ONE · MUSIC WORLD</span><span>🎤 VOCAL BOOTH</span></div><div class="panel"><h1>🎙️ KTV 錄音室</h1><div class="inner">
 <section id="select"><div class="sub">SELECT YOUR SONG</div><p class="note">先選歌，測試麥克風後開始演唱。這是獨立試玩版，不會更動正式網站進度。</p><div id="tracks"></div><p class="hint">完成《缺口》與《海闊天空》的演唱挑戰，即可解鎖隱藏進階曲《學不會》。音準評分目前仍屬測試版。</p><button class="primary" id="choose">進入麥克風測試 →</button></section>
 <section id="ready" class="hidden"><div class="row"><button class="ghost" id="back">← 選歌</button><span class="pill">MIC CHECK</span></div><h2 id="readyName"></h2><div class="status" id="micStatus">尚未啟用麥克風</div><div class="note" style="color:#d9c5f4">收音音量 <b id="volumeLabel">0%</b>　<span id="pitchLabel">音高：—</span></div><div class="progress"><div id="volumeBar"></div></div><canvas class="canvas" id="micCanvas" width="600" height="160"></canvas><button class="primary" id="micBtn">🎙️ 啟用麥克風</button><div class="help">音訊延遲校準（若音高線比聲音慢，可調整）<br><input id="latency" type="range" min="-400" max="400" value="0" step="25"><span id="latencyLabel">0 ms</span></div><button class="primary" id="startBtn" disabled>▶ 開始演唱（3・2・1）</button><p class="hint">建議使用耳機，避免伴奏聲被麥克風收進去。iPhone 請在 Safari 的 HTTPS 網頁開啟並允許麥克風。</p></section>
-<section id="play" class="hidden" style="position:relative"><div id="countdownOverlay" style="display:none;position:absolute;inset:0;z-index:40;align-items:center;justify-content:center;background:#151021ef;color:#ffd37d;font-size:90px;font-weight:900;border-radius:16px;pointer-events:none">3</div><div class="row"><span class="pill" id="playName"></span><span id="clock">00:00 / 00:00</span></div><div class="row" style="margin:14px 0;gap:8px"><button class="ghost" id="vocalToggle" type="button" aria-pressed="false">🎙️ 導唱 OFF</button><span class="pill" id="vocalState">純伴奏 · 計分測試</span></div><div class="stat"><div><b id="pitchNow">—</b><small>目前音高</small></div><div><b id="liveScore">—</b><small>試算音準</small></div><div><b id="singCoverage">0%</b><small>偵測到演唱</small></div></div><canvas class="canvas" id="pitchCanvas" width="600" height="190"></canvas><div class="row" style="margin-top:7px"><span class="tiny">🟣 每字目標音符（長音顯示長條）</span><span class="tiny">🟢 準確：重疊紫色　🔵 接近：顯示實際高低　🔴 偏離：顯示實際高低</span></div><div class="help" style="margin-top:12px;display:none"><div class="row"><b>🎼 歌詞同步校正</b><span id="lyricSyncValue">+0.0 秒</span></div><p class="hint" style="margin:6px 0">先調整整體偏移；下方也能逐句校時。此版不會假稱已完成粵語語音辨識。</p><input id="lyricSync" type="range" min="-8" max="8" step="0.1" value="0"><div class="row tiny"><span>提前 8 秒</span><span>延後 8 秒</span></div></div><div class="lyric-tools" style="display:none"><div class="row"><button class="ghost" type="button" id="lineEarlier">← 本句提前 0.2 秒</button><button class="ghost" type="button" id="lineMark">🎯 現在開始唱這句</button><button class="ghost" type="button" id="lineLater">本句延後 0.2 秒 →</button></div><span class="tiny" id="lineTimingStatus">每句可獨立校時；調整會自動保存</span></div>
+<section id="play" class="hidden" style="position:relative"><div id="countdownOverlay" style="display:none;position:absolute;inset:0;z-index:40;align-items:center;justify-content:center;background:#151021ef;color:#ffd37d;font-size:90px;font-weight:900;border-radius:16px;pointer-events:none">3</div><div class="row"><span class="pill" id="playName"></span><span id="clock">00:00 / 00:00</span></div><div class="row" style="margin:14px 0;gap:8px"><button class="ghost" id="vocalToggle" type="button" aria-pressed="false">🎙️ 導唱 OFF</button><label class="tiny" for="guideVolume">導唱音量</label><input id="guideVolume" type="range" min="0" max="100" value="25" step="5" style="width:105px;accent-color:#b69aff" aria-label="導唱音量"><span class="tiny" id="guideVolumeText">25%</span><span class="pill" id="vocalState">純伴奏 · 持續計分</span></div><div class="stat"><div><b id="pitchNow">—</b><small>目前音高</small></div><div><b id="liveScore">—</b><small>試算音準</small></div><div><b id="singCoverage">0%</b><small>偵測到演唱</small></div></div><canvas class="canvas" id="pitchCanvas" width="600" height="260"></canvas><div class="row" style="margin-top:7px"><span class="tiny">🟣 每字目標音符（長音顯示長條）</span><span class="tiny">🟢 準確：重疊紫色　🔵 接近：顯示實際高低　🔴 偏離：顯示實際高低</span></div><div class="help" style="margin-top:12px;display:none"><div class="row"><b>🎼 歌詞同步校正</b><span id="lyricSyncValue">+0.0 秒</span></div><p class="hint" style="margin:6px 0">先調整整體偏移；下方也能逐句校時。此版不會假稱已完成粵語語音辨識。</p><input id="lyricSync" type="range" min="-8" max="8" step="0.1" value="0"><div class="row tiny"><span>提前 8 秒</span><span>延後 8 秒</span></div></div><div class="lyric-tools" style="display:none"><div class="row"><button class="ghost" type="button" id="lineEarlier">← 本句提前 0.2 秒</button><button class="ghost" type="button" id="lineMark">🎯 現在開始唱這句</button><button class="ghost" type="button" id="lineLater">本句延後 0.2 秒 →</button></div><span class="tiny" id="lineTimingStatus">每句可獨立校時；調整會自動保存</span></div>
 <div class="help" style="margin-top:12px;display:none"><b>🎯 逐字打點校時 · 已內建兩首歌的校時紀錄</b><p class="hint">先開啟導唱 ON，聽到下方指定的字開始發音時，按「記錄這個字」。會記下歌曲播放的實際秒數並自動跳下一字。可以重播、倒退一字重新記錄。</p><div class="row" style="margin:10px 0;align-items:center"><span class="pill" id="wordTarget">準備校時</span><span class="tiny" id="wordCount">0 / 0</span></div><div class="row" style="gap:7px;flex-wrap:wrap"><button class="ghost" id="wordBack" type="button">↶ 上一字</button><button class="primary" id="wordMark" type="button" style="width:auto;flex:1">● 記錄這個字</button><button class="ghost" id="wordSkip" type="button">跳下一字 →</button></div><div class="row" style="margin-top:8px;gap:7px;flex-wrap:wrap"><button class="ghost" id="wordReplay" type="button">↺ 重播本句</button><button class="ghost" id="wordExport" type="button">↓ 匯出校時紀錄</button><button class="ghost" id="wordReset" type="button">清除此歌紀錄</button></div><p class="hint" id="wordStatus">校時資料儲存在目前瀏覽器；匯出 JSON 後可傳給我整合進正式字幕。</p></div><div class="timeline-editor" id="timelineEditor"><h3>舊版節點編輯（已停用）</h3><div class="edhint">選擇歌詞句子，直接左右拖動每個字的節點；時間會立即儲存並反映在 KTV 掃色。可暫停音樂、慢速聆聽後調整。</div><div class="edrow"><select id="edLine" aria-label="選擇歌詞句子"></select><button type="button" id="edReplay">↺ 播放這句</button><button type="button" id="edPause">⏸ 暫停</button><button type="button" id="edSlow">0.75× 慢速</button></div><div class="edline" id="edWords"></div><div class="edtrack" id="edTrack" aria-label="逐字時間軸"></div><div class="edrow"><span class="edreadout" id="edReadout">點選或拖曳一個字</span><button type="button" id="edRestore">還原本句預設</button></div><div class="edhint">左右邊界是本句與下一句的時間範圍。節點可拖動，放開即儲存；較密集的字可先點選字，再用下方微調。</div><input id="edFine" type="range" min="0" max="40" step="0.01" value="0" aria-label="微調選中字的秒數"/></div><div class="music-seek"><div class="row"><b>♫ 音樂播放時間</b><span id="seekReadout">00:00 / 00:00</span></div><input type="range" id="musicSeek" min="0" max="40" step="0.01" value="0" aria-label="拖動音樂播放時間"><div class="seek-help">先拖音樂找到正確發音，再拖下面歌詞的黃色變色位置。放開字幕就會記錄這個字的時間，並立即預覽。</div></div><div class="lyric" id="scrubLyrics" aria-label="拖動歌詞變色位置以同步快轉倒退"><div class="current"><span class="highlight" id="currentLyric">♪ 跟著旋律演唱 ♪</span></div><div class="next" id="nextLyric">跟著旋律一起唱</div></div><div class="scrub-hint">↔ 直接拖動歌詞黃色邊界校時 · 上方音樂時間軸可獨立快轉／倒退 · 放開立即預覽</div><div class="scrub-readout" id="scrubReadout">點住字幕即可校時</div><div class="row" style="justify-content:center;margin:8px 0"><button class="ghost" id="scrubExport" type="button">↓ 匯出逐字校時 JSON</button></div><div class="progress"><div id="progressFill"></div></div><button class="ghost" id="stopBtn">■ 提前結束</button><p class="hint">字幕已套用逐字校時；導唱 ON 播放原唱，導唱 OFF 播放伴奏。切換時保留進度。</p></section>
 <section id="result" class="hidden"><div class="sub">PERFORMANCE COMPLETE</div><h2 id="resultName"></h2><div class="stat"><div><b id="rScore">—</b><small>試算音準</small></div><div><b id="rCoverage">—</b><small>演唱覆蓋率</small></div><div><b id="rGrade">—</b><small>試算評級</small></div></div><div class="status" id="resultInfo"></div><button class="primary" id="retry">再唱一次</button><button class="ghost" style="width:100%;margin-top:10px" id="chooseAgain">返回選歌</button></section>
 </div></div></div>
@@ -221,7 +221,7 @@ $('latency').oninput=()=>{$('latencyLabel').textContent=$('latency').value+' ms'
 renderTracks();loadLyrics();updateWordPanel();edInit();
 $('choose').onclick=()=>{$('readyName').textContent=SONGS[selected].name;show('ready');drawIdle()};
 $('back').onclick=()=>{cancelAnimationFrame(micFrame);show('select')};
-async function initMic(){try{if(!navigator.mediaDevices?.getUserMedia)throw Error('此瀏覽器不支援麥克風，請使用 HTTPS 的 Safari');micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:true}});ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();await ctx.resume();if(micSource)micSource.disconnect();micSource=ctx.createMediaStreamSource(micStream);analyser=ctx.createAnalyser();analyser.fftSize=4096;analyser.smoothingTimeConstant=0;micSource.connect(analyser);$('micStatus').textContent='✅ 麥克風已連線，試著唱一個長音';$('startBtn').disabled=false;$('micBtn').textContent='🎙️ 重新啟用麥克風';drawIdle()}catch(e){$('micStatus').textContent='無法啟用麥克風：'+e.message}}
+async function initMic(){try{if(!navigator.mediaDevices?.getUserMedia)throw Error('此瀏覽器不支援麥克風，請使用 HTTPS 的 Safari');micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:false}});ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();await ctx.resume();if(micSource)micSource.disconnect();micSource=ctx.createMediaStreamSource(micStream);analyser=ctx.createAnalyser();analyser.fftSize=4096;analyser.smoothingTimeConstant=0;micSource.connect(analyser);$('micStatus').textContent='✅ 麥克風已連線，試著唱一個長音';$('startBtn').disabled=false;$('micBtn').textContent='🎙️ 重新啟用麥克風';drawIdle()}catch(e){$('micStatus').textContent='無法啟用麥克風：'+e.message}}
 $('micBtn').onclick=initMic;
 function getPitch(){
  if(!analyser||!ctx)return 0;
@@ -230,7 +230,7 @@ function getPitch(){
  const buf=new Float32Array(analyser.fftSize);analyser.getFloatTimeDomainData(buf);
  let power=0;for(let i=0;i<buf.length;i++)power+=buf[i]*buf[i];
  lastRms=Math.sqrt(power/buf.length);
- if(lastRms<.0035){lastMicPitch=0;return 0}
+ if(lastRms<(vocalOn?.011:.0035)){lastMicPitch=0;return 0}
  // Downsample by 4: drastically reduce CPU usage on iPhone.
  const step=4, len=Math.floor(buf.length/step), rate=ctx.sampleRate/step;
  const min=Math.max(8,Math.floor(rate/800)),max=Math.min(Math.floor(rate/95),Math.floor(len*.55));
@@ -267,11 +267,11 @@ function getMatch(p,r){
  if(!p||!r)return null;
  const delta=Math.abs(p-r);
  const diff=Math.min(...[-24,-12,0,12,24].map(shift=>Math.abs(p-(r+shift))));
- if(diff<=1.25)return 100;
- if(diff<=2.5)return Math.round(100-(diff-1.25)*9);
- if(diff<=4)return Math.round(89-(diff-2.5)*12);
- if(diff<=6)return Math.round(71-(diff-4)*15);
- return Math.max(15,Math.round(41-(diff-6)*7));
+ if(diff<=0.8)return 100;
+ if(diff<=1.7)return Math.round(100-(diff-.8)*15);
+ if(diff<=3)return Math.round(86.5-(diff-1.7)*18);
+ if(diff<=5)return Math.round(63-(diff-3)*22);
+ return Math.max(0,Math.round(19-(diff-5)*12));
 }
 // 每字一條音符：以已校準字元時間作為邊界，以分離人聲音高估測音符高度。
 const NOTE_CACHE={};
@@ -345,15 +345,17 @@ function noteBars(){
 function drawChart(t){
  const c=$('pitchCanvas'),g=c.getContext('2d'),W=c.width,H=c.height;
  g.fillStyle='#171525';g.fillRect(0,0,W,H);
- const left=Math.max(0,t-2.4),span=8.2;
+ const left=Math.max(0,t-1.0),span=3.6;
  const bars=noteBars();
  const nearby=bars.filter(n=>n.b>=left&&n.a<=left+span);
  const values=nearby.map(n=>n.m).concat(history.filter(v=>v.t>=left&&v.p).map(v=>v.p));
  // 顯示範圍同時涵蓋標準音符與玩家實際音高，避免偏高／偏低被裁掉。
  const minValue=values.length?Math.min(...values):48;
  const maxValue=values.length?Math.max(...values):76;
- const min=Math.max(24,Math.floor(minValue-3));
- const max=Math.max(min+12,Math.min(108,Math.ceil(maxValue+3)));
+ const midPitch=(minValue+maxValue)/2;
+ const pitchRange=Math.max(12,Math.min(28,Math.ceil(maxValue-minValue+5)));
+ const min=Math.max(24,Math.floor(midPitch-pitchRange/2));
+ const max=min+pitchRange;
  const yy=m=>H-18-(m-min)/(max-min)*(H-36);
  const xx=sec=>(sec-left)/span*W;
  for(let m=Math.ceil(min/4)*4;m<=max;m+=4){
@@ -362,8 +364,7 @@ function drawChart(t){
  for(const n of nearby){
   const x=xx(n.a),end=xx(n.b),y=yy(n.m),w=Math.max(3,end-x);
   g.fillStyle=n.a<=t&&t<n.b?'#ffdc88':'#ad91fa';
-  g.beginPath();g.roundRect(Math.max(-3,x),y-6,w,12,5);g.fill();
-  if(n.char&&w>=13){g.font='bold 11px system-ui';g.textAlign='center';g.fillStyle='#fff';g.fillText(n.char,x+Math.min(w/2,25),y-11)}
+  g.beginPath();g.roundRect(Math.max(-3,x),y-11,w,22,7);g.fill();
  }
  // 玩家音高也以音符條呈現：連續發聲合併成長條，音高轉折分段。
  const recent=history.filter(v=>v.t>=left&&v.t<=left+span).sort((a,b)=>a.t-b.t);
@@ -394,23 +395,26 @@ function drawChart(t){
     ||nearby.filter(ref=>ref.a<=n.b&&ref.b>=n.a)
       .sort((a,b)=>Math.abs((a.a+a.b)/2-mid)-Math.abs((b.a+b.b)/2-mid))[0];
   const diff=expected?Math.abs(n.m-expected.m):Infinity;
-  const accurate=diff<=1.25;
-  const color=accurate?'#55e6b6':diff<=3?'#61cfff':'#ff7d93';
+  const accurate=diff<=.8;
+  const color=accurate?'#55e6b6':diff<=1.7?'#61cfff':'#ff7d93';
   const drawY=accurate&&expected?yy(expected.m):y;
-  g.fillStyle=color;g.beginPath();g.roundRect(x,drawY-4.5,w,9,4);g.fill();
+  g.fillStyle=color;g.beginPath();g.roundRect(x,drawY-(accurate?11:8),w,accurate?22:16,6);g.fill();
  }
  const cursor=xx(t);g.strokeStyle='#fff';g.lineWidth=1.5;g.beginPath();g.moveTo(cursor,0);g.lineTo(cursor,H);g.stroke();
- g.fillStyle='#ded1f7';g.textAlign='left';g.font='10px system-ui';g.fillText('← 已唱',9,H-5);g.textAlign='right';g.fillText('即將演唱 →',W-9,H-5);
+
 }
-function tick(){if(!playing)return;const t=Math.min(SONGS[selected].duration,audio.currentTime||0),p=midi(getPitch()),ref=getRef(Math.max(0,t+Number($('latency').value)/1000)),match=getMatch(p,ref);history.push({t,p});if(history.length>500)history.shift();if(t>0.2&&(!samples.length||t-samples[samples.length-1].t>.09))samples.push({t,p,match:vocalOn?null:match,practice:vocalOn});$('pitchNow').textContent=noteName(p);$('liveScore').textContent=vocalOn?'導唱練習':(ref?(match===null?'等待人聲':Math.round(match)+' 分'):'參考旋律不足');$('singCoverage').textContent=samples.length?Math.round(samples.filter(x=>x.p).length/samples.length*100)+'%':'0%';$('clock').textContent=`${formatTime(t)} / ${formatTime(SONGS[selected].duration)}`;$('progressFill').style.width=(t/SONGS[selected].duration*100)+'%';updateLyric(t);drawChart(t);if(t>=SONGS[selected].duration-.06){finish();return}frame=requestAnimationFrame(tick)}
+function tick(){if(!playing)return;const t=Math.min(SONGS[selected].duration,audio.currentTime||0),p=midi(getPitch()),ref=getRef(Math.max(0,t+Number($('latency').value)/1000)),match=getMatch(p,ref);history.push({t,p});if(history.length>500)history.shift();if(t>0.2&&(!samples.length||t-samples[samples.length-1].t>.09))samples.push({t,p,match,practice:vocalOn});$('pitchNow').textContent=noteName(p);$('liveScore').textContent=(ref?(match===null?'等待人聲':Math.round(match)+' 分'):'參考旋律不足');$('singCoverage').textContent=samples.length?Math.round(samples.filter(x=>x.p).length/samples.length*100)+'%':'0%';$('clock').textContent=`${formatTime(t)} / ${formatTime(SONGS[selected].duration)}`;$('progressFill').style.width=(t/SONGS[selected].duration*100)+'%';updateLyric(t);drawChart(t);if(t>=SONGS[selected].duration-.06){finish();return}frame=requestAnimationFrame(tick)}
+function guideGain(){return Number($('guideVolume').value)/100}
+$('guideVolume').addEventListener('input',()=>{$('guideVolumeText').textContent=$('guideVolume').value+'%';if(vocalAudio)vocalAudio.volume=guideGain()});
 function setVocalUI(){
  $('vocalToggle').textContent=vocalOn?'🎙️ 導唱 ON':'🎙️ 導唱 OFF';
  $('vocalToggle').setAttribute('aria-pressed',String(vocalOn));
- $('vocalState').textContent=vocalOn?'原唱練習 · 暫停計分':'純伴奏 · 計分測試';
+ $('vocalState').textContent=vocalOn?'低音量導唱 · 持續計分':'純伴奏 · 持續計分';
 }
 async function toggleVocal(){
  if(!playing||!backingAudio||!vocalAudio)return;
  const previous=audio,next=vocalOn?backingAudio:vocalAudio;
+ if(next===vocalAudio)next.volume=guideGain();
  const at=previous.currentTime;
  previous.pause();
  try{next.currentTime=Math.min(at,Math.max(0,(next.duration||SONGS[selected].duration)-.05));audio=next;vocalOn=!vocalOn;setVocalUI();await next.play()}
@@ -425,7 +429,7 @@ async function begin(){
   if(audio){audio.pause();audio=null}
   backingAudio=new Audio(SONGS[selected].backing);
   vocalAudio=new Audio(SONGS[selected].vocal);
-  backingAudio.preload='auto';vocalAudio.preload='auto';
+  backingAudio.preload='auto';vocalAudio.preload='auto';vocalAudio.volume=guideGain();
   backingAudio.onended=finish;vocalAudio.onended=finish;
   audio=backingAudio;vocalOn=false;setVocalUI();history=[];samples=[];
   cancelAnimationFrame(micFrame);show('play');loadLyrics();
@@ -433,16 +437,18 @@ async function begin(){
   $('clock').textContent='00:00 / '+formatTime(SONGS[selected].duration);
   const overlay=$('countdownOverlay');
   overlay.style.display='flex';
-  // On iPhone, start audio from the original button gesture; keep it silent during countdown.
-  audio.volume=0;await audio.play();
+  // Prime iOS audio permission within the tap, then STOP completely before countdown.
+  // No playback continues under the countdown overlay.
+  audio.muted=true;
+  try{await audio.play();audio.pause();audio.currentTime=0}catch(_){audio.pause()}
+  audio.muted=false;audio.volume=1;
   for(let n=3;n>=1;n--){
    overlay.textContent=String(n);
-   await new Promise(resolve=>setTimeout(resolve,850));
+   await new Promise(resolve=>setTimeout(resolve,1000));
   }
   overlay.textContent='GO!';
   audio.currentTime=0;
-  audio.volume=1;
-  await new Promise(resolve=>setTimeout(resolve,250));
+  await audio.play();
   overlay.style.display='none';
   playing=true;tick();
  }catch(e){
@@ -452,7 +458,7 @@ async function begin(){
  }
 }
 $('startBtn').onclick=begin;$('stopBtn').onclick=finish;
-function finish(){if(!playing)return;playing=false;cancelAnimationFrame(frame);if(backingAudio)backingAudio.pause();if(vocalAudio)vocalAudio.pause();const valid=samples.filter(x=>x.match!==null),coverage=samples.length?Math.round(samples.filter(x=>x.p).length/samples.length*100):0,score=valid.length?Math.round(valid.reduce((a,x)=>a+x.match,0)/valid.length):0,refCoverage=samples.length?Math.round(valid.length/samples.length*100):0;$('resultName').textContent=SONGS[selected].name;$('rScore').textContent=valid.length>=8?score+' / 100':'參考不足';$('rCoverage').textContent=coverage+'%';$('rGrade').textContent=valid.length>=8?(score>=85?'S':score>=72?'A':score>=58?'B':score>=42?'C':'D'):'—';let notice='使用最新分離人聲建立的自動估測旋律，可能受和聲、轉音、分離殘留影響。這是測試分數，暫不發放金幣。可評分樣本 '+valid.length+' 個，佔總採樣 '+refCoverage+'%。';if(selected<2&&coverage>=15&&valid.length>=8){
+function finish(){if(!playing)return;playing=false;cancelAnimationFrame(frame);if(backingAudio)backingAudio.pause();if(vocalAudio)vocalAudio.pause();const valid=samples.filter(x=>x.match!==null),coverage=samples.length?Math.round(samples.filter(x=>x.p).length/samples.length*100):0,score=valid.length?Math.round(valid.reduce((a,x)=>a+x.match,0)/valid.length):0,refCoverage=samples.length?Math.round(valid.length/samples.length*100):0;$('resultName').textContent=SONGS[selected].name;$('rScore').textContent=valid.length>=8?score+' / 100':'參考不足';$('rCoverage').textContent=coverage+'%';$('rGrade').textContent=valid.length>=8?(score>=96?'S':score>=88?'A':score>=75?'B':score>=58?'C':'D'):'—';let notice='使用最新分離人聲建立的自動估測旋律，可能受和聲、轉音、分離殘留影響。這是測試分數，暫不發放金幣。可評分樣本 '+valid.length+' 個，佔總採樣 '+refCoverage+'%。';if(selected<2&&coverage>=15&&valid.length>=8){
  safeStorage.setItem('ktv_song_completed_'+selected,'1');
  if(!unlocked&&safeStorage.getItem('ktv_song_completed_0')==='1'&&safeStorage.getItem('ktv_song_completed_1')==='1'){
   unlocked=true;safeStorage.setItem('ktv_advanced_unlocked','1');
