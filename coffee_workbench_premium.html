@@ -213,62 +213,68 @@ $('#ttl').textContent=to?'時間到':'這杯咖啡完成了';
 $('#pn').style.maxHeight='62%';ui(`<div style="text-align:center"><div style="font:800 46px 'Noto Serif TC',serif;color:var(--gd)">${tot}<small style="display:inline;font-size:14px"> / 100</small></div><small>完成時間 ${fmt(sec)}${to?'（未完成）':'　時間加分 '+bonus}</small></div>${rs.map(x=>`<div class="rw"><span>${x.name}</span><span>${x.score}　<small style="display:inline">${x.sec}s／重試 ${x.att}</small></span></div>`).join('')}<textarea readonly id="js">${js}</textarea><div class="row"><button id="cp">複製測試紀錄</button><button class="sec" onclick="location.reload()">再沖一杯</button></div><small>分數是遊戲操作表現，不代表真實杯測。紀錄只留在本機。</small>`);
 $('#cp').onclick=async()=>{try{await navigator.clipboard.writeText(js);toast('已複製')}catch(_){$('#js').select();toast('請長按選取後複製')}}}
 </script>\n<script type="module">
-// Independent art renderer: Claude's original SVG game remains the authoritative input/state machine.
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-const svg=document.getElementById('sv'), host=document.getElementById('stg'), canvas=document.getElementById('art3d');
-const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
-canvas.addEventListener("webglcontextlost",()=>{document.querySelectorAll("#tools>g").forEach(g=>g.classList.remove("art-ready"));canvas.style.display="none";});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
-renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.55;
-const scene=new THREE.Scene();
-const camera=new THREE.OrthographicCamera(0,400,0,-300,.1,1200);camera.position.set(0,0,600);camera.lookAt(0,0,0);
-scene.add(new THREE.HemisphereLight(0xfff4db,0x49372b,2.0));
-const key=new THREE.DirectionalLight(0xffe6b9,3.1);key.position.set(-120,180,280);scene.add(key);
-const fill=new THREE.DirectionalLight(0xb5d6cf,1.4);fill.position.set(200,-50,160);scene.add(fill);
-const mat=(color,roughness=.55,metalness=0,extra={})=>new THREE.MeshStandardMaterial({color,roughness,metalness,...extra});
-const sage=mat('#a3bdac',.28),sageDark=mat('#779e8a',.45),ceramic=mat('#f5eddb',.3),wood=mat('#986439',.75),woodDark=mat('#5a3827',.72),metal=mat('#c4b5a1',.26,.7),black=mat('#24272a',.35,.35),gold=mat('#c9a66b',.34,.5),coffee=mat('#56321e',.9),bean=mat('#714326',.75),water=mat('#8dbcc5',.16,.06,{transparent:true,opacity:.5,depthWrite:false}),glass=mat('#dcece8',.1,.05,{transparent:true,opacity:.3,depthWrite:false,side:THREE.DoubleSide});
-const models={};const dynamic={};
-function group(id){const g=new THREE.Group();scene.add(g);models[id]=g;return g}
-function mesh(g,geo,m,x=0,y=0,z=0){const o=new THREE.Mesh(geo,m);o.position.set(x,y,z);g.add(o);return o}
-const cyl=(a,b,h,n=40)=>new THREE.CylinderGeometry(a,b,h,n);
-const box=(w,h,d)=>new THREE.BoxGeometry(w,h,d);
-function ball(g,r,m,x,y,z){return mesh(g,new THREE.SphereGeometry(r,18,12),m,x,y,z)}
-function tube(g,points,r,m){const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));return mesh(g,new THREE.TubeGeometry(curve,24,r,8,false),m)}
-function rim(g,r,y,m,thick=.09){const o=mesh(g,new THREE.TorusGeometry(r,thick,10,44),m,0,y,0);o.rotation.x=Math.PI/2;return o}
-function cup(g,r,h,m,edge=ceramic){mesh(g,cyl(r,r*.82,h),m,0,h/2,0);rim(g,r,h,edge)}
-// Each model is built in local 3D units, scaled into the original SVG coordinate system.
-{const g=group('paper');mesh(g,box(2.7,3.4,.12),ceramic,0,0,0);mesh(g,box(2.2,.10,.13),wood,0,.9,.09);mesh(g,box(1.8,.08,.13),wood,0,.4,.09);mesh(g,box(2,.08,.13),wood,0,-.1,.09);ball(g,.5,bean,.5,-.55,.14);}
-{const g=group('bag');mesh(g,box(1.6,2.25,.65),wood,0,1.15,0);mesh(g,box(1.7,.18,.7),woodDark,0,2.28,0);mesh(g,box(1.05,.7,.68),ceramic,0,1.15,.36);}
-{const g=group('cup');cup(g,.73,1.45,glass,metal);const fill=mesh(g,cyl(.68,.60,.2),bean,0,.15,0);dynamic.cup=fill;}
-{const g=group('scale');mesh(g,box(5.5,.68,3.3),ceramic,0,.35,0);mesh(g,box(2.3,.05,1.3),metal,-.5,.72,0);mesh(g,box(1.9,.05,.9),black,-.5,.76,0);ball(g,.21,gold,2,.78,0);}
-{const g=group('server');const body=mesh(g,cyl(1.55,1.16,2.5),glass,0,1.3,0);rim(g,1.55,2.55,metal);tube(g,[[1.35,2.1,0],[2.1,2.0,0],[2.25,1.1,0],[1.35,.7,0]],.15,glass);tube(g,[[-1.3,2.5,0],[-1.9,2.68,0]],.12,glass);dynamic.server=mesh(g,cyl(1.2,1.05,.05),water,0,.15,0);}
-{const g=group('dripper');mesh(g,cyl(1.8,.55,1.8),sage,0,1.3,0);rim(g,1.8,2.2,sageDark,.13);mesh(g,cyl(2.05,2.05,.22),sage,0,.27,0);rim(g,2.05,.4,sageDark,.08);dynamic.bed=mesh(g,cyl(1.25,1.25,.12),coffee,0,1.86,0);dynamic.filter=mesh(g,cyl(1.52,.56,1.63),ceramic,0,1.34,0);}
-{const g=group('filter');const o=mesh(g,new THREE.ConeGeometry(1.15,1.7,3),ceramic,0,.8,0);o.rotation.y=Math.PI/4;}
-{const g=group('kettle');mesh(g,cyl(1.2,1.05,2),black,0,1.15,0);rim(g,1.17,2.15,metal);tube(g,[[-.95,1.9,0],[-1.7,2.5,0],[-2.45,2.65,0]],.10,metal);tube(g,[[1.1,1.9,0],[1.9,1.9,0],[2,1.1,0],[1.15,.8,0]],.13,black);ball(g,.18,gold,0,2.3,0);}
-{const g=group('waste');cup(g,1.65,.75,ceramic,ceramic);}
-{const g=group('grinder');mesh(g,cyl(.95,.95,2.6),wood,0,2.3,0);mesh(g,cyl(.95,.9,1.15),glass,0,.55,0);rim(g,.95,1.18,metal);mesh(g,cyl(.95,.95,.2),black,0,3.65,0);mesh(g,cyl(.8,.8,.8),glass,0,4.15,0);const arm=new THREE.Group();g.add(arm);mesh(arm,box(2.5,.16,.18),metal,1.2,4.75,0);ball(arm,.42,woodDark,2.45,4.75,0);dynamic.arm=arm;dynamic.jar=mesh(g,cyl(.83,.83,.12),coffee,0,.13,0);}
-{const g=group('mug');cup(g,1.05,1.55,ceramic);tube(g,[[.95,1.35,0],[1.6,1.3,0],[1.65,.4,0],[.95,.35,0]],.14,ceramic);dynamic.mug=mesh(g,cyl(.93,.93,.08),coffee,0,.2,0);}
-// Original SVG transforms are sampled every frame, so all original tween timings and state transitions survive.
+// Claude's SVG is the sole source of input, timing, and gameplay state.
+const svg=document.getElementById('sv'),host=document.getElementById('stg'),canvas=document.getElementById('art3d');
+let THREE;
+try{THREE=await import('https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js')}catch(err){console.warn('3D unavailable; SVG fallback remains',err)}
+if(THREE){try{
+const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.7));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.5;
+const scene=new THREE.Scene(),camera=new THREE.OrthographicCamera(0,400,0,-300,.1,1200);camera.position.set(0,0,600);camera.lookAt(0,0,0);
+scene.add(new THREE.HemisphereLight('#fff1db','#584336',2.5));
+const key=new THREE.DirectionalLight('#ffe2b6',3.4);key.position.set(-150,240,280);scene.add(key);
+const fill=new THREE.DirectionalLight('#c3e5dd',1.1);fill.position.set(160,80,150);scene.add(fill);
+const M=(c,r=.55,m=0,extra={})=>new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m,...extra});
+const mat={sage:M('#91b6a5',.28),sageDeep:M('#5d8976',.34),ceramic:M('#e9e3d4',.26),paper:M('#e9dfc7',.91,0,{side:THREE.DoubleSide}),brown:M('#5b3824',.88),ground:M('#3f281a',.95),copper:M('#d2b28c',.27,.68),steel:M('#abb2ad',.22,.75),steelLight:M('#e0dfd4',.2,.72),charcoal:M('#30332f',.45,.28),glass:M('#d8f2ec',.08,.02,{transparent:true,opacity:.38,depthWrite:false,side:THREE.DoubleSide}),water:M('#9dc7d2',.18,0,{transparent:true,opacity:.68}),coffee:M('#493021',.43),white:M('#e8e8e3',.4),black:M('#17231e',.35)};
+let seed=17;function rng(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
+function woodTexture(){const c=document.createElement('canvas');c.width=384;c.height=768;const x=c.getContext('2d'),g=x.createLinearGradient(0,0,384,0);g.addColorStop(0,'#503323');g.addColorStop(.25,'#aa805a');g.addColorStop(.6,'#936a49');g.addColorStop(1,'#4e3020');x.fillStyle=g;x.fillRect(0,0,384,768);for(let i=0;i<430;i++){x.strokeStyle=i%3?'rgba(47,24,12,.17)':'rgba(250,202,142,.13)';x.lineWidth=.4+rng()*1.8;const q=rng()*384;x.beginPath();x.moveTo(q,0);for(let y=0;y<768;y+=28)x.lineTo(q+5*Math.sin(y*.02+i),y);x.stroke()}const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t}
+const wood=M('#ffffff',.68,0,{map:woodTexture()});
+const models={},dyn={};function group(id){const g=new THREE.Group();scene.add(g);models[id]=g;return g}
+function obj(g,geo,m,x=0,y=0,z=0){const o=new THREE.Mesh(geo,m);o.position.set(x,y,z);g.add(o);return o}
+function box(g,w,h,d,m,x=0,y=0,z=0){return obj(g,new THREE.BoxGeometry(w,h,d),m,x,y,z)}
+function cyl(g,rt,rb,h,m,x=0,y=0,z=0){return obj(g,new THREE.CylinderGeometry(rt,rb,h,48),m,x,y,z)}
+function lathe(g,pts,m,x=0,y=0,z=0){return obj(g,new THREE.LatheGeometry(pts.map(p=>new THREE.Vector2(...p)),64),m,x,y,z)}
+function ring(g,r,t,m,x=0,y=0,z=0){const o=obj(g,new THREE.TorusGeometry(r,t,10,64),m,x,y,z);o.rotation.x=Math.PI/2;return o}
+function tube(g,pts,r,m){return obj(g,new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(...p))),48,r,10,false),m)}
+function sphere(g,r,m,x=0,y=0,z=0){return obj(g,new THREE.SphereGeometry(r,18,12),m,x,y,z)}
+// Models are detailed versions of the v9 ceramic/glass/wood designs, resized for Claude's SVG world.
+{const g=group('paper');box(g,3.1,4.1,.12,mat.paper,0,0,0);const ink=M('#6a5842',.95);for(let i=0;i<6;i++)box(g,2.4-(i%3)*.25,.055,.025,ink,-.15,1.35-i*.46,.075);const stain=M('#9d7950',.9,0,{transparent:true,opacity:.4});const a=sphere(g,.55,stain,.62,-.75,.13);a.scale.set(1.2,.8,.12)}
+{const g=group('bag');const body=box(g,1.85,2.45,.64,M('#bca27f',.89),0,1.23,0);box(g,1.9,.22,.66,M('#8c7053',.87),0,2.46,0);box(g,1.35,1.25,.05,mat.paper,0,1.3,.35);box(g,.85,.08,.065,mat.brown,0,1.55,.4);box(g,.65,.05,.065,mat.brown,0,1.24,.4);box(g,.8,.05,.065,mat.brown,0,.99,.4)}
+{const g=group('cup');lathe(g,[[0,0],[.59,.03],[.69,.14],[.70,1.45],[.75,1.56]],mat.glass);ring(g,.74,.045,mat.steelLight,0,1.54,0);dyn.cup=cyl(g,.58,.58,.5,mat.brown,0,.3,0)}
+{const g=group('scale');box(g,5.6,.42,3.8,mat.white,0,.21,0);box(g,4.9,.06,2.35,M('#d6d9d2',.34),0,.47,-.34);box(g,2.15,.045,.86,mat.black,-.9,.46,1.38);const btn=cyl(g,.21,.21,.045,mat.copper,2.13,.48,1.38);btn.rotation.x=.03}
+{const g=group('server');lathe(g,[[0,.04],[.75,.04],[1.13,.16],[1.34,.5],[1.29,1.25],[1.04,1.72],[.69,2.10],[.70,2.4]],mat.glass);ring(g,.71,.047,mat.glass,0,2.39,0);tube(g,[[1.05,1.8,0],[1.5,1.92,0],[1.95,1.78,0],[2.04,1.36,0],[1.86,.93,0],[1.49,.89,0],[1.25,1.04,0]],.12,mat.glass);tube(g,[[-.48,2.4,0],[-.25,2.57,0],[.03,2.55,0]],.07,mat.glass);dyn.server=cyl(g,1.06,1.06,.6,mat.water,0,.4,0)}
+{const g=group('dripper');lathe(g,[[.28,.43],[.39,.58],[1.34,2.20],[1.46,2.37],[1.40,2.43],[1.30,2.34],[.33,.65]],mat.sage);ring(g,1.39,.08,mat.sageDeep,0,2.37,0);cyl(g,1.36,1.36,.16,mat.sage,0,.31,0);ring(g,1.34,.06,mat.sageDeep,0,.41,0);dyn.filter=lathe(g,[[.25,.65],[1.24,2.20],[1.28,2.25],[1.21,2.18],[.28,.70]],mat.paper);dyn.bed=cyl(g,.83,.79,.19,mat.ground,0,1.44,0);dyn.bubbles=[];for(let i=0;i<18;i++){const a=i*2.4,r=Math.sqrt((i+.5)/18)*.76;dyn.bubbles.push(sphere(g,.045+(i%3)*.015,mat.paper,Math.cos(a)*r,1.59,Math.sin(a)*r))}}
+{const g=group('filter');lathe(g,[[.08,.05],[1.05,1.12],[1.10,1.18],[1.02,1.13],[.08,.11]],mat.paper)}
+{const g=group('kettle');lathe(g,[[0,.08],[.8,.1],[1.04,.35],[1.12,1.12],[1.01,2.04],[.76,2.13],[.63,2.15]],mat.steel);cyl(g,.77,.77,.09,mat.steelLight,0,2.13,0);sphere(g,.15,mat.copper,0,2.27,0);tube(g,[[-.75,1.56,0],[-1.48,1.32,0],[-2.02,1.56,0],[-2.20,2.12,0],[-2.32,2.60,0]],.12,mat.steelLight);tube(g,[[.89,1.81,0],[1.46,1.82,0],[1.75,1.41,0],[1.58,.93,0],[1.04,.90,0]],.15,mat.charcoal)}
+{const g=group('waste');lathe(g,[[0,0],[1.0,.05],[1.4,.28],[1.52,.72],[1.39,.77],[1.24,.57]],mat.ceramic);dyn.waste=cyl(g,1.12,1.12,.07,mat.water,0,.25,0)}
+{const g=group('grinder');lathe(g,[[0,.03],[.65,.03],[.77,.19],[.76,1.29],[.70,1.4]],mat.glass);ring(g,.76,.05,mat.steelLight,0,1.37,0);dyn.jar=cyl(g,.65,.65,.5,mat.ground,0,.32,0);cyl(g,.82,.84,2.62,wood,0,2.75,0);ring(g,.84,.045,mat.copper,0,4.0,0);cyl(g,.83,.83,.18,mat.charcoal,0,4.17,0);lathe(g,[[.4,4.25],[.7,4.29],[.71,4.94],[.64,5.05]],mat.glass);dyn.hopper=cyl(g,.58,.58,.44,mat.brown,0,4.68,0);const arm=new THREE.Group();arm.position.y=5.22;g.add(arm);box(arm,2.05,.11,.21,mat.steelLight,1.02,0,0);cyl(arm,.17,.17,.7,M('#795039',.54),2.01,.35,0);sphere(arm,.22,mat.copper,2.01,.72,0);dyn.arm=arm}
+{const g=group('mug');lathe(g,[[0,.03],[.72,.05],[.95,.17],[1.02,1.44],[.96,1.57]],mat.ceramic);ring(g,.98,.055,mat.ceramic,0,1.56,0);tube(g,[[.91,1.33,0],[1.42,1.38,0],[1.72,1.05,0],[1.66,.49,0],[1.35,.34,0],[.96,.45,0]],.14,mat.ceramic);dyn.mug=cyl(g,.84,.84,.07,mat.coffee,0,.2,0)}
 const sizes={paper:14,bag:14,cup:15,scale:17,server:15,dripper:14,filter:13,kettle:15,waste:14,grinder:14,mug:14};
-const anchors={paper:0,bag:0,cup:0,scale:0,server:0,dripper:0,filter:0,kettle:0,waste:0,grinder:0,mug:0};
-function update(){
- const v=svg.viewBox.baseVal;camera.left=v.x;camera.right=v.x+v.width;camera.top=-v.y;camera.bottom=-(v.y+v.height);camera.updateProjectionMatrix();
- const rect=svg.getBoundingClientRect();const w=host.clientWidth,h=host.clientHeight;renderer.setSize(w,h,false);
- // SVG preserveAspectRatio=xMidYMid meet: match 3D canvas with the actual SVG letterboxing.
- const scale=Math.min(w/v.width,h/v.height),drawW=v.width*scale,drawH=v.height*scale;canvas.style.left=((w-drawW)/2)+'px';canvas.style.top=((h-drawH)/2)+'px';canvas.style.width=drawW+'px';canvas.style.height=drawH+'px';renderer.setSize(Math.max(1,drawW),Math.max(1,drawH),false);
- for(const [id,g] of Object.entries(models)){const node=document.getElementById(id);if(!node)continue;const tr=node.transform.baseVal.consolidate()?.matrix;if(!tr)continue;g.position.set(tr.e,-tr.f,25);g.rotation.set(0,0,-Math.atan2(tr.b,tr.a));g.scale.setScalar(sizes[id]);g.visible=getComputedStyle(node).display!=='none';}
- const n=id=>parseFloat(document.getElementById(id)?.getAttribute('height')||0);
- dynamic.cup.scale.y=Math.max(.01,n('cf')/20);dynamic.cup.position.y=.1+dynamic.cup.scale.y*.65;
- dynamic.server.scale.y=Math.max(.01,n('sf')/33);dynamic.server.position.y=.13+dynamic.server.scale.y*1.0;dynamic.server.material.color.set(document.getElementById('sf')?.getAttribute('fill')||'#8dbcc5');
- dynamic.filter.visible=Number(document.getElementById('fp')?.getAttribute('opacity')||0)>.5;
- dynamic.bed.visible=Number(document.getElementById('bd')?.getAttribute('opacity')||0)>.5||Number(document.getElementById('md')?.getAttribute('opacity')||0)>.5;
- dynamic.jar.scale.y=Math.max(.01,n('jf')/22);dynamic.jar.position.y=.12+dynamic.jar.scale.y*.42;
- dynamic.mug.scale.y=Math.max(.01,n('mf')/22);dynamic.mug.position.y=.13+dynamic.mug.scale.y*.65;
- const cr=document.getElementById('cr')?.getAttribute('transform')||'';const a=/rotate\(([-\d.]+)/.exec(cr);if(a)dynamic.arm.rotation.y=Number(a[1])*Math.PI/180;
- renderer.render(scene,camera);
- if(!window.__brewArtReady){window.__brewArtReady=true;document.querySelectorAll("#tools>g").forEach(g=>g.classList.add("art-ready"));}
- requestAnimationFrame(update);
+const modelHeights={paper:0,bag:0,cup:0,scale:0,server:0,dripper:0,filter:0,kettle:0,waste:0,grinder:0,mug:0};
+let artReady=false,lastW=0,lastH=0;
+const num=id=>parseFloat(document.getElementById(id)?.getAttribute('height')||0);
+function tick(){
+const v=svg.viewBox.baseVal,rect=svg.getBoundingClientRect(),w=host.clientWidth,h=host.clientHeight;
+if(w!==lastW||h!==lastH){lastW=w;lastH=h;renderer.setSize(w,h,false)}
+const ratio=Math.min(w/v.width,h/v.height),dw=v.width*ratio,dh=v.height*ratio;canvas.style.left=(w-dw)/2+'px';canvas.style.top=(h-dh)/2+'px';canvas.style.width=dw+'px';canvas.style.height=dh+'px';renderer.setSize(Math.max(1,Math.round(dw)),Math.max(1,Math.round(dh)),false);
+camera.left=v.x;camera.right=v.x+v.width;camera.top=-v.y;camera.bottom=-(v.y+v.height);camera.updateProjectionMatrix();
+for(const [id,g] of Object.entries(models)){const node=document.getElementById(id);if(!node)continue;const tr=node.transform.baseVal.consolidate()?.matrix;if(!tr)continue;g.position.set(tr.e,-tr.f,25);g.rotation.set(0,0,-Math.atan2(tr.b,tr.a));g.scale.setScalar(sizes[id]);g.visible=node.style.display!=='none'&&getComputedStyle(node).display!=='none'}
+// Water, powder, paper and crank are read from Claude's existing live SVG state.
+const setFill=(o,h,max,base,range)=>{const f=Math.max(.005,Math.min(1,h/max));o.scale.y=f;o.position.y=base+range*f*.5;o.visible=h>.01};
+setFill(dyn.cup,num('cf'),22,.08,.55);setFill(dyn.server,num('sf'),34,.07,.85);setFill(dyn.jar,num('jf'),22,.07,.55);setFill(dyn.mug,num('mf'),22,.08,.8);
+dyn.server.material.color.set(document.getElementById('sf')?.getAttribute('fill')||'#9dc7d2');
+dyn.filter.visible=Number(document.getElementById('fp')?.getAttribute('opacity')||0)>.5;
+dyn.bed.visible=Number(document.getElementById('bd')?.getAttribute('opacity')||0)>.5||Number(document.getElementById('md')?.getAttribute('opacity')||0)>.5;
+const bubble=Number(document.getElementById('bb')?.getAttribute('opacity')||0)>.5;dyn.bubbles.forEach(o=>o.visible=bubble);
+dyn.waste.visible=Number(document.getElementById('wl')?.getAttribute('opacity')||0)>.5;
+const hf=num('hf');dyn.hopper.scale.y=Math.max(.01,hf/15);dyn.hopper.visible=hf>.1;
+const cr=document.getElementById('cr')?.getAttribute('transform')||'';const m=/rotate\(([-\d.]+)/.exec(cr);if(m)dyn.arm.rotation.y=Number(m[1])*Math.PI/180;
+renderer.render(scene,camera);
+if(!artReady){artReady=true;document.querySelectorAll('#tools>g').forEach(n=>n.classList.add('art-ready'))}
+requestAnimationFrame(tick)
 }
-requestAnimationFrame(update);
+canvas.addEventListener('webglcontextlost',()=>{document.querySelectorAll('#tools>g').forEach(n=>n.classList.remove('art-ready'));canvas.style.display='none'});
+requestAnimationFrame(tick)
+}catch(err){console.error('3D init failed, SVG fallback remains',err);document.querySelectorAll('#tools>g').forEach(n=>n.classList.remove('art-ready'));canvas.style.display='none'}}
 </script>
 </body></html>
