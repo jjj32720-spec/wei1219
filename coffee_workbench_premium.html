@@ -199,7 +199,7 @@ box(.25,8,10,plaster,room,-7.35,3.55,0);
 box(.25,8,10,plaster,room,7.35,3.55,0);
 box(14.6,.17,.32,trim,room,0,1.55,-4.47);
 box(14.6,.15,.35,trim,room,0,3.1,-4.46);
-for(let i=0;i<5;i++){const mug=grp(-4.3+i*1.25,1.7,-4.23,room);cyl(.28,.24,.52,i%2?mat.ceramic:mat.sage,mug,0,.26,0);ring(.19,.047,i%2?mat.ceramic:mat.sage,mug,.33,.29,0).rotation.y=Math.PI/2}
+for(let i=0;i<5;i++){const mug=grp(-4.3+i*1.25,1.7,-4.23,room);cyl(.28,.24,.52,i%2?mat.ceramic:mat.sage,mug,0,.26,0);ring(.19,.047,i%2?mat.ceramic:mat.sage,mug,.33,.29,0).rotation.y=0}
 const framed=box(2.1,1.4,.10,trim,room,3.1,4.15,-4.47);box(1.84,1.13,.13,mat.paper,room,3.1,4.15,-4.36);
 const ambient=new T.PointLight('#f4c891',16,14,2);ambient.position.set(-2.5,6.0,1.5);scene.add(ambient);
 const countertop=box(14.6,.28,8.4,mat.walnut,room,0,-.18,.25);
@@ -232,7 +232,7 @@ const server=grp(0,.2,.4,station);const glassWall=lathe([[0,.03],[.43,.03],[.67,
 // Glass carafe handle: an upright C-shaped loop with two physical attachment points.
 tube([[.59,1.02,0],[.83,1.07,0],[1.02,.99,0],[1.10,.79,0],[1.02,.57,0],[.82,.50,0],[.65,.56,0]],.067,mat.glass,server);tube([[.25,1.33,0],[.1,1.41,0],[-.12,1.41,0]],.035,mat.glass,server);const serverLiquid=cyl(.54,.54,.01,mat.water,server,0,.14,0);const coffeeLiquid=cyl(.53,.53,.01,mat.coffee,server,0,.14,0);coffeeLiquid.visible=false;function setServerWater(v){const h=clamp(v,0,.52);serverLiquid.visible=h>.008;serverLiquid.scale.y=h/.01;serverLiquid.position.y=.10+h/2}function setCoffeeVolume(v){const h=clamp(v,0,.50);coffeeLiquid.visible=h>.01;coffeeLiquid.scale.y=h/.01;coffeeLiquid.position.y=.11+h/2}
 // Dripper is concentric open ceramic cone (lathe inner + outer walls).
-const dripper=grp(0,1.70,.4,station);const coneProfile=[[.18,-.32],[.22,-.25],[.71,.48],[.79,.59],[.76,.63],[.70,.59],[.19,-.19]];lathe(coneProfile,mat.sage,dripper);ring(.75,.05,mat.sageDeep,dripper,0,.60,0);cyl(.34,.34,.075,mat.sageDeep,dripper,0,-.34,0);for(let i=0;i<24;i++){const a=i/24*Math.PI*2;const rib=box(.032,.62,.026,mat.sageDeep,dripper,Math.sin(a)*.42,.09,Math.cos(a)*.42);rib.rotation.y=a;rib.rotation.z=Math.sin(a)*.18}
+const dripper=grp(0,1.70,.4,station);const coneProfile=[[.18,-.32],[.22,-.25],[.71,.48],[.79,.59],[.76,.63],[.70,.59],[.19,-.19]];lathe(coneProfile,mat.sage,dripper);ring(.75,.05,mat.sageDeep,dripper,0,.60,0);cyl(.34,.34,.075,mat.sageDeep,dripper,0,-.34,0);/* Removed the 24 exposed vertical sticks: the real ceramic cone has a continuous wall. */
 // Real ceramic saucer is a solid, glazed part of the dripper (not a floating ring).
 const dripperSaucer=cyl(.69,.69,.075,mat.sage,dripper,0,-.39,0);
 const saucerLip=ring(.675,.027,mat.sageDeep,dripper,0,-.342,0);
@@ -276,9 +276,9 @@ let camTween=null;
 const views={
  hub:{pos:[.1,6.5,12.2],aim:[0,1.05,.15]},
  recipe:{pos:[-3.8,5.85,1.25],aim:[-3.8,.12,-1.3]},
- weigh:{pos:[-.10,3.35,8.8],aim:[-.35,.78,.10]},
+ weigh:{pos:[-.10,2.90,6.35],aim:[-.35,.78,.10]},
  grind:{pos:[.25,2.35,5.95],aim:[-.85,1.13,.10]},
- station:{pos:[.05,4.25,9.2],aim:[0,1.05,.35]},
+ station:{pos:[.10,5.25,14.6],aim:[0,1.05,.35]},
  bloom:{pos:[.05,6.1,.42],aim:[0,1.68,.4]},
  spiral:{pos:[.05,6.1,.42],aim:[0,1.68,.4]},
  groundsClose:{pos:[1.25,4.65,4.4],aim:[0,1.87,.4]},
@@ -416,7 +416,7 @@ async function startMotion(){if(motionActive||idx!==5)return;try{
  motionListener=(event)=>{if(stage!==4||idx!==5){stopMotion();return}const a=event.accelerationIncludingGravity||event.acceleration;if(!a)return;motionEvents++;const x=Number(a.x)||0;const sign=Math.sign(x);const now=performance.now();if(Math.abs(x)>3.0&&sign&&sign!==motionSign&&now-motionLast>300){motionSign=sign;motionLast=now;applyShake()}};
  window.addEventListener('devicemotion',motionListener,{passive:true});showToast('已啟用感測，請輕輕左右晃動手機');
  }catch(e){stopMotion();showToast('無法使用感測器，請左右拖曳濾杯整平')}}
-const change=()=>{stState.idx=idx;document.body.classList.toggle('brew-close',idx===5);targetHalo.visible=false;if(targetHalo.visible){const xz=[[0,.4],[0,.4],[3.05,-2.40],[0,.4],[0,.4]][idx];targetHalo.position.set(xz[0],idx===0?1.96:idx===1?2.05:idx===2?.41:idx===3?.18:1.96,xz[1]);} UI.pt.textContent=stationLabels[Math.min(idx,6)][0];UI.desc.textContent='第 '+(idx+1)+'/7 步｜'+stationLabels[Math.min(idx,6)][1]+' · '+['點選或拖曳桌面左側濾紙至綠色濾杯。','按住手沖壺，向濾杯倒水預濕。','拿起分享壺，傾斜倒掉廢水。','把分享壺放回電子秤。','將裝粉杯移到濾杯上方倒粉。','左右拖曳濾杯或搖晃手機整平。','點擊電子秤歸零。'][Math.min(idx,6)];$('#prepStep').textContent=String(idx+1).padStart(2,'0')+' / 07';UI.actions.innerHTML='';if(idx===5){act('啟用手機搖晃感測',startMotion);act('改用左右拖曳',()=>showToast('按住濾杯，左右來回拖曳即可整平'),true)} if(idx===6){act('電子秤歸零',()=>onTare(),true)}
+const change=()=>{stState.idx=idx;document.body.classList.toggle('brew-close',idx===5);targetHalo.visible=idx<5;if(targetHalo.visible){const xz=[[0,.4],[0,.4],[3.05,-2.40],[0,.4],[0,.4]][idx];targetHalo.position.set(xz[0],idx===0?1.96:idx===1?2.05:idx===2?.41:idx===3?.18:1.96,xz[1]);} UI.pt.textContent=stationLabels[Math.min(idx,6)][0];UI.desc.textContent='第 '+(idx+1)+'/7 步｜'+stationLabels[Math.min(idx,6)][1]+' · '+['點選或拖曳桌面左側濾紙至綠色濾杯。','按住手沖壺，向濾杯倒水預濕。','拿起分享壺，傾斜倒掉廢水。','把分享壺放回電子秤。','將裝粉杯移到濾杯上方倒粉。','左右拖曳濾杯或搖晃手機整平。','點擊電子秤歸零。'][Math.min(idx,6)];$('#prepStep').textContent=String(idx+1).padStart(2,'0')+' / 07';UI.actions.innerHTML='';if(idx===5){act('啟用手機搖晃感測',startMotion);act('改用左右拖曳',()=>showToast('按住濾杯，左右來回拖曳即可整平'),true)} if(idx===6){act('電子秤歸零',()=>onTare(),true)}
 // PLAYTEST ACCESSIBILITY: a manual fallback is offered if 3D touch/drag is blocked on mobile.
 // It still runs the same stage animations and logs the assist for difficulty calibration.
 if(idx<6 && document.querySelector('#ptPanel')?.classList.contains('open')){act('🧪 操作輔助：完成目前步驟',()=>{
@@ -465,7 +465,7 @@ function pickExpected(ev,tool){
 function generousCarafeHit(ev){if(!server.visible)return false;const v=server.localToWorld(new T.Vector3(0,.77,0)).project(camera);const x=sx3(v),y=sy3(v);return Math.hypot(ev.clientX-x,ev.clientY-y)<Math.max(52,Math.min(innerWidth,innerHeight)*.12)}
 function dropPosition(tool,targetPt,valid){const g=currentObj(tool);if(!g)return;}
 async function handleSuccess(tool){if(stage!==4)return;busy=true;drag=null;
-if(idx===0){await tween(filterLoose,'position',[0,1.85,.4],500);filterLoose.visible=false;paperInside.visible=true;cue('FILTER SET');}
+if(idx===0){filterLoose.traverse(o=>{if(o.isMesh){o.renderOrder=900;o.material=o.material.clone();o.material.depthTest=false;o.material.depthWrite=false;}});await tween(filterLoose,'position',[0,2.43,.4],420);await tween(filterLoose,'position',[0,1.85,.4],280);filterLoose.visible=false;paperInside.visible=true;cue('FILTER SET');}
 else if(idx===1){await tween(kettle,'position',[1.35,1.65,.35],550);kettleTilt.rotation.z=-.27;pouring=true;let start=performance.now();while(performance.now()-start<1750){const p=(performance.now()-start)/1750;setServerWater(.41*clamp(p,0,1));scaleText((85*p).toFixed(1)+' g');$('#prepWeight').textContent=(85*p).toFixed(1)+' g';await sleep(35)}pouring=false;streamGroup.visible=false;wetPaper=true;paperInside.material=wetPaperMat;await tween(kettle,'position',[3.35,.14,1.70],650);kettleTilt.rotation.z=0;cue('PRE-WET COMPLETE');}
 else if(idx===2){/* Move dripper to a resting position before the carafe is poured. */await tween(dripper,'position',[-1.65,.55,-2.40],600);server.position.set(1.35,.23,-2.40);server.rotation.z=0;serverPouring=true;await sleep(150);
 // tilt carafe from its handle, with a stream originating precisely at the open rim.
@@ -474,7 +474,7 @@ else if(idx===3){server.rotation.z=0;await tween(server,'position',[0,.20,.4],62
 else if(idx===4){await tween(doseCup,'position',[-.35,2.0,.42],450);cameraTo('groundsClose',1100);groundPouring=true;let start=performance.now();while(performance.now()-start<1700){const p=clamp((performance.now()-start)/1700,0,1);doseCup.rotation.z=-.98*Math.sin(Math.min(1,p*1.7)*Math.PI/2);setDoseFill(1-p);groundsShape.visible=true;groundsShape.scale.y=.16+p*.84;groundsShape.position.y=-.055+(groundsShape.scale.y*.13)/2;groundPts.forEach((g,i)=>g.visible=i<Math.floor(p*groundPts.length));const w=14*p;scaleText(w.toFixed(1)+' g');$('#prepWeight').textContent=w.toFixed(1)+' g';await sleep(30)}groundPouring=false;doseCup.rotation.z=0;await tween(doseCup,'position',[-2.10,.11,-1.10],500);scaleText('14.0 g');$('#prepWeight').textContent='14.0 g';cue('14.0 G ADDED');}
 else if(idx===5){stopMotion();await tween(dripper,'rotation',[0,0,0],350);cameraTo('tareClose',950);cue('COFFEE BED LEVEL');}
 busy=false;await advance()}
-function down(e){if(busy||idx>=7)return;const expected=stepsTools[idx];const picked=(pickExpected(e,expected)||(expected==='server'&&generousCarafeHit(e)))?expected:null;if(idx===6){if(picked==='scale'||isHitObject(e,scaleButton))onTare();return}if(!canDrag(picked)){showToast('請碰觸目前步驟的器具，並拖曳到指定位置');return}const g=currentObj(picked),p=planeHit(e,g.position.y);if(!p)return;drag={tool:picked,group:g,start:g.position.clone(),offset:g.position.clone().sub(p),moved:false};try{renderer.domElement.setPointerCapture(e.pointerId)}catch(_e){};lastX=e.clientX;showToast('已拿起器具，拖到發光的目標位置再放開')}
+function down(e){if(busy||idx>=7)return;const expected=stepsTools[idx];const picked=(pickExpected(e,expected)||(expected==='server'&&generousCarafeHit(e)))?expected:null;if(idx===6){if(picked==='scale'||isHitObject(e,scaleButton))onTare();return}if(!canDrag(picked)){showToast('請碰觸目前步驟的器具，並拖曳到指定位置');return}const g=currentObj(picked),p=planeHit(e,g.position.y);if(!p)return;drag={tool:picked,group:g,start:g.position.clone(),offset:g.position.clone().sub(p),moved:false};if(picked==='filter')g.traverse(o=>{if(o.isMesh){o.renderOrder=900;o.material=o.material.clone();o.material.depthTest=false;o.material.depthWrite=false;}});try{renderer.domElement.setPointerCapture(e.pointerId)}catch(_e){};lastX=e.clientX;showToast('已拿起器具，拖到發光的目標位置再放開')}
 function move(e){if(!drag||busy)return;const h=planeHit(e,drag.group.position.y);if(!h)return;const pos=h.add(drag.offset);drag.group.position.x=pos.x;drag.group.position.z=pos.z;drag.moved=true;if(idx===5){const dx=e.clientX-lastX;const sign=Math.sign(dx);if(Math.abs(dx)>7&&sign&&sign!==lastSign){if(lastSign)wiggle++;lastSign=sign}lastX=e.clientX;drag.group.position.x=clamp(pos.x,-.22,.22);dripper.rotation.z=clamp(dx*.007,-.14,.14);if(wiggle>=5){const g=drag.group;drag=null;g.position.copy(new T.Vector3(0,1.70,.4));handleSuccess('dripper')}}}
 function up(e){if(!drag||busy)return;const d=drag;drag=null;if(idx===5){d.group.position.set(0,1.70,.4);if(wiggle>=5)handleSuccess('dripper');else showToast('再輕晃幾次，讓粉床整平');return}let dest=targets[idx];const dist=Math.hypot(d.group.position.x-dest.x,d.group.position.z-dest.z);const ok=visibleTargetHit(e,idx)||dist<(idx===2?1.35:1.25);if(ok){handleSuccess(d.tool)}else{const src=d.start;d.group.position.copy(src);showToast('將器具移到正確的位置')}}
 canvasHandlers(down,move,up);const unbind=cleanupStage;const orig = ()=>{stopMotion();document.body.classList.remove('brew-close');unbind();streamGroup.visible=false};cleanupStage=orig;change();
@@ -551,7 +551,7 @@ function adaptViews(){
  if(aspect<.75){
    views.hub.pos=[.15,7.4,14.3];views.hub.aim=[0,.85,.05];
    views.recipe.pos=[-3.8,6.6,1.9];views.recipe.aim=[-3.8,.12,-1.3];
-   views.station.pos=[.05,3.18,7.15];views.station.aim=[0,1.33,.35];views.weigh.pos=[-.10,3.35,8.8];views.weigh.aim=[-.35,.78,.10];views.grind.pos=[-.35,2.45,4.5];views.grind.aim=[-.85,1.02,.10];views.final.pos=[.3,3.1,8.15];views.final.aim=[.35,1.08,.70];
+   views.station.pos=[.10,5.25,14.6];views.station.aim=[0,1.05,-.20];views.weigh.pos=[-.10,2.90,6.35];views.weigh.aim=[-.35,.85,.10];views.grind.pos=[-.35,2.45,4.5];views.grind.aim=[-.85,1.02,.10];views.final.pos=[.3,3.1,8.15];views.final.aim=[.35,1.08,.70];
    views.bloom.pos=[.03,7.1,.42];views.spiral.pos=[.03,7.1,.42];
  }else{views.hub.pos=[.1,6.5,12.2];views.recipe.pos=[-3.8,5.85,1.25];views.station.pos=[.1,3.15,5.9]}
 }
