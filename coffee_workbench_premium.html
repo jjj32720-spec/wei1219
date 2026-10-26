@@ -149,6 +149,25 @@ body.hub-mode #sceneViewport{height:calc(100% - 205px)!important}
 body.hub-mode #hubTools{display:none!important}body.hub-mode #hubBar{padding:14px 22px calc(18px + env(safe-area-inset-bottom,0px))!important;pointer-events:none;background:linear-gradient(transparent,#201d25 22%)!important}body.hub-mode #hubTitle{font-size:19px!important}body.hub-mode #hubHint{font:13px/1.8 Georgia,'Noto Serif TC',serif!important;white-space:pre-line!important;color:#e8d9c3!important;margin:8px auto 4px!important;max-width:330px!important}body.hub-mode #sceneViewport{height:calc(100% - 170px)!important}body.hub-mode #oneTimeline{opacity:0!important}
 #storyOverlay{position:fixed;inset:0;z-index:1050;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(12,15,20,.76);backdrop-filter:blur(7px)}#storyOverlay.visible{display:flex}#storyCard{width:min(350px,95vw);padding:22px 20px;border:1px solid #b99c71;border-radius:19px;background:linear-gradient(145deg,#30283b,#201d29);color:#f4eadc;box-shadow:0 20px 65px #0008}#storyKicker{font:700 11px system-ui;letter-spacing:.18em;color:#d7bb83}#storyTitle{font:24px Georgia,serif;margin:8px 0 12px}#storyText{font:13px/1.8 system-ui;white-space:pre-line;color:#e5d8c9;margin:0 0 17px}#storyNext{width:100%;border:0;border-radius:12px;background:#dec9a1;color:#24342b;padding:13px;font-weight:700}
 #callout.stopAlert{font-size:15px!important;max-width:94vw;white-space:normal;text-align:center}
+</style><style id="v29VisualAndMobileFix">
+/* Keep the game viewport and action buttons within the iPhone screen. */
+body.stage-recipe #panel{padding:7px 10px!important;max-height:min(45dvh,335px)!important;overflow-y:auto!important}
+body.stage-recipe #panelTitle{font-size:14px!important;margin:1px 0!important}
+body.stage-recipe #panel .eyebrow{font-size:9px!important}
+body.stage-recipe .slots{margin:3px 0!important;gap:6px!important}
+body.stage-recipe .slot{height:26px!important;font-size:19px!important}
+body.stage-recipe .keypad{gap:4px!important;margin-top:4px!important}
+body.stage-recipe .key{min-height:30px!important;padding:2px!important;font-size:15px!important}
+body.stage-recipe #panelActions{margin-top:5px!important}
+body.stage-recipe #panelActions button{min-height:35px!important;padding:5px!important}
+body.stage-recipe #panelExtra{margin-top:2px!important}
+body.stage-recipe #historyDetails{margin-top:0!important}
+body.stage-weigh #panel{padding:9px 11px!important;max-height:min(30dvh,220px)!important}
+body.stage-weigh .statRow{margin-top:3px!important}
+body.stage-weigh #panelActions{margin-top:5px!important}
+body.stage-weigh #panelActions button{min-height:40px!important}
+body.stage-recipe #sceneViewport,body.stage-weigh #sceneViewport{height:calc(100% - 315px)!important}
+@media(max-height:740px){body.stage-recipe #sceneViewport,body.stage-weigh #sceneViewport{height:calc(100% - 290px)!important}body.stage-recipe #panel{max-height:43dvh!important}}
 </style></head><body><button id="ptToggle" type="button">🧪 測試紀錄</button><aside id="ptPanel"><b>DAILY BREW · 原版 3D 場景 × 連續轉場測試</b><div class="sub">預設不限時，先確認鏡頭、引導與操作；正式目標仍是 05:00。</div><label><input type="checkbox" id="ptStrict"> 嚴格 5 分鐘（時間到直接結算）</label><div id="ptSummary">尚未開始</div><details><summary>目前暫定過關標準（待實測修訂）</summary><div class="sub">配方：4A 正確；提示可用但扣分。秤豆：目標14g，±0.5g優秀，±1g可接受；測試版不中斷。磨豆：完整磨完；測試版超時記錄後可繼續。工作檯：七步順序正確。悶蒸：38–42g且兩次STOP成功。螺旋：相似度至少72%，總注水227g。倒杯：完整倒入空杯。這些是起始假設，尚非正式淘汰標準。</div></details><table><thead><tr><th>關卡</th><th>時間</th><th>分數</th><th>狀態</th></tr></thead><tbody id="ptRows"></tbody></table><div><button id="ptExport">下載測試紀錄 JSON</button><button id="ptCopy">複製測試摘要</button><button id="ptReset">重置測試＋第一關</button></div><div class="smallprint">記錄儲存在本機瀏覽器。完成後請下載 JSON 或複製摘要貼回聊天，我才能依實測結果調整標準。測試模式可以逐關重試，不會因 5 分鐘到期中斷。</div></aside><div id="storyOverlay" role="dialog" aria-modal="true" aria-labelledby="storyTitle"><div id="storyCard"><div id="storyKicker">DAILY BREW · STAGE CLEAR</div><h2 id="storyTitle"></h2><p id="storyText"></p><button id="storyNext" type="button">繼續 →</button></div></div><div id="rulesOverlay" role="dialog" aria-modal="true" aria-labelledby="rulesTitle"><div id="rulesCard"><div id="rulesKicker">DAILY BREW · HOW TO PLAY</div><h2 id="rulesTitle"></h2><p id="rulesDesc"></p><ol id="rulesSteps"></ol><div id="rulesGoal"></div><button id="rulesGo" type="button">了解，開始挑戰 →</button><div id="rulesPause">閱讀規則期間暫停總計時；按下按鈕才開始記錄本關時間。</div></div></div><div id="load">DAILY BREW · LOADING</div><main id="brewShell"><div id="brewCard"><div id="sceneViewport"><canvas id="world"></canvas><div id="shade"></div></div><div id="cameraFade"></div><div id="hud"><div id="top"><div><div id="logo">PLAYER ONE / DAILY RITUAL</div><div id="stageName">神秘配方</div><div id="stageEn">SECRET RECIPE</div></div><div id="count">01 <span>/ 07</span></div><div id="oneClock" aria-live="off">05:00</div></div><div id="progress"><div id="progressFill"></div></div><div id="oneTimeline">①配方秤豆　②磨豆　③備料　④悶蒸　⑤螺旋　⑥倒杯</div><div id="sceneNote"></div><button id="returnHub" type="button">← 返回工作室</button><div id="callout"></div><div id="flowPanel"><label>FLOW</label><input id="flowSlider" type="range" min="0" max="100" value="0" orient="vertical" aria-label="水壺流速"><div class="small">0—100</div></div><div id="toast"></div><div id="bottom"><div id="panel"><div class="eyebrow" id="panelEyebrow">RECIPE</div><div id="panelTitle">還原今天的配方</div><div id="panelDesc"></div><div id="panelExtra"></div><div id="panelActions"></div></div></div></div><div id="hubBar"><div id="hubTitle">THE COFFEE ROOM</div><div id="hubHint">環顧桌上的器具，點選正確的物品，完成一杯手沖咖啡。</div><div id="hubTools"></div></div><div id="finalCard"><div id="finalInner"><div id="logo">DAILY BREW / BREW COMPLETE</div><h2 style="font:30px Georgia,serif;font-weight:400">再趕，也要喝杯好的。</h2><div id="finalScore">—</div><div id="runResult"></div><div style="color:#c9c5b3;font-size:12px;letter-spacing:.2em;margin-bottom:18px">YOUR BREW SCORE / 100</div><div id="finalList"></div><button id="replay" style="width:100%;margin-top:25px;padding:14px;background:#dec9a1;border:0;border-radius:14px;color:#24342b;font-weight:700">再沖一杯</button></div></div><div id="oneIntro"><div class="inner"><div style="letter-spacing:.24em;color:#e0cba3;font-size:11px">DAILY BREW · THE COFFEE ROOM</div><h2>再五分鐘就好。</h2><p>早晨的陽光照進房間。<br>書包還沒整理好，手機已經跳出好幾則訊息。<br>明明快遲到了，你卻還站在咖啡桌前。<br><br>畢竟，出門可以趕。咖啡，不能隨便。</p><button id="oneStart">進入咖啡工作室 →</button></div></div><div id="error"></div><script type="module">// DAILY BREW / Seven-stage procedural 3D game. One camera; one persistent tabletop.
 (async()=>{
 'use strict';
@@ -205,7 +224,14 @@ box(.25,8,10,plaster,room,7.35,3.55,0);
 box(14.6,.17,.32,trim,room,0,1.55,-4.47);
 box(14.6,.15,.35,trim,room,0,3.1,-4.46);
 for(let i=0;i<5;i++){const mug=grp(-4.3+i*1.25,1.7,-4.23,room);const glaze=i%2?mat.ceramic:mat.sage;cyl(.28,.24,.52,glaze,mug,0,.26,0);/* A real upright C-handle: upper/lower joints meet the cup wall. */tube([[.255,.43,0],[.36,.45,0],[.46,.40,0],[.49,.29,0],[.46,.18,0],[.36,.12,0],[.255,.15,0]],.047,glaze,mug)}
-const framed=box(2.1,1.4,.10,trim,room,3.1,4.15,-4.47);box(1.84,1.13,.13,mat.paper,room,3.1,4.15,-4.36);
+// A real wall clock replaces the empty frame; its hands are fixed at 09:25.
+const wallClock=grp(3.1,4.15,-4.32,room);
+const clockRim=cyl(.76,.76,.105,M('#6a5235',.42,.40),wallClock,0,0,-.04);clockRim.rotation.x=Math.PI/2;
+const clockFace=cyl(.685,.685,.012,M('#e8e0ca',.83),wallClock,0,0,.035);clockFace.rotation.x=Math.PI/2;
+const clockInk=M('#4a4538',.84);
+for(let i=0;i<12;i++){const a=i*Math.PI/6;const marker=box(i%3===0?.043:.025,i%3===0?.14:.075,.012,clockInk,wallClock,Math.sin(a)*.565,Math.cos(a)*.565,.052);marker.rotation.z=-a;}
+function clockHand(length,width,angle,z){const hand=box(width,length,.017,clockInk,wallClock,Math.sin(angle)*length*.43,Math.cos(angle)*length*.43,z);hand.rotation.z=-angle;return hand;}
+clockHand(.37,.062,(9+25/60)*Math.PI/6,.080);clockHand(.53,.034,25*Math.PI/30,.097);sphere(.048,clockInk,wallClock,0,0,.12);
 const ambient=new T.PointLight('#f4c891',16,14,2);ambient.position.set(-2.5,6.0,1.5);scene.add(ambient);
 const countertop=box(14.6,.28,8.4,mat.walnut,room,0,-.18,.25);
 
@@ -269,7 +295,7 @@ box(tinW-.065,tinH-.035,.07,tinGreen,storageTin,0,tinH/2+.06,-tinD/2+.040);
 for(const sign of [-1,1])box(.025,.022,tinD,tinGold,storageTin,sign*(tinW/2-.022),tinH+.09,0);
 // Hinged lid: a shallow gold metal tray, held upright behind the open box.
 const tinLid=grp(0,tinH+.09,-tinD/2-.035,storageTin);
-tinLid.rotation.x=-1.48;
+tinLid.rotation.x=0;tinLid.position.set(0,tinH+.12,tinD/2-.035);
 box(tinW+.09,.052,tinD+.08,tinGold,tinLid,0,.018,-(tinD+.08)/2+.035);
 box(tinW-.06,.012,tinD-.05,M('#d7b981',.3,.50),tinLid,0,.050,-(tinD+.08)/2+.035);
 for(const sign of [-1,1])box(.038,.085,tinD+.08,tinGold,tinLid,sign*(tinW/2+.025),.024,-(tinD+.08)/2+.035);
@@ -283,8 +309,9 @@ ta.fillStyle='#f1e4c5';ta.font='bold 24px Georgia';ta.textAlign='left';ta.fillTe
 const tinTex=new T.CanvasTexture(tinArt);tinTex.colorSpace=T.SRGBColorSpace;
 const tinDecal=obj(new T.PlaneGeometry(tinW-.14,tinH-.16),new T.MeshBasicMaterial({map:tinTex,transparent:true,depthWrite:false,side:T.DoubleSide}),storageTin,0,.46,tinD/2+.040);
 // Rolled filter papers and a small utensil are visible inside the opened tin.
-for(let i=0;i<3;i++){const f=cyl(.105,.105,.36,mat.paper,storageTin,-.40+i*.24,.30,-.10);f.rotation.z=Math.PI/2;}
-const storedSpoon=box(.42,.018,.045,mat.steelLight,storageTin,.30,.18,.16);storedSpoon.rotation.y=.27;
+// Contents remain hidden under the closed lid.
+for(let i=0;i<3;i++){const f=cyl(.105,.105,.36,mat.paper,storageTin,-.40+i*.24,.30,-.10);f.rotation.z=Math.PI/2;f.visible=false;}
+const storedSpoon=box(.42,.018,.045,mat.steelLight,storageTin,.30,.18,.16);storedSpoon.rotation.y=.27;storedSpoon.visible=false;
 // Paper filter packet, individual cone-shaped paper prop.
 const filterLoose=grp(-2.05,.12,1.58,station);lathe([[.04,0],[.56,.09],[.53,.11],[.05,.015]],mat.paper,filterLoose);ring(.52,.014,mat.paper,filterLoose,0,.105,0);
 const waste=grp(2.35,.07,-1.48,station);lathe([[0,0],[.47,.02],[.58,.16],[.60,.31],[.55,.34],[.45,.26]],mat.ceramic,waste);const wasteWater=cyl(.40,.4,.01,mat.water,waste,0,.19,0);wasteWater.visible=false;
@@ -322,7 +349,7 @@ function setFall(p,q,rate,t,isBean=false){const arr=isBean?beanFall:flying,amoun
 // camera tween uses real world position and LookAt target; no CSS fake tilt.
 let camTween=null;
 const views={
- hub:{pos:[.1,3.45,13.7],aim:[0,1.55,-.55]},
+ hub:{pos:[.1,2.9,11.7],aim:[0,1.80,-.55]},
  recipe:{pos:[-3.8,5.85,1.25],aim:[-3.8,.12,-1.3]},
  weigh:{pos:[-.10,2.90,6.35],aim:[-.35,.78,.10]},
  grind:{pos:[.25,2.35,5.95],aim:[-.85,1.13,.10]},
@@ -339,7 +366,7 @@ function resetScene(){storageTin.visible=false;stageAssets.visible=true;station.
 let stage=1,cleanupStage=()=>{},scores={recipe:0,weigh:0,grind:0,station:0,bloom:0,spiral:0},busy=false,anim=[],stState=null,runTime=0;
 function tween(obj,prop,to,dur=700,fn){return new Promise(resolve=>{const from=obj[prop].clone();const toV=new T.Vector3(...to);const a={from,to:toV,prop,obj,dur,start:performance.now(),resolve,fn,rotation:prop==='rotation'};anim.push(a)})}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}function ease(t){return 1-Math.pow(1-t,3)}
-function stepHeader(n){storageTin.visible=false;targetHalo.visible=false;stage=n;$('#panel').classList.toggle('recipeLayout',n===1);UI.title.textContent=titles[n-1][1];UI.en.textContent=titles[n-1][0];const macro=[1,1,2,3,4,5,6][n-1];UI.count.innerHTML=String(macro).padStart(2,'0')+' <span>/ 06</span>';UI.p.style.width=(macro/6*100)+'%';UI.note.textContent='';UI.flow.style.display='none';UI.extra.innerHTML='';UI.actions.innerHTML='';UI.desc.textContent='';UI.callout.classList.remove('show');cleanupStage();cleanupStage=()=>{};busy=false}
+function stepHeader(n){document.body.classList.toggle('stage-recipe',n===1);document.body.classList.toggle('stage-weigh',n===2);storageTin.visible=false;targetHalo.visible=false;stage=n;$('#panel').classList.toggle('recipeLayout',n===1);UI.title.textContent=titles[n-1][1];UI.en.textContent=titles[n-1][0];const macro=[1,1,2,3,4,5,6][n-1];UI.count.innerHTML=String(macro).padStart(2,'0')+' <span>/ 06</span>';UI.p.style.width=(macro/6*100)+'%';UI.note.textContent='';UI.flow.style.display='none';UI.extra.innerHTML='';UI.actions.innerHTML='';UI.desc.textContent='';UI.callout.classList.remove('show');cleanupStage();cleanupStage=()=>{};busy=false}
 function panel(eye,title,desc){UI.eye.textContent=eye;UI.pt.textContent=title;UI.desc.textContent=desc}
 function act(name,cb,secondary=false){const b=document.createElement('button');b.textContent=name;b.className=secondary?'secondary':'';b.onclick=cb;UI.actions.append(b);return b}
 // Single-run progression is event-driven, never inferred from UI button labels.
@@ -382,7 +409,7 @@ document.querySelector('#rulesGo').onclick=()=>{if(!rulesPendingStage)return;con
 let hubActive=false,hubUnlocked=1,hubLaunching=false;
 const hubItems=[['📜','配方紙','recipeGroup',1],['🫘','咖啡豆包','bag',2],['⚙️','磨豆機','grinder',3],['🫖','沖煮器具','dripper',4],['💧','悶蒸','kettle',5],['🌀','螺旋注水','server',6],['☕','咖啡杯','finalCup',7]];
 function hubStage(n){if(!oneStarted||oneDone)return;if(n>hubUnlocked){showToast('先完成前面的步驟，找出下一件需要的器具');return}if(n<hubUnlocked){showToast('這個步驟已完成，請尋找下一件器具');return}if(n===1){nextWithCamera(1);return}openStageRules(n)}
-function showHub(){if(oneDone)return;storageTin.position.set(3.25,1.65,-4.20);storageTin.visible=true;if(ptActive)ptCloseStage('返回工作室');hubActive=true;phaseToken++;try{cleanupStage()}catch(e){}cleanupStage=()=>{};anim.length=0;busy=false;document.body.classList.add('hub-mode');document.body.classList.remove('challenge-mode','station-compact','brew-close');UI.flow.style.display='none';UI.callout.classList.remove('show');UI.title.textContent='再五分鐘就好。';UI.en.textContent='THE COFFEE ROOM / EXPLORE';const macro=[1,1,2,3,4,5,6][Math.min(hubUnlocked,7)-1];UI.count.innerHTML=String(macro).padStart(2,'0')+' <span>/ 06</span>';UI.p.style.width=((macro-1)/6*100)+'%';UI.note.textContent='';
+function showHub(){if(oneDone)return;storageTin.position.set(3.25,1.65,-4.20);storageTin.visible=true;if(ptActive)ptCloseStage('返回工作室');hubActive=true;phaseToken++;try{cleanupStage()}catch(e){}cleanupStage=()=>{};anim.length=0;busy=false;document.body.classList.add('hub-mode');document.body.classList.remove('challenge-mode','station-compact','brew-close','stage-recipe','stage-weigh');UI.flow.style.display='none';UI.callout.classList.remove('show');UI.title.textContent='再五分鐘就好。';UI.en.textContent='THE COFFEE ROOM / EXPLORE';const macro=[1,1,2,3,4,5,6][Math.min(hubUnlocked,7)-1];UI.count.innerHTML=String(macro).padStart(2,'0')+' <span>/ 06</span>';UI.p.style.width=((macro-1)/6*100)+'%';UI.note.textContent='';
 // Never recreate the world: simply restore visibility for the exploration view.
 for(const o of [recipeGroup,scale,server,dripper,grinder,kettle,bag,beanCup,filterLoose,doseCup,waste,finalCup])o.visible=true;
 recipeGroup.position.set(-3.8,.07,-1.3);bag.position.set(-2.3,.18,-.7);bagPivot.rotation.z=0;grinder.position.set(-3.6,.11,-2.35);kettle.position.set(3.35,.14,-1.2);server.position.set(0,.2,.4);dripper.position.set(0,1.70,.4);finalCup.position.set(2.25,.12,1.85);filterLoose.position.set(-2.4,.12,1.7);doseCup.position.set(-1.6,.11,-1.6);waste.position.set(3.2,.07,-2.45);
@@ -394,7 +421,7 @@ document.querySelectorAll('[data-hub]').forEach(b=>b.onclick=()=>hubStage(+b.dat
 }
 // Raycast the actual persistent 3D objects, not a fake background image.
 const hubPickTargets=()=>[[recipeGroup,1],[bag,2],[beanCup,2],[grinder,3],[filterLoose,4],[dripper,hubUnlocked>=5?Math.min(hubUnlocked,6):4],[kettle,hubUnlocked>=5?Math.min(hubUnlocked,6):4],[server,hubUnlocked>=7?7:4],[finalCup,7],[scale,hubUnlocked<=2?2:4]];
-renderer.domElement.addEventListener('pointerup',e=>{if(!hubActive||!oneStarted||oneDone)return;ndc(e);const candidates=[];for(const [o,n] of hubPickTargets()){if(!o.visible)continue;const hits=ray.intersectObject(o,true);if(hits.length)candidates.push({distance:hits[0].distance,n})}candidates.sort((a,b)=>a.distance-b.distance);if(!hubLaunching&&candidates.length&&candidates[0].n===1){hubLaunching=true;nextWithCamera(1)}else showToast('請先點擊桌面左側的配方紙，開始第一關');});
+renderer.domElement.addEventListener('pointerup',e=>{if(!hubActive||!oneStarted||oneDone)return;ndc(e);const candidates=[];for(const [o,n] of hubPickTargets()){if(!o.visible)continue;const hits=ray.intersectObject(o,true);if(hits.length)candidates.push({distance:hits[0].distance,n})}candidates.sort((a,b)=>a.distance-b.distance);if(!hubLaunching&&candidates.length&&candidates[0].n===1){hubLaunching=true;nextWithCamera(1)}else showToast('試著點擊桌上物件找到關卡入口');});
 document.querySelector('#returnHub').onclick=()=>{if(oneDone)return;showHub()};
 // Claude-inspired continuous stage progression: never interrupt a completed action with a hub.
 // The original v9 THREE.Scene, objects, shaders, physical effects and camera presets remain untouched.
@@ -455,7 +482,7 @@ function finish(ok){if(finished)return;finished=true;started=false;pointerOn=fal
 canvasHandlers(down,move,()=>{pointerOn=false;angle=null});const unbind=cleanupStage;cleanupStage=()=>{unbind();cancelAnimationFrame(raf)};update()}
 // 04 / Seven-step physically staged preparation. All active props directly 3D draggable.
 const stationLabels=[['把濾紙放進綠色濾杯','拖起濾紙，放入濾杯。'],['用熱水預濕濾紙','拖動右側細口手沖壺至濾杯右上方，讓壺嘴對準濾紙，完成預濕。'],['倒掉分享壺內的預濕水','拖動中央玻璃分享壺至右後方的白色廢水碗，倒掉預濕水。'],['把分享壺放回電子秤','從廢水碗旁拿起玻璃分享壺，拖回中央白色電子秤上。'],['倒入研磨好的咖啡粉','將左側透明咖啡粉杯拖到濾杯左上方，把咖啡粉倒進濾紙。'],['整平濾杯內的咖啡粉','輕輕左右晃動手機，或用手指在咖啡粉表面左右來回滑動，讓粉床平整；濾杯保持固定。'],['按下電子秤歸零鍵','點擊白色電子秤右前方的圓形按鈕，讓電子秤讀數回到 0.0 g。']];
-function stationStage(){stepHeader(4);cameraTo('station',1400);recipeGroup.visible=true;recipeGroup.position.set(-4.75,.095,2.40);recipeGroup.rotation.set(0,0,0);bag.visible=true;bag.position.set(-4.45,.18,.65);bagPivot.rotation.z=0;grinderContent(1);beanCup.visible=false;grinder.visible=true;grinder.position.set(-3.75,.11,-2.9);finalCup.visible=false;/* Spread tools across the worktop to leave independent finger-sized pick zones. */filterLoose.position.set(-1.15,.12,1.60);doseCup.position.set(-2.10,.11,-1.10);kettle.position.set(3.30,.14,1.55);storageTin.visible=true;storageTin.position.set(3.25,1.65,-4.20);waste.position.set(3.05,.07,-2.40);scale.visible=true;server.visible=true;dripper.visible=true;doseCup.visible=true;filterLoose.visible=true;kettle.visible=true;waste.visible=true;scaleText('0.0 g');setServerWater(0);paperInside.visible=false;groundsShape.visible=false;filterLoose.visible=true;server.rotation.set(0,0,0);dripper.rotation.set(0,0,0);wasteWater.visible=false;dripper.position.set(0,1.70,.4);server.position.set(0,.20,.4);
+function stationStage(){stepHeader(4);cameraTo('station',1400);recipeGroup.visible=true;recipeGroup.position.set(-4.75,.095,2.40);recipeGroup.rotation.set(0,0,0);bag.visible=true;bag.position.set(-4.45,.18,.65);bagPivot.rotation.z=0;grinderContent(1);beanCup.visible=false;grinder.visible=true;grinder.position.set(-3.75,.11,-2.9);finalCup.visible=false;/* Spread tools across the worktop to leave independent finger-sized pick zones. */filterLoose.position.set(-3.10,.12,2.65);doseCup.position.set(-2.10,.11,-1.10);kettle.position.set(3.30,.14,1.55);storageTin.visible=true;storageTin.position.set(3.25,1.65,-4.20);waste.position.set(3.05,.07,-2.40);scale.visible=true;server.visible=true;dripper.visible=true;doseCup.visible=true;filterLoose.visible=true;kettle.visible=true;waste.visible=true;scaleText('0.0 g');setServerWater(0);paperInside.visible=false;groundsShape.visible=false;filterLoose.visible=true;server.rotation.set(0,0,0);dripper.rotation.set(0,0,0);wasteWater.visible=false;dripper.position.set(0,1.70,.4);server.position.set(0,.20,.4);
 let idx=0,drag=null,wiggle=0,lastX=null,lastSign=0,lastSignX=0,moving=false,stageToken=Symbol('station');let motionActive=false,motionListener=null,motionLast=0,motionSign=0,motionEvents=0;stState={idx};
 panel('04 / BREW STATION · 01 / 07',stationLabels[0][0],stationLabels[0][1]);stats([['prepStep','01 / 07','操作進度'],['prepWeight','0.0 g','電子秤讀數']]);hint('先看完整器具：左前方是濾紙，中央是綠色濾杯、玻璃分享壺與電子秤。拖曳濾紙進入濾杯，成功後會出現確認回饋。');
 function applyShake(){if(stage!==4||idx!==5||busy)return;wiggle++;const shift=(wiggle%2?.035:-.035);groundParticles.position.x=shift;groundsShape.rotation.z=shift*.12;if(wiggle>=5){groundParticles.position.x=0;groundsShape.rotation.z=0;stopMotion();handleSuccess('dripper')}else showToast('粉床整平進度 '+Math.min(100,wiggle*20)+'%')}
@@ -603,11 +630,11 @@ function adaptViews(){
  const vp=document.getElementById('sceneViewport');
  const aspect=vp.clientWidth/Math.max(1,vp.clientHeight);
  if(aspect<.75){
-   views.hub.pos=[.15,7.4,14.3];views.hub.aim=[0,.85,.05];
+   views.hub.pos=[.15,3.05,12.0];views.hub.aim=[0,1.85,-.20];
    views.recipe.pos=[-3.8,6.6,1.9];views.recipe.aim=[-3.8,.12,-1.3];
    views.station.pos=[.10,8.4,24.0];views.station.aim=[.25,.98,-.28];views.weigh.pos=[-.10,2.90,6.35];views.weigh.aim=[-.35,.85,.10];views.grind.pos=[-.35,2.45,4.5];views.grind.aim=[-.85,1.02,.10];views.final.pos=[.3,3.1,8.15];views.final.aim=[.35,1.08,.70];
    views.bloom.pos=[.03,7.1,.42];views.spiral.pos=[.03,5.75,.42];
- }else{views.hub.pos=[.1,6.5,12.2];views.recipe.pos=[-3.8,5.85,1.25];views.station.pos=[.1,5.8,15.0];views.station.aim=[.2,1.0,-.1]}
+ }else{views.hub.pos=[.1,2.95,11.6];views.hub.aim=[0,1.8,-.20];views.recipe.pos=[-3.8,5.85,1.25];views.station.pos=[.1,5.8,15.0];views.station.aim=[.2,1.0,-.1]}
 }
 adaptViews();setCamera('hub');resetAll();const testStage=+(new URLSearchParams(location.search).get('stage')||0);if(testStage>=2&&testStage<=7)go(testStage);requestAnimationFrame(frame);UI.load.classList.add('hide');setTimeout(()=>UI.load.remove(),900);
 })();
