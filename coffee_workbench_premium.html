@@ -243,6 +243,40 @@ const wetRing=obj(new T.CircleGeometry(.16,64),new T.MeshBasicMaterial({color:'#
 const bubbles=grp(0,.13,0,coffeeBed);for(let i=0;i<35;i++){const a=i*2.3999,r=Math.sqrt((i+.5)/35)*.37,b=sphere(.014+(i%5)*.008,i%3?mat.paper:mat.copper,bubbles,Math.cos(a)*r,.01,Math.sin(a)*r);b.userData.phase=i*.76;b.visible=false}
 // Ground coffee cup with transparent body and mound.
 const doseCup=grp(-1.85,.11,-1.20,station);lathe([[0,0],[.34,.02],[.38,.10],[.37,.52],[.38,.61]],mat.glass,doseCup);ring(.38,.022,mat.glass,doseCup,0,.6,0);const doseFill=cyl(.29,.29,.36,mat.ground,doseCup,0,.20,0);let doseFillFrac=1;function setDoseFill(v){doseFillFrac=v;const h=Math.max(.008,.36*v);doseFill.scale.y=h/.36;doseFill.position.y=.05+h/2;doseFill.visible=v>.01}
+// Personal coffee-storage tin, modeled after the user's dark emerald and champagne-gold rectangular box.
+// The lid is OPEN, tilted back on a rear hinge; no interaction or game logic is attached.
+const storageTin=grp(-5.05,.045,-1.50,station);
+const tinGreen=M('#164d49',.29,.35),tinGreenDark=M('#0b3433',.42,.25),tinGold=M('#c7a46b',.22,.72),tinInterior=M('#a5a995',.62,.12);
+const tinW=1.45,tinD=.93,tinH=.78;
+// Four thin metal walls and a recessed interior, not a solid block.
+box(tinW,.065,tinD,tinGreenDark,storageTin,0,.038,0);
+box(tinW,.045,tinD,tinInterior,storageTin,0,.094,0);
+for(const sign of [-1,1]){
+ box(.055,tinH,tinD,tinGreen,storageTin,sign*(tinW/2-.027),tinH/2+.06,0);
+ box(tinW,.055,.05,tinGold,storageTin,0,tinH+.064,sign*(tinD/2-.025));
+}
+box(tinW-.07,tinH,.052,tinGreen,storageTin,0,tinH/2+.06,-tinD/2+.026);
+box(tinW-.07,tinH,.052,tinGreen,storageTin,0,tinH/2+.06,tinD/2-.026);
+// Fine golden lip follows the upper rim.
+for(const sign of [-1,1])box(.025,.022,tinD,tinGold,storageTin,sign*(tinW/2-.022),tinH+.09,0);
+// Hinged lid: a shallow gold metal tray, held upright behind the open box.
+const tinLid=grp(0,tinH+.09,-tinD/2-.035,storageTin);
+tinLid.rotation.x=-1.98;
+box(tinW+.09,.052,tinD+.08,tinGold,tinLid,0,.018,-(tinD+.08)/2+.035);
+box(tinW-.06,.012,tinD-.05,M('#d7b981',.3,.50),tinLid,0,.050,-(tinD+.08)/2+.035);
+for(const sign of [-1,1])box(.038,.085,tinD+.08,tinGold,tinLid,sign*(tinW/2+.025),.024,-(tinD+.08)/2+.035);
+// Front illustration: subtle cream flying creature and blossoms, decorative only.
+const tinArt=document.createElement('canvas');tinArt.width=512;tinArt.height=256;const ta=tinArt.getContext('2d');
+ta.clearRect(0,0,512,256);ta.fillStyle='#e4d7af';ta.globalAlpha=.93;
+ta.beginPath();ta.moveTo(225,120);ta.quadraticCurveTo(265,60,310,105);ta.quadraticCurveTo(340,66,390,82);ta.quadraticCurveTo(365,112,327,127);ta.quadraticCurveTo(359,146,387,162);ta.quadraticCurveTo(328,161,296,139);ta.quadraticCurveTo(264,158,234,140);ta.closePath();ta.fill();
+ta.beginPath();ta.moveTo(229,116);ta.lineTo(197,100);ta.lineTo(205,121);ta.closePath();ta.fill();
+for(let i=0;i<34;i++){const x=35+(i*73)%435,y=181+(i*41)%55,r=2+(i%3)*2;ta.fillStyle=i%3?'#c7827e':'#ead5b6';ta.beginPath();for(let k=0;k<5;k++){const a=k*Math.PI*2/5;ta.ellipse(x+Math.cos(a)*r,y+Math.sin(a)*r,r*.8,r*.7,a,0,Math.PI*2)}ta.fill()}
+ta.fillStyle='#f1e4c5';ta.font='bold 24px Georgia';ta.textAlign='left';ta.fillText('COFFEE',30,70);ta.font='14px Georgia';ta.fillText('STORAGE TIN',30,91);
+const tinTex=new T.CanvasTexture(tinArt);tinTex.colorSpace=T.SRGBColorSpace;
+const tinDecal=obj(new T.PlaneGeometry(tinW-.14,tinH-.16),new T.MeshBasicMaterial({map:tinTex,transparent:true,depthWrite:false,side:T.DoubleSide}),storageTin,0,.46,tinD/2+.005);
+// Rolled filter papers and a small utensil are visible inside the opened tin.
+for(let i=0;i<3;i++){const f=cyl(.105,.105,.36,mat.paper,storageTin,-.40+i*.24,.30,-.10);f.rotation.z=Math.PI/2;}
+const storedSpoon=box(.42,.018,.045,mat.steelLight,storageTin,.30,.18,.16);storedSpoon.rotation.y=.27;
 // Paper filter packet, individual cone-shaped paper prop.
 const filterLoose=grp(-2.05,.12,1.58,station);lathe([[.04,0],[.56,.09],[.53,.11],[.05,.015]],mat.paper,filterLoose);ring(.52,.014,mat.paper,filterLoose,0,.105,0);
 const waste=grp(2.35,.07,-1.48,station);lathe([[0,0],[.47,.02],[.58,.16],[.60,.31],[.55,.34],[.45,.26]],mat.ceramic,waste);const wasteWater=cyl(.40,.4,.01,mat.water,waste,0,.19,0);wasteWater.visible=false;
