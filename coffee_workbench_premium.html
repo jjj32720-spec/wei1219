@@ -312,19 +312,30 @@ box(14.6,.15,.35,trim,room,0,3.1,-4.46);
 for(let i=0;i<5;i++){const mug=grp(-4.3+i*1.25,1.7,-4.23,room);const glaze=i%2?mat.ceramic:mat.sage;cyl(.28,.24,.52,glaze,mug,0,.26,0);/* A real upright C-handle: upper/lower joints meet the cup wall. */tube([[.255,.43,0],[.36,.45,0],[.46,.40,0],[.49,.29,0],[.46,.18,0],[.36,.12,0],[.255,.15,0]],.047,glaze,mug)}
 // V51: Framed coffee botanical illustration replaces the decorative bean shelf.
 // This is fixed wall decor, not an interactive workbench object.
-const coffeeArt=grp(-3.25,4.05,-4.30,room);
+const coffeeArt=grp(-2.85,4.05,-4.30,room);
 const artFrame=M('#61442f',.76),artInset=M('#d9c9a6',.9);
 box(2.45,1.78,.12,artFrame,coffeeArt,0,0,0);
 box(2.24,1.57,.016,artInset,coffeeArt,0,0,.071);
 const artCanvas=document.createElement('canvas');artCanvas.width=640;artCanvas.height=440;
 const artCtx=artCanvas.getContext('2d');
 artCtx.fillStyle='#f1ead8';artCtx.fillRect(0,0,640,440);
-artCtx.strokeStyle='#758267';artCtx.lineCap='round';artCtx.lineJoin='round';
-artCtx.lineWidth=8;artCtx.beginPath();artCtx.moveTo(304,377);artCtx.bezierCurveTo(338,283,305,186,342,65);artCtx.stroke();
-const leaf=(x,y,rx,ry,angle)=>{artCtx.save();artCtx.translate(x,y);artCtx.rotate(angle);artCtx.fillStyle='#859879';artCtx.beginPath();artCtx.ellipse(0,0,rx,ry,0,0,Math.PI*2);artCtx.fill();artCtx.strokeStyle='#526b52';artCtx.lineWidth=2;artCtx.beginPath();artCtx.moveTo(-rx*.8,0);artCtx.lineTo(rx*.8,0);artCtx.stroke();artCtx.restore()};
-leaf(258,130,63,25,-.48);leaf(392,163,62,24,.48);leaf(246,232,59,24,-.33);leaf(393,273,58,23,.46);leaf(305,72,43,19,-.8);
-for(const [x,y] of [[315,212],[341,235],[327,260],[348,287]]){artCtx.fillStyle='#a85c42';artCtx.beginPath();artCtx.ellipse(x,y,13,17,.2,0,Math.PI*2);artCtx.fill();artCtx.strokeStyle='#794736';artCtx.lineWidth=2;artCtx.stroke();}
-artCtx.textAlign='center';artCtx.fillStyle='#766d58';artCtx.font='19px Georgia';artCtx.fillText('COFFEA ARABICA',320,407);
+// V52: new vintage coffee-cup line illustration, replacing the botanical branch.
+artCtx.fillStyle='#e7dcc3';artCtx.beginPath();artCtx.arc(320,190,125,0,Math.PI*2);artCtx.fill();
+artCtx.strokeStyle='#6d7966';artCtx.lineWidth=7;artCtx.lineCap='round';artCtx.lineJoin='round';
+// Gentle steam rising above the cup.
+for(const [x,shift] of [[267,-12],[321,8],[373,-5]]){
+  artCtx.beginPath();artCtx.moveTo(x,182);artCtx.bezierCurveTo(x-22,157,x+22,135,x+shift,100);artCtx.stroke();
+}
+// Cup body, rim, and handle.
+artCtx.fillStyle='#f6f0df';artCtx.strokeStyle='#765a43';artCtx.lineWidth=9;
+artCtx.beginPath();artCtx.moveTo(215,218);artCtx.lineTo(415,218);artCtx.lineTo(397,330);artCtx.quadraticCurveTo(320,360,243,330);artCtx.closePath();artCtx.fill();artCtx.stroke();
+artCtx.beginPath();artCtx.moveTo(417,242);artCtx.bezierCurveTo(500,225,484,319,403,305);artCtx.stroke();
+artCtx.beginPath();artCtx.ellipse(315,218,102,17,0,0,Math.PI*2);artCtx.fillStyle='#704c36';artCtx.fill();artCtx.stroke();
+// Saucer and small coffee-bean motif.
+artCtx.beginPath();artCtx.ellipse(321,350,156,17,0,0,Math.PI);artCtx.stroke();
+artCtx.fillStyle='#b18a62';artCtx.beginPath();artCtx.ellipse(315,283,18,25,.4,0,Math.PI*2);artCtx.fill();
+artCtx.strokeStyle='#f1e4cb';artCtx.lineWidth=3;artCtx.beginPath();artCtx.moveTo(307,267);artCtx.quadraticCurveTo(325,282,318,299);artCtx.stroke();
+artCtx.textAlign='center';artCtx.fillStyle='#766d58';artCtx.font='23px Georgia';artCtx.fillText('SLOW MORNING',320,402);
 const artTex=new T.CanvasTexture(artCanvas);artTex.colorSpace=T.SRGBColorSpace;
 const artPrint=new T.Mesh(new T.PlaneGeometry(2.16,1.50),new T.MeshBasicMaterial({map:artTex,side:T.DoubleSide}));
 artPrint.position.set(0,0,.084);coffeeArt.add(artPrint);
