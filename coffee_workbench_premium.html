@@ -211,6 +211,11 @@ body.stage-recipe #sceneViewport,body.stage-weigh #sceneViewport{height:calc(100
 #phoneDialogue{display:none;margin:8px 0 2px;padding:10px 12px;border:1px solid #c4a8d055;border-radius:10px;background:#523b64;color:#fff1fc;font-size:14px;line-height:1.65;white-space:pre-line}
 #phoneDialogue.visible{display:block}
 @keyframes phonePop{from{opacity:0;transform:translate(-50%,-8px) scale(.96)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+/* V49: stable countdown typography; only the hundredths change rapidly. */
+#oneClock{display:flex;align-items:baseline;justify-content:flex-end;gap:0;font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;letter-spacing:0;white-space:nowrap;min-width:112px}
+#oneClock .clock-main{display:inline-block;font-size:23px;line-height:1;font-weight:600;min-width:5ch;text-align:right}
+#oneClock .clock-fraction{display:inline-block;font-size:12px;line-height:1;font-weight:500;opacity:.78;min-width:3ch;text-align:left;margin-left:1px}
+@media(max-height:730px){#oneClock .clock-main{font-size:20px}#oneClock .clock-fraction{font-size:11px}}
 </style></head><body><button id="ptToggle" type="button">🧪 測試紀錄</button><aside id="ptPanel"><b>DAILY BREW · 原版 3D 場景 × 連續轉場測試</b><div class="sub">預設不限時，先確認鏡頭、引導與操作；正式目標仍是 05:00。</div><label><input type="checkbox" id="ptStrict"> 嚴格 5 分鐘（時間到直接結算）</label><div id="ptSummary">尚未開始</div><details><summary>目前暫定過關標準（待實測修訂）</summary><div class="sub">配方：4A 正確；提示可用但扣分。秤豆：11–17g合格，否則重秤。磨豆：12圈，沒有單關失敗。工作檯：七步順序正確。悶蒸：30秒內35–45g，突發來電需在反應時間內停水。螺旋：相似度至少75%，總注水227g。倒杯：完整倒入空杯。這些是起始假設，尚非正式淘汰標準。</div></details><table><thead><tr><th>關卡</th><th>時間</th><th>分數</th><th>狀態</th></tr></thead><tbody id="ptRows"></tbody></table><div><button id="ptExport">下載測試紀錄 JSON</button><button id="ptCopy">複製測試摘要</button><button id="ptReset">重置測試＋第一關</button></div><div class="smallprint">記錄儲存在本機瀏覽器。完成後請下載 JSON 或複製摘要貼回聊天，我才能依實測結果調整標準。測試模式可以逐關重試，不會因 5 分鐘到期中斷。</div></aside><div id="storyOverlay" role="dialog" aria-modal="true" aria-labelledby="storyTitle"><div id="storyCard"><div id="storyKicker">DAILY BREW · STAGE CLEAR</div><h2 id="storyTitle"></h2><p id="storyText"></p><button id="storyNext" type="button">繼續 →</button></div></div><div id="rulesOverlay" role="dialog" aria-modal="true" aria-labelledby="rulesTitle"><div id="rulesCard"><div id="rulesKicker">DAILY BREW · HOW TO PLAY</div><h2 id="rulesTitle"></h2><p id="rulesDesc"></p><ol id="rulesSteps"></ol><div id="rulesGoal"></div><button id="rulesGo" type="button">了解，開始挑戰 →</button><div id="rulesPause">閱讀規則期間暫停總計時；按下按鈕才開始記錄本關時間。</div></div></div><div id="load">DAILY BREW · LOADING</div><main id="brewShell"><div id="brewCard"><div id="sceneViewport"><canvas id="world"></canvas><div id="shade"></div></div><div id="cameraFade"></div><div id="hud"><div id="top"><div><div id="logo">PLAYER ONE / DAILY RITUAL</div><div id="stageName">神秘配方</div><div id="stageEn">SECRET RECIPE</div></div><div id="count">01 <span>/ 07</span></div><div id="oneClock" aria-live="off">05:00.00</div></div><div id="progress"><div id="progressFill"></div></div><div id="oneTimeline">①配方秤豆　②磨豆　③備料　④悶蒸　⑤螺旋　⑥倒杯</div><div id="sceneNote"></div><button id="returnHub" type="button">← 返回工作室</button><div id="callout"></div><div id="phoneAlert" aria-live="assertive"><div class="phoneIcon">📞</div><div class="phoneName">小剛 來電</div><div class="phoneStatus">來電中</div></div><div id="flowPanel"><label>FLOW</label><input id="flowSlider" type="range" min="0" max="100" value="0" orient="vertical" aria-label="水壺流速"><div class="small">0—100</div></div><div id="toast"></div><div id="bottom"><div id="panel"><div class="eyebrow" id="panelEyebrow">RECIPE</div><div id="panelTitle">還原今天的配方</div><div id="panelDesc"></div><div id="phoneDialogue" aria-live="polite"></div><div id="panelExtra"></div><div id="panelActions"></div></div></div></div><div id="hubBar"><div id="hubTitle">THE COFFEE ROOM</div><div id="hubHint">環顧桌上的器具，點選正確的物品，完成一杯手沖咖啡。</div><div id="hubTools"></div></div><div id="finalCard"><div id="finalInner"><div id="logo">DAILY BREW / BREW COMPLETE</div><h2 style="font:30px Georgia,serif;font-weight:400">再趕，也要喝杯好的。</h2><div id="finalScore">—</div><div id="runResult"></div><div style="color:#c9c5b3;font-size:12px;letter-spacing:.2em;margin-bottom:18px">YOUR BREW SCORE / 100</div><div id="finalList"></div><button id="replay" style="width:100%;margin-top:25px;padding:14px;background:#dec9a1;border:0;border-radius:14px;color:#24342b;font-weight:700">再沖一杯</button></div></div><div id="oneIntro"><div class="inner"><div style="letter-spacing:.24em;color:#e0cba3;font-size:11px">DAILY BREW · THE COFFEE ROOM</div><h2>倒數中的咖啡香</h2><p>早晨的陽光照進房間。<br>明明再過五分鐘就該出門了，你卻還站在咖啡桌前。<br><br>畢竟，出門可以趕。<br><strong>咖啡，不能隨便。</strong></p><button id="oneStart">進入咖啡工作室 →</button></div></div><div id="error"></div><script type="module">// DAILY BREW / Seven-stage procedural 3D game. One camera; one persistent tabletop.
 (async()=>{
 'use strict';
@@ -255,11 +260,24 @@ function formatBrewCountdown(seconds){
  const hundredths=centiseconds%100;
  return String(minutes).padStart(2,'0')+':'+String(wholeSeconds).padStart(2,'0')+'.'+String(hundredths).padStart(2,'0');
 }
+function setBrewClock(value){
+ const el=document.getElementById('oneClock');
+ const match=String(value).match(/^(.*?)(\.\d{2})$/);
+ if(match){
+  if(!el.querySelector('.clock-main'))el.innerHTML='<span class="clock-main"></span><span class="clock-fraction"></span>';
+  el.querySelector('.clock-main').textContent=match[1];
+  el.querySelector('.clock-fraction').textContent=match[2];
+ }else{
+  if(!el.querySelector('.clock-main'))el.innerHTML='<span class="clock-main"></span><span class="clock-fraction"></span>';
+  el.querySelector('.clock-main').textContent=String(value);
+  el.querySelector('.clock-fraction').textContent='';
+ }
+}
 function brewWallTime(seconds){
  const total=9*60+25+Math.floor(Math.max(0,Math.min(300,seconds))/60);
  return String(Math.floor(total/60)).padStart(2,'0')+':'+String(total%60).padStart(2,'0');
 }
-function oneStart(){if(oneStarted)return;oneStarted=true;rulesPausedMs=0;document.getElementById('ptStrict').disabled=true;ptStartedAt=ptNow();brewClockStarted=false;ptRun.startedAt=new Date().toISOString();ptRun.strict=true;oneDeadline=performance.now()+300000;document.querySelector('#oneIntro').style.display='none';hubUnlocked=1;showHub();document.querySelector('#hubHint').textContent=openingCopy;ptEvent('進入工作室','尋找咖啡漬配方紙後開始五分鐘倒數');oneTimer=setInterval(()=>{if(oneDone)return;const elapsed=brewElapsedSeconds();oneElapsed=elapsed;ptRun.totalSeconds=elapsed;const left=Math.max(0,300-brewElapsedPrecise());document.querySelector('#oneClock').textContent=ptRun.strict?formatBrewCountdown(left):('＋'+ptTime(elapsed));if(left<=0){oneTimedOut=true;oneComplete()}ptRender()},30)}
+function oneStart(){if(oneStarted)return;oneStarted=true;rulesPausedMs=0;document.getElementById('ptStrict').disabled=true;ptStartedAt=ptNow();brewClockStarted=false;ptRun.startedAt=new Date().toISOString();ptRun.strict=true;oneDeadline=performance.now()+300000;document.querySelector('#oneIntro').style.display='none';hubUnlocked=1;showHub();document.querySelector('#hubHint').textContent=openingCopy;ptEvent('進入工作室','尋找咖啡漬配方紙後開始五分鐘倒數');oneTimer=setInterval(()=>{if(oneDone)return;const elapsed=brewElapsedSeconds();oneElapsed=elapsed;ptRun.totalSeconds=elapsed;const left=Math.max(0,300-brewElapsedPrecise());setBrewClock(ptRun.strict?formatBrewCountdown(left):('＋'+ptTime(elapsed)));if(left<=0){oneTimedOut=true;oneComplete()}ptRender()},30)}
 function oneComplete(){if(oneDone)return;ptCloseStage(oneTimedOut?'超時中斷':'完成');ptRun.totalSeconds=oneElapsed;ptRun.endedAt=new Date().toISOString();ptEvent('挑戰結束',oneTimedOut?'超時':'完成倒杯');oneDone=true;phaseToken++;clearInterval(oneTimer);try{cleanupStage()}catch(e){};UI.flow.style.display='none';UI.callout.classList.remove('show');document.body.classList.remove('hub-mode','challenge-mode');document.querySelector('#hubBar').classList.remove('active');const entries=[['配方',scores.recipe],['秤豆',scores.weigh],['研磨',scores.grind],['工作檯',scores.station],['悶蒸',scores.bloom],['螺旋',scores.spiral]];const quality=Math.round(entries.reduce((a,x)=>a+x[1],0)/entries.length);const timeBonus=oneTimedOut?0:Math.round(Math.max(0,300-oneElapsed)/300*12);const total=Math.min(100,Math.round(quality*.88+timeBonus));if(oneTimedOut){document.querySelector('#finalInner').innerHTML='<div style="letter-spacing:.2em;color:#dec9a1;font-size:11px">09:30 · TIME OUT</div><h2 style="font:27px Georgia,serif;margin:20px 0">咖啡還沒好，小剛先到了。</h2><p style="white-space:pre-line;line-height:2;text-align:left;font-size:14px">時間跳到 9:30。\n\n你還在專心沖咖啡，手機卻突然震了起來。\n\n小剛：「惟程，214 怎麼沒人？到我辦公室來。」\n\n看來今天不只咖啡沒沖完，還得先去見小剛了。\n\n重新挑戰，再給咖啡五分鐘。</p><button id="retryFull" style="width:100%;margin-top:20px;padding:14px;border:0;border-radius:12px;background:#dec9a1;color:#24342b;font-weight:700">重新挑戰</button>';UI.final.style.display='flex';document.querySelector('#retryFull').onclick=()=>location.reload();ptSave();return;}document.querySelector('#finalScore').textContent=total;document.querySelector('#runResult').textContent=oneTimedOut?'時間到！本次保留目前的沖煮成績。':'完成時間 '+Math.floor(oneElapsed/60)+' 分 '+(oneElapsed%60)+' 秒 · 時間加分 '+timeBonus;document.querySelector('#finalList').innerHTML=entries.map(([n,v])=>'<div class="row"><span>'+n+'</span><strong>'+v+'</strong></div>').join('')+'<p style="font-size:11px;color:#c3bcac">遊戲模擬分數，不代表真實杯測。</p>';UI.final.style.display='flex';ptSave()}
 const RECIPE={code:'4279',dose:14,water:227,temp:93,bloom:40,bloomWait:35};
 const titles=[['SECRET RECIPE','神秘配方'],['BLIND WEIGH','盲秤挑戰'],['MORNING GRIND','限時磨豆'],['BREW STATION','沖煮工作檯'],['BLOOM RUSH','極限悶蒸'],['GOLDEN SPIRAL','黃金螺旋'],['FINAL CUP','最終萃取']];
@@ -292,6 +310,26 @@ box(.25,8,10,plaster,room,7.35,3.55,0);
 box(14.6,.17,.32,trim,room,0,1.55,-4.47);
 box(14.6,.15,.35,trim,room,0,3.1,-4.46);
 for(let i=0;i<5;i++){const mug=grp(-4.3+i*1.25,1.7,-4.23,room);const glaze=i%2?mat.ceramic:mat.sage;cyl(.28,.24,.52,glaze,mug,0,.26,0);/* A real upright C-handle: upper/lower joints meet the cup wall. */tube([[.255,.43,0],[.36,.45,0],[.46,.40,0],[.49,.29,0],[.46,.18,0],[.36,.12,0],[.255,.15,0]],.047,glaze,mug)}
+// V50: Decorative upper-left coffee shelf, separate from interactive workbench props.
+// All elements are attached to room, not stageAssets/station, so drag raycasts remain unchanged.
+const coffeeShelf=grp(-3.25,4.02,-4.31,room);
+const shelfWood=M('#8a6041',.7),shelfDark=M('#513b2b',.78);
+box(3.55,.15,.51,shelfWood,coffeeShelf,0,-.37,.04);
+box(3.58,.045,.54,shelfDark,coffeeShelf,0,-.46,.04);
+for(const sx of [-1.30,1.30]){box(.13,.43,.20,shelfDark,coffeeShelf,sx,-.62,-.12);}
+// Two compact sealed bean jars: glass bodies, coffee beans, dark lids.
+for(const [jx,jr] of [[-.98,.29],[-.19,.26]]){
+ const jar=grp(jx,-.27,.04,coffeeShelf);
+ cyl(jr*.91,jr*.91,.44,M('#b9c5b5',.16),jar,0,.24,0);
+ cyl(jr*.83,jr*.83,.25,M('#76503a',.9),jar,0,.13,0);
+ cyl(jr,jr,.085,shelfDark,jar,0,.49,0);
+ box(jr*1.2,.15,.018,M('#e9dfc7',.9),jar,0,.25,jr*.91+.008);
+}
+// A small ceramic mug on the right balances the jars.
+const shelfCup=grp(.95,-.28,.05,coffeeShelf);
+cyl(.28,.24,.43,mat.ceramic,shelfCup,0,.23,0);
+cyl(.21,.21,.009,M('#5c4635',.82),shelfCup,0,.45,0);
+tube([[.23,.37,0],[.38,.38,0],[.45,.27,0],[.40,.14,0],[.24,.15,0]],.043,mat.ceramic,shelfCup);
 // A real wall clock replaces the empty frame; its hands are fixed at 09:25.
 const wallClock=grp(3.1,4.15,-4.32,room);
 const clockRim=cyl(.76,.76,.105,M('#6a5235',.42,.40),wallClock,0,0,-.04);clockRim.rotation.x=Math.PI/2;
@@ -512,7 +550,7 @@ function nextWithCamera(n){
  }
  go(n);
 }
-function resetAll(){window.__brewAssistCount=0;ptActive=null;document.getElementById('ptStrict').checked=true;document.getElementById('ptStrict').disabled=false;recipeAttempts=[];recipeGuess='';recipeHints=0;hubUnlocked=1;hubActive=false;document.body.classList.remove('hub-mode','challenge-mode');oneDone=false;oneStarted=false;oneTimedOut=false;rulesPendingStage=0;rulesPausedMs=0;storyPendingStage=0;storyPausedMs=0;brewClockStarted=false;document.querySelector('#storyOverlay').classList.remove('visible');document.querySelector('#rulesOverlay').classList.remove('visible');clearInterval(oneTimer);document.querySelector('#oneClock').textContent='05:00.00';document.querySelector('#oneIntro').style.display='flex';scores={recipe:0,weigh:0,grind:0,station:0,bloom:0,spiral:0};revealed=0;refreshRecipe();resetScene();UI.final.style.display='none';setCamera('hub');showHub()}
+function resetAll(){window.__brewAssistCount=0;ptActive=null;document.getElementById('ptStrict').checked=true;document.getElementById('ptStrict').disabled=false;recipeAttempts=[];recipeGuess='';recipeHints=0;hubUnlocked=1;hubActive=false;document.body.classList.remove('hub-mode','challenge-mode');oneDone=false;oneStarted=false;oneTimedOut=false;rulesPendingStage=0;rulesPausedMs=0;storyPendingStage=0;storyPausedMs=0;brewClockStarted=false;document.querySelector('#storyOverlay').classList.remove('visible');document.querySelector('#rulesOverlay').classList.remove('visible');clearInterval(oneTimer);setBrewClock('05:00.00');document.querySelector('#oneIntro').style.display='flex';scores={recipe:0,weigh:0,grind:0,station:0,bloom:0,spiral:0};revealed=0;refreshRecipe();resetScene();UI.final.style.display='none';setCamera('hub');showHub()}
 // 01 / Coffee-stained recipe and untouched 1A2B mechanics.
 let recipeAttempts=[],recipeGuess='',recipeHints=0;
 function ab(g,code){let a=0,b=0;for(let i=0;i<4;i++){if(g[i]===code[i])a++;else if(code.includes(g[i]))b++}return [a,b]}
