@@ -319,23 +319,17 @@ box(2.24,1.57,.016,artInset,coffeeArt,0,0,.071);
 const artCanvas=document.createElement('canvas');artCanvas.width=640;artCanvas.height=440;
 const artCtx=artCanvas.getContext('2d');
 artCtx.fillStyle='#f1ead8';artCtx.fillRect(0,0,640,440);
-// V52: new vintage coffee-cup line illustration, replacing the botanical branch.
-artCtx.fillStyle='#e7dcc3';artCtx.beginPath();artCtx.arc(320,190,125,0,Math.PI*2);artCtx.fill();
-artCtx.strokeStyle='#6d7966';artCtx.lineWidth=7;artCtx.lineCap='round';artCtx.lineJoin='round';
-// Gentle steam rising above the cup.
-for(const [x,shift] of [[267,-12],[321,8],[373,-5]]){
-  artCtx.beginPath();artCtx.moveTo(x,182);artCtx.bezierCurveTo(x-22,157,x+22,135,x+shift,100);artCtx.stroke();
-}
-// Cup body, rim, and handle.
-artCtx.fillStyle='#f6f0df';artCtx.strokeStyle='#765a43';artCtx.lineWidth=9;
-artCtx.beginPath();artCtx.moveTo(215,218);artCtx.lineTo(415,218);artCtx.lineTo(397,330);artCtx.quadraticCurveTo(320,360,243,330);artCtx.closePath();artCtx.fill();artCtx.stroke();
-artCtx.beginPath();artCtx.moveTo(417,242);artCtx.bezierCurveTo(500,225,484,319,403,305);artCtx.stroke();
-artCtx.beginPath();artCtx.ellipse(315,218,102,17,0,0,Math.PI*2);artCtx.fillStyle='#704c36';artCtx.fill();artCtx.stroke();
-// Saucer and small coffee-bean motif.
-artCtx.beginPath();artCtx.ellipse(321,350,156,17,0,0,Math.PI);artCtx.stroke();
-artCtx.fillStyle='#b18a62';artCtx.beginPath();artCtx.ellipse(315,283,18,25,.4,0,Math.PI*2);artCtx.fill();
-artCtx.strokeStyle='#f1e4cb';artCtx.lineWidth=3;artCtx.beginPath();artCtx.moveTo(307,267);artCtx.quadraticCurveTo(325,282,318,299);artCtx.stroke();
-artCtx.textAlign='center';artCtx.fillStyle='#766d58';artCtx.font='23px Georgia';artCtx.fillText('SLOW MORNING',320,402);
+// V53: restore coffee botanical artwork while preserving the shifted frame position.
+artCtx.fillStyle='#f5efdf';artCtx.fillRect(0,0,640,440);
+artCtx.lineCap='round';artCtx.lineJoin='round';
+// Soft vintage watercolor-inspired coffee branch, leaves and cherries.
+artCtx.strokeStyle='#796d51';artCtx.lineWidth=10;
+artCtx.beginPath();artCtx.moveTo(173,380);artCtx.bezierCurveTo(235,325,295,245,350,84);artCtx.stroke();
+const leaf=(x,y,angle,scale)=>{artCtx.save();artCtx.translate(x,y);artCtx.rotate(angle);artCtx.scale(scale,scale);artCtx.fillStyle='#7e987d';artCtx.strokeStyle='#526f5d';artCtx.lineWidth=4;artCtx.beginPath();artCtx.moveTo(0,0);artCtx.bezierCurveTo(-40,-60,-32,-110,0,-132);artCtx.bezierCurveTo(42,-102,42,-51,0,0);artCtx.fill();artCtx.stroke();artCtx.strokeStyle='#d7ddc0';artCtx.lineWidth=3;artCtx.beginPath();artCtx.moveTo(0,-6);artCtx.lineTo(0,-115);artCtx.stroke();artCtx.restore()};
+leaf(248,308,-.96,.86);leaf(266,280,.95,.84);leaf(294,235,-.88,.74);leaf(322,190,1.08,.74);leaf(341,142,-.58,.65);
+const cherry=(x,y,r)=>{artCtx.fillStyle='#a95b45';artCtx.strokeStyle='#844b3a';artCtx.lineWidth=3;artCtx.beginPath();artCtx.arc(x,y,r,0,Math.PI*2);artCtx.fill();artCtx.stroke();artCtx.fillStyle='#e6b28b';artCtx.beginPath();artCtx.arc(x-r*.25,y-r*.28,r*.23,0,Math.PI*2);artCtx.fill()};
+[[234,330,18],[260,344,17],[287,304,17],[318,263,16],[344,280,16],[356,234,15],[377,222,14]].forEach(v=>cherry(...v));
+artCtx.fillStyle='#887963';artCtx.textAlign='center';artCtx.font='italic 22px Georgia';artCtx.fillText('Coffea arabica',320,410);
 const artTex=new T.CanvasTexture(artCanvas);artTex.colorSpace=T.SRGBColorSpace;
 const artPrint=new T.Mesh(new T.PlaneGeometry(2.16,1.50),new T.MeshBasicMaterial({map:artTex,side:T.DoubleSide}));
 artPrint.position.set(0,0,.084);coffeeArt.add(artPrint);
