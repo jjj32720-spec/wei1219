@@ -278,6 +278,19 @@ body.challenge-mode #panel .message{margin:4px 0 0!important;}
 body.challenge-mode #panel .meter{margin:5px 0 0!important;}
 body.challenge-mode #panel.recipeLayout{max-height:min(42dvh,350px)!important;}
 body.challenge-mode #panel.recipeLayout #panelExtra{overflow-y:auto!important;flex-shrink:1!important;}
+</style><style id="v61Refinements">
+/* Preserve a stable opening dialogue card while the action button appears. */
+#oneIntro .inner{min-height:190px!important;display:flex!important;flex-direction:column!important;justify-content:flex-start!important}
+#oneIntro .inner p{min-height:40px!important;flex:1 0 40px!important}
+#oneIntro #oneStart{width:100%!important;margin-top:6px!important;padding:8px 10px!important;font-size:12px!important;min-height:34px!important}
+/* Restore visible stage headings, keep story typography consistent. */
+body.challenge-mode #panelTitle:not(:empty){display:block!important;visibility:visible!important;opacity:1;font-size:15px!important;line-height:1.55!important}
+body.challenge-mode #panelTitle.narrativeText{font-size:15px!important;line-height:1.65!important}
+body.challenge-mode #panelTitle.narrativeFade{opacity:0!important}
+/* Restore the wider, original brew-station camera viewport proportions. */
+body.challenge-mode.station-compact #sceneViewport{top:132px!important;height:calc(100% - 342px)!important}
+/* Ensure status console can show the opening instruction. */
+body.challenge-mode.station-compact #panelTitle{display:block!important;min-height:1.55em!important}
 </style></head><body><button id="ptToggle" type="button">🧪 測試紀錄</button><aside id="ptPanel"><b>DAILY BREW · 原版 3D 場景 × 連續轉場測試</b><div class="sub">預設不限時，先確認鏡頭、引導與操作；正式目標仍是 05:00。</div><label><input type="checkbox" id="ptStrict"> 嚴格 5 分鐘（時間到直接結算）</label><div id="ptSummary">尚未開始</div><details><summary>目前暫定過關標準（待實測修訂）</summary><div class="sub">配方：4A 正確；提示可用但扣分。秤豆：11–17g合格，否則重秤。磨豆：12圈，沒有單關失敗。工作檯：七步順序正確。悶蒸：30秒內35–45g，突發來電需在反應時間內停水。螺旋：相似度至少75%，總注水227g。倒杯：完整倒入空杯。這些是起始假設，尚非正式淘汰標準。</div></details><table><thead><tr><th>關卡</th><th>時間</th><th>分數</th><th>狀態</th></tr></thead><tbody id="ptRows"></tbody></table><div><button id="ptExport">下載測試紀錄 JSON</button><button id="ptCopy">複製測試摘要</button><button id="ptReset">重置測試＋第一關</button></div><div class="smallprint">記錄儲存在本機瀏覽器。完成後請下載 JSON 或複製摘要貼回聊天，我才能依實測結果調整標準。測試模式可以逐關重試，不會因 5 分鐘到期中斷。</div></aside><div id="storyOverlay" role="dialog" aria-modal="true" aria-labelledby="storyTitle"><div id="storyCard"><div id="storyKicker">DAILY BREW · STAGE CLEAR</div><h2 id="storyTitle"></h2><p id="storyText"></p><button id="storyNext" type="button">繼續 →</button></div></div><div id="rulesOverlay" role="dialog" aria-modal="true" aria-labelledby="rulesTitle"><div id="rulesCard"><div id="rulesKicker">DAILY BREW · HOW TO PLAY</div><h2 id="rulesTitle"></h2><p id="rulesDesc"></p><div id="rulesSteps"></div><div id="rulesGoal"></div><button id="rulesGo" type="button">了解，開始挑戰 →</button><div id="rulesPause">閱讀規則期間暫停總計時；按下按鈕才開始記錄本關時間。</div></div></div><div id="load">DAILY BREW · LOADING</div><main id="brewShell"><div id="brewCard"><div id="sceneViewport"><canvas id="world"></canvas><div id="shade"></div></div><div id="cameraFade"></div><div id="hud"><div id="top"><div><div id="logo">PLAYER ONE / DAILY RITUAL</div><div id="stageName">神秘配方</div><div id="stageEn">SECRET RECIPE</div></div><div id="count">01 <span>/ 07</span></div><div id="oneClock" aria-live="off">05:00.00</div></div><div id="progress"><div id="progressFill"></div></div><div id="oneTimeline">①配方秤豆　②磨豆　③備料　④悶蒸　⑤螺旋　⑥倒杯</div><div id="sceneNote"></div><button id="returnHub" type="button">← 返回工作室</button><div id="callout"></div><div id="phoneAlert" aria-live="assertive"><div class="phoneIcon">📞</div><div class="phoneName">小剛 來電</div><div class="phoneStatus">來電中</div></div><div id="flowPanel"><label>FLOW</label><input id="flowSlider" type="range" min="0" max="100" value="0" orient="vertical" aria-label="水壺流速"><div class="small">0—100</div></div><div id="toast"></div><div id="bottom"><div id="panel"><div class="eyebrow" id="panelEyebrow">RECIPE</div><div id="panelTitle">還原今天的配方</div><div id="panelDesc"></div><div id="phoneDialogue" aria-live="polite"></div><div id="panelExtra"></div><div id="panelActions"></div></div></div></div><div id="hubBar"><div id="hubTitle">THE COFFEE ROOM</div><div id="hubHint">環顧桌上的器具，點選正確的物品，完成一杯手沖咖啡。</div><div id="hubTools"></div></div><div id="finalCard"><div id="finalInner"><div id="logo">DAILY BREW / BREW COMPLETE</div><h2 style="font:30px Georgia,serif;font-weight:400">再趕，也要喝杯好的。</h2><div id="finalScore">—</div><div id="runResult"></div><div style="color:#c9c5b3;font-size:12px;letter-spacing:.2em;margin-bottom:18px">YOUR BREW SCORE / 100</div><div id="finalList"></div><button id="replay" style="width:100%;margin-top:25px;padding:14px;background:#dec9a1;border:0;border-radius:14px;color:#24342b;font-weight:700">再沖一杯</button></div></div><div id="oneIntro"><div class="inner"><div style="letter-spacing:.24em;color:#e0cba3;font-size:11px">DAILY BREW · THE COFFEE ROOM</div><h2>倒數中的咖啡香</h2><p>早晨的陽光照進房間。<br>9:25，明明應該出門了<br>你卻還站在咖啡桌前。<br>畢竟，出門可以趕。<br><strong>咖啡，不能隨便。</strong></p><button id="oneStart" style="display:none">進入咖啡工作室 →</button></div></div><div id="error"></div><script>
 /* V57: One sentence at a time in the opening console; reveal entry after final line. */
 (function(){
@@ -286,9 +299,9 @@ body.challenge-mode #panel.recipeLayout #panelExtra{overflow-y:auto!important;fl
  const button=document.getElementById('oneStart');
  if(!panel||!button)return;
  let index=0,token=0;
- panel.textContent='';button.style.display='none';
+ panel.textContent='';button.style.display='block';button.style.visibility='hidden';
  function next(){
-  if(index>=lines.length){button.style.display='block';return;}
+  if(index>=lines.length){button.style.display='block';button.style.visibility='visible';return;}
   const current=++token,phrase=lines[index++];
   panel.classList.remove('intro-line-fade');panel.textContent='';
   let pos=0;
@@ -296,7 +309,7 @@ body.challenge-mode #panel.recipeLayout #panelExtra{overflow-y:auto!important;fl
    if(current!==token||!document.getElementById('oneIntro'))return;
    panel.textContent=phrase.slice(0,++pos);
    if(pos<phrase.length){setTimeout(type,90);return;}
-   if(index===lines.length){button.style.display='block';return;}
+   if(index===lines.length){button.style.display='block';button.style.visibility='visible';return;}
    setTimeout(()=>{panel.classList.add('intro-line-fade');setTimeout(next,290)},1100);
   }
   type();
@@ -562,8 +575,8 @@ function resetScene(){storageTin.visible=false;stageAssets.visible=true;station.
 let stage=1,cleanupStage=()=>{},scores={recipe:0,weigh:0,grind:0,station:0,bloom:0,spiral:0},busy=false,anim=[],stState=null,runTime=0;
 function tween(obj,prop,to,dur=700,fn){return new Promise(resolve=>{const from=obj[prop].clone();const toV=new T.Vector3(...to);const a={from,to:toV,prop,obj,dur,start:performance.now(),resolve,fn,rotation:prop==='rotation'};anim.push(a)})}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}function ease(t){return 1-Math.pow(1-t,3)}
-function stepHeader(n){document.body.classList.toggle('stage-recipe',n===1);document.body.classList.toggle('stage-weigh',n===2);storageTin.visible=false;targetHalo.visible=false;stage=n;$('#panel').classList.toggle('recipeLayout',n===1);UI.title.textContent=titles[n-1][1];UI.en.textContent=titles[n-1][0];const macro=[1,1,2,3,4,5,6][n-1];UI.count.innerHTML=String(macro).padStart(2,'0')+' <span>/ 06</span>';UI.p.style.width=(macro/6*100)+'%';UI.note.textContent='';UI.flow.style.display='none';UI.extra.innerHTML='';UI.actions.innerHTML='';UI.desc.textContent='';UI.callout.classList.remove('show');cleanupStage();cleanupStage=()=>{};busy=false}
-function panel(eye,title,desc){UI.eye.textContent=eye;UI.pt.textContent=title;UI.desc.textContent=desc}
+function stepHeader(n){UI.pt.classList.remove('narrativeText','narrativeFade');document.body.classList.toggle('stage-recipe',n===1);document.body.classList.toggle('stage-weigh',n===2);storageTin.visible=false;targetHalo.visible=false;stage=n;$('#panel').classList.toggle('recipeLayout',n===1);UI.title.textContent=titles[n-1][1];UI.en.textContent=titles[n-1][0];const macro=[1,1,2,3,4,5,6][n-1];UI.count.innerHTML=String(macro).padStart(2,'0')+' <span>/ 06</span>';UI.p.style.width=(macro/6*100)+'%';UI.note.textContent='';UI.flow.style.display='none';UI.extra.innerHTML='';UI.actions.innerHTML='';UI.desc.textContent='';UI.callout.classList.remove('show');cleanupStage();cleanupStage=()=>{};busy=false}
+function panel(eye,title,desc){UI.pt.classList.remove('narrativeText','narrativeFade');UI.eye.textContent=eye;UI.pt.textContent=title;UI.desc.textContent=desc}
 function act(name,cb,secondary=false){const b=document.createElement('button');b.textContent=name;b.className=secondary?'secondary':'';b.onclick=cb;UI.actions.append(b);return b}
 // Single-run progression is event-driven, never inferred from UI button labels.
 let phaseToken=0;
@@ -709,7 +722,7 @@ canvasHandlers(down,move,()=>{pointerOn=false;angle=null});const unbind=cleanupS
 // 04 / Seven-step physically staged preparation. All active props directly 3D draggable.
 const stationLabels=[['把濾紙放進綠色濾杯','拖起濾紙，放入濾杯。'],['用熱水預濕濾紙','拖動右側細口手沖壺至濾杯右上方，讓壺嘴對準濾紙，完成預濕。'],['倒掉分享壺內的預濕水','拖動中央玻璃分享壺至右後方的白色廢水碗，倒掉預濕水。'],['把分享壺放回電子秤','從廢水碗旁拿起玻璃分享壺，拖回中央白色電子秤上。'],['倒入研磨好的咖啡粉','將左側透明咖啡粉杯拖到濾杯左上方，把咖啡粉倒進濾紙。'],['整平濾杯內的咖啡粉','用手指在咖啡粉表面左右來回滑動，讓粉床平整；濾杯保持固定。'],['按下電子秤歸零鍵','點擊白色電子秤右前方的圓形按鈕，讓電子秤讀數回到 0.0 g。']];
 function stationStage(){window.__stationStarted=false;stepHeader(4);cameraTo('station',1400);recipeGroup.visible=true;recipeGroup.position.set(-4.75,.095,2.40);recipeGroup.rotation.set(0,0,0);bag.visible=true;bag.position.set(-4.45,.18,.65);bagPivot.rotation.z=0;grinderContent(1);beanCup.visible=false;grinder.visible=true;grinder.position.set(-3.75,.11,-2.9);finalCup.visible=false;/* Spread tools across the worktop to leave independent finger-sized pick zones. */filterLoose.position.set(-2.05,.12,-.12);doseCup.position.set(-2.85,.11,.95);kettle.position.set(3.30,.14,1.55);storageTin.visible=true;storageTin.position.set(3.25,1.65,-4.20);waste.position.set(3.05,.07,-2.40);scale.visible=true;server.visible=true;dripper.visible=true;doseCup.visible=true;filterLoose.visible=true;kettle.visible=true;waste.visible=true;scaleText('0.0 g');setServerWater(0);paperInside.visible=false;groundsShape.visible=false;filterLoose.visible=true;server.rotation.set(0,0,0);dripper.rotation.set(0,0,0);wasteWater.visible=false;dripper.position.set(0,1.70,.4);server.position.set(0,.20,.4);
-let idx=0,drag=null,wiggle=0,lastX=null,lastSign=0,lastSignX=0,moving=false,stageToken=Symbol('station');stState={idx};
+let idx=0,drag=null,wiggle=0,lastX=null,lastSign=0,lastSignX=0,moving=false,stageToken=Symbol('station');stState={idx};panel('04 / BREW STATION','從哪裡開始好呢？','');
 function applyShake(){if(stage!==4||idx!==5||busy)return;wiggle++;const shift=(wiggle%2?.035:-.035);groundParticles.position.x=shift;groundsShape.rotation.z=shift*.12;if(wiggle>=5){groundParticles.position.x=0;groundsShape.rotation.z=0;handleSuccess('dripper')}}
 function stopMotion(){} // Motion sensors intentionally disabled: finger swipe only.
 const change=()=>{document.body.classList.toggle('brew-close',idx===5);targetHalo.visible=false;if(targetHalo.visible){const xz=[[0,.4],[0,.4],[3.05,-2.40],[0,.4],[0,.4]][idx];targetHalo.position.set(xz[0],idx===0?1.96:idx===1?2.05:idx===2?.41:idx===3?.18:1.96,xz[1]);} UI.eye.textContent='04 / BREW STATION';if(idx===0&&!window.__stationStarted)UI.pt.textContent='從哪裡開始好呢？';UI.desc.textContent='';const prepStepEl=$('#prepStep');if(prepStepEl)prepStepEl.textContent=String(idx+1).padStart(2,'0')+' / 07';UI.actions.innerHTML=''; 
