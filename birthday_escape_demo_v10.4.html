@@ -958,7 +958,7 @@ function avatar(x,y,jersey,number,active,defender,now,skin='#f2cda8',o,id,gk){
  ctx.translate(0,-19);ctx.rotate(Math.sin(o._ph*.5)*.06*run-(charging?f*.1:0));
  const R=15,im=headImg(id);
  if(im&&im.complete&&im.naturalWidth){ctx.save();if(f<0)ctx.scale(-1,1);
-  ctx.shadowColor='#fff';ctx.shadowBlur=3;ctx.drawImage(im,-18,-20,36,36);ctx.shadowBlur=0;ctx.drawImage(im,-18,-20,36,36);ctx.restore()
+  ctx.shadowColor='#fff';ctx.shadowBlur=3;const hs=id===0?30:36,hoff=(36-hs)/2;ctx.drawImage(im,-18+hoff,-20+hoff,hs,hs);ctx.shadowBlur=0;ctx.drawImage(im,-18+hoff,-20+hoff,hs,hs);ctx.restore()
  }else{const L=gk?['#e6b68f','#3a2a22']:NPC_LOOK[((o.kind||0)+(id||0))%4];
   ctx.fillStyle=gk?skin:L[0];ctx.beginPath();ctx.arc(0,0,R-1,0,7);ctx.fill();
   ctx.fillStyle=L[1];ctx.beginPath();ctx.arc(0,-3,R-1,Math.PI,Math.PI*2);ctx.lineTo(R-1,0);ctx.lineTo(-R+1,0);ctx.fill();
@@ -1327,7 +1327,7 @@ function defenseMatchAvatar(ctx,state,x,y,jersey,number,active,defender,now,skin
  ctx.translate(0,-19);ctx.rotate(Math.sin(o._ph*.5)*.06*run-(charging?f*.1:0));
  const R=15,im=defenseFace(id);
  if(im&&im.complete&&im.naturalWidth){ctx.save();if(f<0)ctx.scale(-1,1);
-  ctx.shadowColor='#fff';ctx.shadowBlur=3;ctx.drawImage(im,-18,-20,36,36);ctx.shadowBlur=0;ctx.drawImage(im,-18,-20,36,36);ctx.restore()
+  ctx.shadowColor='#fff';ctx.shadowBlur=3;const hs=id===0?30:36,hoff=(36-hs)/2;ctx.drawImage(im,-18+hoff,-20+hoff,hs,hs);ctx.shadowBlur=0;ctx.drawImage(im,-18+hoff,-20+hoff,hs,hs);ctx.restore()
  }else{const L=gk?['#e6b68f','#3a2a22']:defenseNPCLOOK[((o.kind||0)+(id||0))%4];
   ctx.fillStyle=gk?skin:L[0];ctx.beginPath();ctx.arc(0,0,R-1,0,7);ctx.fill();
   ctx.fillStyle=L[1];ctx.beginPath();ctx.arc(0,-3,R-1,Math.PI,Math.PI*2);ctx.lineTo(R-1,0);ctx.lineTo(-R+1,0);ctx.fill();
@@ -1383,7 +1383,7 @@ function soccerDefense(mania=false){
  else {let a=d.atk[d.ball];d.shotCharge+=dt;if(d.def.some(v=>Math.hypot(v.x-a.x,v.y-a.y)<25)){d.steals++;notice(`成功搶回球權！${d.steals} / 5`);playEffect('hit');if(d.steals>=5&&!mania){finish(true);return}reset()}else if(d.shotCharge>Math.max(mania?18:45,(mania?43:95)-d.passes*(mania?13:9))||a.x<165){d.shot={x:a.x,y:a.y};d.shotCharge=0;notice('⚠️ 對方射門！快封堵！')}else if(d.shotCharge>30&&Math.random()<.018*dt){const to=(d.ball+1+Math.floor(Math.random()*2))%3;d.ballFlight={x:a.x,y:a.y,to,t:0};notice('對手傳球！注意路線')}}
  }
  status.textContent=`🛡️ 抄截 ${d.steals} / 5　｜　🥅 失球 ${d.goals} / 2`;challengePitch(ctx);ctx.fillStyle='#fff';ctx.fillRect(6,145,15,90);ctx.font='27px system-ui';ctx.fillText('🥅',7,190);defenseRenderContext=ctx;
- d.atk.forEach((a,i)=>defenseMatchAvatar(ctx,d,a.x,a.y,'#d65775',String(i+7),false,true,performance.now(),undefined,a,[3,6,7][i]));
+ d.atk.forEach((a,i)=>defenseMatchAvatar(ctx,d,a.x,a.y,'#d65775',String(i+7),false,true,performance.now(),undefined,a,null));
  d.def.forEach((v,i)=>{const id=S.footballSquad[i===0?1:2],pl=soccerPlayers[id];defenseMatchAvatar(ctx,d,v.x,v.y,'#e9f5ff',String(pl.number),i===d.selected,false,performance.now(),undefined,v,id);ctx.save();ctx.textAlign='center';ctx.font='800 11px system-ui';ctx.lineWidth=3;ctx.strokeStyle='#214336b0';ctx.strokeText(pl.name,v.x,v.y+39);ctx.fillStyle='#fff';ctx.fillText(pl.name,v.x,v.y+39);ctx.restore()});
  defenseRenderContext=null;const ball=d.shot||d.ballFlight;if(ball){ctx.font='23px system-ui';ctx.textAlign='center';ctx.fillText('⚽',ball.x,ball.y+8)}if(d.tackleUntil>0){let v=d.def[d.selected];ctx.strokeStyle='#ffe584';ctx.lineWidth=4;ctx.beginPath();ctx.arc(v.x,v.y,performance.now()<d.skillUntil?76:51,0,Math.PI*2);ctx.stroke()}ctx.font='bold 14px system-ui';ctx.fillStyle='#fff';ctx.fillText('← 對手進攻',430,35);challengeTimer=requestAnimationFrame(loop)}challengeTimer=requestAnimationFrame(loop)
 }
