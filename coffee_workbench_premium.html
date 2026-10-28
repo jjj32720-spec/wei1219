@@ -681,7 +681,7 @@ function finish(ok){if(finished)return;finished=true;started=false;pointerOn=fal
 canvasHandlers(down,move,()=>{pointerOn=false;angle=null});const unbind=cleanupStage;cleanupStage=()=>{unbind();cancelAnimationFrame(raf)};update()}
 // 04 / Seven-step physically staged preparation. All active props directly 3D draggable.
 const stationLabels=[['把濾紙放進綠色濾杯','拖起濾紙，放入濾杯。'],['用熱水預濕濾紙','拖動右側細口手沖壺至濾杯右上方，讓壺嘴對準濾紙，完成預濕。'],['倒掉分享壺內的預濕水','拖動中央玻璃分享壺至右後方的白色廢水碗，倒掉預濕水。'],['把分享壺放回電子秤','從廢水碗旁拿起玻璃分享壺，拖回中央白色電子秤上。'],['倒入研磨好的咖啡粉','將左側透明咖啡粉杯拖到濾杯左上方，把咖啡粉倒進濾紙。'],['整平濾杯內的咖啡粉','用手指在咖啡粉表面左右來回滑動，讓粉床平整；濾杯保持固定。'],['按下電子秤歸零鍵','點擊白色電子秤右前方的圓形按鈕，讓電子秤讀數回到 0.0 g。']];
-function stationStage(){window.__stationStarted=false;stepHeader(4);cameraTo('station',1400);recipeGroup.visible=true;recipeGroup.position.set(-4.75,.095,2.40);recipeGroup.rotation.set(0,0,0);bag.visible=true;bag.position.set(-2.65,.18,-2.65);bagPivot.rotation.z=0;grinderContent(1);beanCup.visible=false;grinder.visible=true;grinder.position.set(-3.75,.11,-2.9);finalCup.visible=false;/* Spread tools across the worktop to leave independent finger-sized pick zones. */filterLoose.position.set(-2.05,.12,-.12);doseCup.position.set(-2.85,.11,.95);kettle.position.set(3.30,.14,1.55);storageTin.visible=true;storageTin.position.set(3.25,1.65,-4.20);waste.position.set(3.05,.07,-2.40);scale.visible=true;server.visible=true;dripper.visible=true;doseCup.visible=true;filterLoose.visible=true;kettle.visible=true;waste.visible=true;scaleText('0.0 g');setServerWater(0);paperInside.visible=false;groundsShape.visible=false;filterLoose.visible=true;server.rotation.set(0,0,0);dripper.rotation.set(0,0,0);wasteWater.visible=false;dripper.position.set(0,1.70,.4);server.position.set(0,.20,.4);
+function stationStage(){window.__stationStarted=false;stepHeader(4);cameraTo('station',1400);recipeGroup.visible=true;recipeGroup.position.set(-4.75,.095,2.40);recipeGroup.rotation.set(0,0,0);bag.visible=true;bag.position.set(-1.55,.18,-1.10);bagPivot.rotation.z=0;grinderContent(1);beanCup.visible=false;grinder.visible=true;grinder.position.set(-3.75,.11,-2.9);finalCup.visible=false;/* Spread tools across the worktop to leave independent finger-sized pick zones. */filterLoose.position.set(-1.20,.12,1.85);doseCup.position.set(-2.85,.11,.95);kettle.position.set(3.30,.14,1.55);storageTin.visible=true;storageTin.position.set(3.25,1.65,-4.20);waste.position.set(3.05,.07,-2.40);scale.visible=true;server.visible=true;dripper.visible=true;doseCup.visible=true;filterLoose.visible=true;kettle.visible=true;waste.visible=true;scaleText('0.0 g');setServerWater(0);paperInside.visible=false;groundsShape.visible=false;filterLoose.visible=true;server.rotation.set(0,0,0);dripper.rotation.set(0,0,0);wasteWater.visible=false;dripper.position.set(0,1.70,.4);server.position.set(0,.20,.4);
 let idx=0,drag=null,wiggle=0,lastX=null,lastSign=0,lastSignX=0,moving=false,stageToken=Symbol('station');stState={idx};
 // V66: The workbench has exactly one narrative line in panelTitle; success replaces the preceding line.
 let stationTextToken=0,stationCurrentLine='從哪裡開始好呢？';
@@ -814,7 +814,19 @@ function down(e){
  }
  // Test the coffee bag before nearby grinder meshes; the bag is a draggable decoy.
  const allTools=['bag','filter','kettle','server','dose','dripper','grinder','waste'];
- const picked=allTools.find(tool=>pickExpected(e,tool))||null;
+ // Prefer the actual frontmost visible 3D surface over broad screen-space fallback zones.
+ // The dripper body overlaps the carafe's projected hit area; previously the carafe
+ // was always selected first, even when the finger was on the ceramic cone.
+ ndc(e);
+ const directHits=ray.intersectObjects([bag,filterLoose,kettle,server,doseCup,dripper,grinder,waste],true);
+ const belongsTo=(mesh,root)=>{for(let node=mesh;node;node=node.parent){if(node===root)return true;}return false;};
+ let directTool=null;
+ for(const hit of directHits){
+   if(!hit.object.visible)continue;
+   const tool=allTools.find(name=>belongsTo(hit.object,currentObj(name)));
+   if(tool){directTool=tool;break;}
+ }
+ const picked=directTool||allTools.find(tool=>pickExpected(e,tool))||null;
  if(!picked)return;
  const g=currentObj(picked);
  // Screen-space displacement mapped to the tabletop plane makes tall objects draggable
