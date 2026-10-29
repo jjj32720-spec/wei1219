@@ -128,6 +128,9 @@ body.hub-mode #sceneViewport{height:calc(100% - 205px)!important}
 
 /* Continuous camera-led challenge: no separate workshop navigation screen. */
 #returnHub{display:none!important}
+
+/* Double-tap zoom protection limited to stages 1 and 4; no layout changes. */
+body[data-coffee-zoom-stage='1'] button,body[data-coffee-zoom-stage='1'] #panel,body[data-coffee-zoom-stage='4'] button,body[data-coffee-zoom-stage='4'] #panel{touch-action:manipulation}
 </style><style id="v5MobileFix">#returnHub{font-size:11px!important;padding:8px 11px!important;top:125px!important;right:14px!important;max-width:120px!important}#oneTimeline{padding-right:125px!important;font-size:10px!important;white-space:normal!important;line-height:1.4!important}#panelActions button{touch-action:manipulation}</style><style id="playtestStyles">#ptToggle{position:fixed;right:13px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:40;border:1px solid #dfc48e;border-radius:16px;background:#20372f;color:#ffe8bb;padding:8px 12px;font-size:12px;font-weight:700}#ptPanel{position:fixed;z-index:39;top:calc(env(safe-area-inset-top,0px) + 47px);right:9px;width:min(345px,calc(100vw - 18px));max-height:65vh;overflow:auto;background:#1c2924f5;color:#eee5d6;border:1px solid #d5b988;border-radius:16px;padding:13px;box-shadow:0 12px 45px #0009;display:none;font:12px/1.6 system-ui}#ptPanel.open{display:block}#ptPanel button{padding:8px;border-radius:9px;background:#dfc99e;color:#27362e;border:0;margin:4px 3px;font-size:12px}#ptPanel table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}#ptPanel td,#ptPanel th{border-bottom:1px solid #ffffff25;text-align:left;padding:4px}#ptPanel .sub{color:#c5c9b7;font-size:11px}#ptPanel label{display:block;margin:6px 0}#ptPanel input{accent-color:#d7bd88}#ptPanel .smallprint{font-size:10px;color:#c0c4b9}</style><style id="rulesOverlayStyle">
 #rulesOverlay{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;background:rgba(12,15,20,.78);padding:20px;backdrop-filter:blur(7px)}
 #rulesOverlay.visible{display:flex}#rulesCard{width:min(390px,100%);max-height:calc(100dvh - 45px);overflow-y:auto;background:linear-gradient(155deg,#30283b,#201d29);border:1px solid #b99c71;border-radius:23px;padding:24px 22px;color:#f5ede3;box-shadow:0 22px 80px #0009}
@@ -145,7 +148,7 @@ body.hub-mode #sceneViewport{height:calc(100% - 205px)!important}
 @media(max-width:440px){#oneTimeline{font-size:9px!important}#panelActions button{font-size:12px}}
 </style><!-- v8 hybrid: shared 3D workbench, corrected 3/4 grinder camera, normalized scale, larger spiral guide -->
 <style id="v28NarrativeStyle">
-#rulesOverlay{padding:12px!important}#rulesCard{width:min(350px,94vw)!important;max-height:82dvh!important;padding:19px 18px!important;border-radius:18px!important}#rulesTitle{font-size:23px!important;margin:5px 0 8px!important}#rulesDesc{font-size:13px!important;line-height:1.65!important;white-space:pre-line}#rulesSteps{margin:9px 0!important;padding-left:19px!important;font-size:12px!important;line-height:1.55!important}#rulesSteps li{margin:2px 0!important}#rulesGoal{display:none!important}#rulesPause{display:none!important}#rulesGo{margin-top:12px!important;min-height:43px!important}
+#rulesOverlay{padding:12px!important}#rulesCard{width:min(350px,94vw)!important;max-height:82dvh!important;padding:19px 18px!important;border-radius:18px!important}#rulesTitle{font-size:23px!important;margin:5px 0 8px!important}#rulesDesc{font-size:16px!important;line-height:1.7!important;white-space:pre-line}#rulesSteps{margin:9px 0!important;padding-left:19px!important;font-size:15px!important;line-height:1.65!important}#rulesSteps li{margin:2px 0!important}#rulesGoal{display:none!important}#rulesPause{display:none!important}#rulesGo{margin-top:12px!important;min-height:43px!important}
 body.hub-mode #hubTools{display:none!important}body.hub-mode #hubBar{padding:14px 22px calc(18px + env(safe-area-inset-bottom,0px))!important;pointer-events:none;background:linear-gradient(transparent,#201d25 22%)!important}body.hub-mode #hubTitle{font-size:19px!important}body.hub-mode #hubHint{font:13px/1.8 Georgia,'Noto Serif TC',serif!important;white-space:pre-line!important;color:#e8d9c3!important;margin:8px auto 4px!important;max-width:330px!important}body.hub-mode #sceneViewport{height:calc(100% - 170px)!important}body.hub-mode #oneTimeline{opacity:0!important}
 #storyOverlay{position:fixed;inset:0;z-index:1050;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(12,15,20,.76);backdrop-filter:blur(7px)}#storyOverlay.visible{display:flex}#storyCard{width:min(350px,95vw);padding:22px 20px;border:1px solid #b99c71;border-radius:19px;background:linear-gradient(145deg,#30283b,#201d29);color:#f4eadc;box-shadow:0 20px 65px #0008}#storyKicker{font:700 11px system-ui;letter-spacing:.18em;color:#d7bb83}#storyTitle{font:24px Georgia,serif;margin:8px 0 12px}#storyText{font:13px/1.8 system-ui;white-space:pre-line;color:#e5d8c9;margin:0 0 17px}#storyNext{width:100%;border:0;border-radius:12px;background:#dec9a1;color:#24342b;padding:13px;font-weight:700}
 #callout.stopAlert{font-size:15px!important;max-width:94vw;white-space:normal;text-align:center}
@@ -236,24 +239,25 @@ body.challenge-mode #panelTitle:not(:empty){display:block!important;visibility:v
 </style><style id="v69ScopedTouchLock">/* Coffee-only gesture isolation: do not restrict parent game or other maps. */
 #brewShell,#brewCard{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 #brewShell #sceneViewport,#brewShell #world,#brewShell #spiralPointer,#brewShell #flowSlider{touch-action:none!important}
-</style></head><body><button id="ptToggle" type="button">🧪 測試紀錄</button><aside id="ptPanel"><b>DAILY BREW · 原版 3D 場景 × 連續轉場測試</b><div class="sub">預設不限時，先確認鏡頭、引導與操作；正式目標仍是 05:00。</div><label><input type="checkbox" id="ptStrict"> 嚴格 5 分鐘（時間到直接結算）</label><div id="ptSummary">尚未開始</div><details><summary>目前暫定過關標準（待實測修訂）</summary><div class="sub">配方：4A 正確；提示可用但扣分。秤豆：11–17g合格，否則重秤。磨豆：12圈，沒有單關失敗。工作檯：七步順序正確。悶蒸：30秒內35–45g，突發來電需在反應時間內停水。螺旋：相似度至少75%，總注水227g。倒杯：完整倒入空杯。這些是起始假設，尚非正式淘汰標準。</div></details><table><thead><tr><th>關卡</th><th>時間</th><th>分數</th><th>狀態</th></tr></thead><tbody id="ptRows"></tbody></table><div><button id="ptExport">下載測試紀錄 JSON</button><button id="ptCopy">複製測試摘要</button><button id="ptReset">重置測試＋第一關</button></div><div class="smallprint">記錄儲存在本機瀏覽器。完成後請下載 JSON 或複製摘要貼回聊天，我才能依實測結果調整標準。測試模式可以逐關重試，不會因 5 分鐘到期中斷。</div></aside><div id="storyOverlay" role="dialog" aria-modal="true" aria-labelledby="storyTitle"><div id="storyCard"><div id="storyKicker">DAILY BREW · STAGE CLEAR</div><h2 id="storyTitle"></h2><p id="storyText"></p><button id="storyNext" type="button">繼續 →</button></div></div><div id="rulesOverlay" role="dialog" aria-modal="true" aria-labelledby="rulesTitle"><div id="rulesCard"><div id="rulesKicker">DAILY BREW · HOW TO PLAY</div><h2 id="rulesTitle"></h2><p id="rulesDesc"></p><div id="rulesSteps"></div><div id="rulesGoal"></div><button id="rulesGo" type="button">了解，開始挑戰 →</button><div id="rulesPause">閱讀規則期間暫停總計時；按下按鈕才開始記錄本關時間。</div></div></div><div id="load">DAILY BREW · LOADING</div><main id="brewShell"><div id="brewCard"><div id="sceneViewport"><canvas id="world"></canvas><div id="shade"></div></div><div id="cameraFade"></div><div id="hud"><div id="top"><div><div id="logo">PLAYER ONE / DAILY RITUAL</div><div id="stageName">神秘配方</div><div id="stageEn">SECRET RECIPE</div></div><div id="count">01 <span>/ 07</span></div><div id="oneClock" aria-live="off">05:00.00</div></div><div id="progress"><div id="progressFill"></div></div><div id="oneTimeline">①配方　②秤豆　③磨豆　④備料　⑤悶蒸　⑥螺旋　⑦倒杯</div><div id="sceneNote"></div><button id="returnHub" type="button">← 返回工作室</button><div id="callout"></div><div id="phoneAlert" aria-live="assertive"><div class="phoneIcon">📞</div><div class="phoneName">小剛 來電</div><div class="phoneStatus">來電中</div></div><div id="flowPanel"><label>FLOW</label><input id="flowSlider" type="range" min="0" max="100" value="0" orient="vertical" aria-label="水壺流速"><div class="small">0—100</div></div><div id="toast"></div><div id="bottom"><div id="panel"><div class="eyebrow" id="panelEyebrow">RECIPE</div><div id="panelTitle">還原今天的配方</div><div id="panelDesc"></div><div id="phoneDialogue" aria-live="polite"></div><div id="panelExtra"></div><div id="panelActions"></div></div></div></div><div id="hubBar"><div id="hubTitle">THE COFFEE ROOM</div><div id="hubHint">環顧桌上的器具，點選正確的物品，完成一杯手沖咖啡。</div><div id="hubTools"></div></div><div id="finalCard"><div id="finalInner"><div id="logo">DAILY BREW / BREW COMPLETE</div><h2 style="font:30px Georgia,serif;font-weight:400">再趕，也要喝杯好的。</h2><div id="finalScore">—</div><div id="runResult"></div><div style="color:#c9c5b3;font-size:12px;letter-spacing:.2em;margin-bottom:18px">YOUR BREW SCORE / 100</div><div id="finalList"></div><button id="replay" style="width:100%;margin-top:25px;padding:14px;background:#dec9a1;border:0;border-radius:14px;color:#24342b;font-weight:700">再沖一杯</button></div></div><div id="oneIntro"><div class="inner"><div style="letter-spacing:.24em;color:#e0cba3;font-size:11px">DAILY BREW · THE COFFEE ROOM</div><h2>倒數中的咖啡香</h2><p>早晨的陽光照進房間。<br>9:25，明明應該出門了<br>你卻還站在咖啡桌前。<br>畢竟，出門可以趕。<br><strong>咖啡，不能隨便。</strong></p><button id="oneStart">進入咖啡工作室 →</button></div></div><div id="error"></div><script type="module">// V69: Block browser zoom only when a gesture starts inside the coffee game.
+</style></head><body><button id="ptToggle" type="button">🧪 測試紀錄</button><aside id="ptPanel"><b>DAILY BREW · 原版 3D 場景 × 連續轉場測試</b><div class="sub">預設不限時，先確認鏡頭、引導與操作；正式目標仍是 05:00。</div><label><input type="checkbox" id="ptStrict"> 嚴格 5 分鐘（時間到直接結算）</label><div id="ptSummary">尚未開始</div><details><summary>目前暫定過關標準（待實測修訂）</summary><div class="sub">配方：4A 正確；提示可用但扣分。秤豆：11–17g合格，否則重秤。磨豆：12圈，沒有單關失敗。工作檯：七步順序正確。悶蒸：30秒內35–45g，突發來電需在反應時間內停水。螺旋：相似度至少75%，總注水227g。倒杯：完整倒入空杯。這些是起始假設，尚非正式淘汰標準。</div></details><table><thead><tr><th>關卡</th><th>時間</th><th>分數</th><th>狀態</th></tr></thead><tbody id="ptRows"></tbody></table><div><button id="ptExport">下載測試紀錄 JSON</button><button id="ptCopy">複製測試摘要</button><button id="ptReset">重置測試＋第一關</button></div><div class="smallprint">記錄儲存在本機瀏覽器。完成後請下載 JSON 或複製摘要貼回聊天，我才能依實測結果調整標準。測試模式可以逐關重試，不會因 5 分鐘到期中斷。</div></aside><div id="storyOverlay" role="dialog" aria-modal="true" aria-labelledby="storyTitle"><div id="storyCard"><div id="storyKicker">DAILY BREW · STAGE CLEAR</div><h2 id="storyTitle"></h2><p id="storyText"></p><button id="storyNext" type="button">繼續 →</button></div></div><div id="rulesOverlay" role="dialog" aria-modal="true" aria-labelledby="rulesTitle"><div id="rulesCard"><div id="rulesKicker">DAILY BREW · HOW TO PLAY</div><h2 id="rulesTitle"></h2><p id="rulesDesc"></p><div id="rulesSteps"></div><div id="rulesGoal"></div><button id="rulesGo" type="button">了解，開始挑戰 →</button><div id="rulesPause">閱讀規則期間暫停總計時；按下按鈕才開始記錄本關時間。</div></div></div><div id="load">DAILY BREW · LOADING</div><main id="brewShell"><div id="brewCard"><div id="sceneViewport"><canvas id="world"></canvas><div id="shade"></div></div><div id="cameraFade"></div><div id="hud"><div id="top"><div><div id="logo">PLAYER ONE / DAILY RITUAL</div><div id="stageName">神秘配方</div><div id="stageEn">SECRET RECIPE</div></div><div id="count">01 <span>/ 07</span></div><div id="oneClock" aria-live="off">05:00.00</div></div><div id="progress"><div id="progressFill"></div></div><div id="oneTimeline">①配方　②秤豆　③磨豆　④備料　⑤悶蒸　⑥螺旋　⑦倒杯</div><div id="sceneNote"></div><button id="returnHub" type="button">← 返回工作室</button><div id="callout"></div><div id="phoneAlert" aria-live="assertive"><div class="phoneIcon">📞</div><div class="phoneName">小剛 來電</div><div class="phoneStatus">來電中</div></div><div id="flowPanel"><label>FLOW</label><input id="flowSlider" type="range" min="0" max="100" value="0" orient="vertical" aria-label="水壺流速"><div class="small">0—100</div></div><div id="toast"></div><div id="bottom"><div id="panel"><div class="eyebrow" id="panelEyebrow">RECIPE</div><div id="panelTitle">還原今天的配方</div><div id="panelDesc"></div><div id="phoneDialogue" aria-live="polite"></div><div id="panelExtra"></div><div id="panelActions"></div></div></div></div><div id="hubBar"><div id="hubTitle">THE COFFEE ROOM</div><div id="hubHint">環顧桌上的器具，點選正確的物品，完成一杯手沖咖啡。</div><div id="hubTools"></div></div><div id="finalCard"><div id="finalInner"><div id="logo">DAILY BREW / BREW COMPLETE</div><h2 style="font:30px Georgia,serif;font-weight:400">再趕，也要喝杯好的。</h2><div id="finalScore">—</div><div id="runResult"></div><div style="color:#c9c5b3;font-size:12px;letter-spacing:.2em;margin-bottom:18px">YOUR BREW SCORE / 100</div><div id="finalList"></div><button id="replay" style="width:100%;margin-top:25px;padding:14px;background:#dec9a1;border:0;border-radius:14px;color:#24342b;font-weight:700">再沖一杯</button></div></div><div id="oneIntro"><div class="inner"><div style="letter-spacing:.24em;color:#e0cba3;font-size:11px">DAILY BREW · THE COFFEE ROOM</div><h2>倒數中的咖啡香</h2><p>早晨的陽光透過窗戶，悄悄灑在咖啡桌上。<br>牆上的時鐘指向 9:25。<br>距離 9:30 出門，只剩最後五分鐘。<br>可你還是站在咖啡桌前，準備沖上一杯咖啡。<br>畢竟，出門可以趕。<br><strong>咖啡，可不能隨便。</strong></p><button id="oneStart">進入咖啡工作室 →</button></div></div><div id="error"></div><script type="module">// V69: Block browser zoom only when a gesture starts inside the coffee game.
 // Safe for merging into a single HTML with rooms/maps that need double-tap zoom.
 (() => {
   const coffeeRoot = document.getElementById('brewShell');
   if (!coffeeRoot) return;
   const insideCoffee = target => target instanceof Node && coffeeRoot.contains(target);
+  const zoomGuardActive = () => ['1','4'].includes(document.body.dataset.coffeeZoomStage);
   coffeeRoot.addEventListener('dblclick', event => {
-    if (insideCoffee(event.target)) event.preventDefault();
+    if (zoomGuardActive() && insideCoffee(event.target)) event.preventDefault();
   }, { passive: false });
   for (const type of ['gesturestart', 'gesturechange', 'gestureend']) {
     coffeeRoot.addEventListener(type, event => {
-      if (insideCoffee(event.target)) event.preventDefault();
+      if (zoomGuardActive() && insideCoffee(event.target)) event.preventDefault();
     }, { passive: false });
   }
   // iOS Safari can double-tap zoom without emitting dblclick.
   let lastTapTime = 0, lastTapTarget = null;
   coffeeRoot.addEventListener('touchend', event => {
-    if (!insideCoffee(event.target) || event.changedTouches.length !== 1 || event.touches.length) return;
+    if (!zoomGuardActive() || !insideCoffee(event.target) || event.changedTouches.length !== 1 || event.touches.length) { lastTapTime=0; lastTapTarget=null; return; }
     const now = performance.now();
     if (now - lastTapTime < 320 && lastTapTarget === event.target && event.cancelable) {
       event.preventDefault();
@@ -544,16 +548,16 @@ function isHitObject(ev,o){ndc(ev);return ray.intersectObject(o,true).length>0}
 const picks={filter:filterLoose,kettle,server,dose:doseCup,dripper,scale:scaleButton};
 function toolAt(ev){ndc(ev);for(const [k,g] of Object.entries(picks)){if(!g.visible)continue;const hits=ray.intersectObject(g,true);if(hits.length>0)return k}return null}
 function canvasHandlers(down,move,up){const el=renderer.domElement;const dn=e=>{e.preventDefault();down(e)};const mv=e=>{move(e)};const ud=e=>{up(e)};el.addEventListener('pointerdown',dn);el.addEventListener('pointermove',mv);el.addEventListener('pointerup',ud);el.addEventListener('pointercancel',ud);cleanupStage=()=>{el.removeEventListener('pointerdown',dn);el.removeEventListener('pointermove',mv);el.removeEventListener('pointerup',ud);el.removeEventListener('pointercancel',ud)}}
-function go(n){if(n>7||oneDone)return;hubActive=false;document.body.classList.remove('hub-mode');document.body.classList.add('challenge-mode');phaseToken++;if(oneStarted)ptStartStage(n);document.body.classList.toggle('station-compact',n===4);document.body.classList.remove('brew-close');UI.slider.value=0;cleanupStage();anim.length=0;busy=false;stage=n;switch(n){case 1:recipeStage();break;case 2:weighStage();break;case 3:grindStage();break;case 4:stationStage();break;case 5:bloomStage();break;case 6:spiralStage();break;case 7:finalStage();break}}
+function go(n){if(n>7||oneDone)return;document.body.dataset.coffeeZoomStage=String(n);hubActive=false;document.body.classList.remove('hub-mode');document.body.classList.add('challenge-mode');phaseToken++;if(oneStarted)ptStartStage(n);document.body.classList.toggle('station-compact',n===4);document.body.classList.remove('brew-close');UI.slider.value=0;cleanupStage();anim.length=0;busy=false;stage=n;switch(n){case 1:recipeStage();break;case 2:weighStage();break;case 3:grindStage();break;case 4:stationStage();break;case 5:bloomStage();break;case 6:spiralStage();break;case 7:finalStage();break}}
 // Per-stage rules are displayed before the stage is initialized. The timer and
 // per-stage playtest stopwatch are paused until the player confirms.
 let rulesOpenedAt=0,rulesPausedMs=0,rulesPendingStage=0,storyOpenedAt=0,storyPendingStage=0,storyPausedMs=0,brewClockStarted=false;
 const openingCopy='點擊桌上的物件，試著找出線索。';
 const brewStories={
-1:{title:'神秘配方',rule:'根據 1A2B 線索，找回四位數密碼。',clear:'配方找回來了！14g 咖啡豆、227g 水、93°C。\n手機突然震了一下。\n算了，先把咖啡煮好再說。'},
+1:{title:'神秘配方',rule:'根據 1A2B 線索，找回四位數密碼。',clear:'配方找回來了！14g 咖啡豆、227g 水、93°C。\n這時，手機突然震了一下。\n算了，還是先把咖啡煮好再說。'},
 2:{title:'盲秤挑戰',rule:'按住咖啡包倒豆，放手立即確認重量，不能補豆。最後 3g 讀數隱藏，11–17g 過關。',clear:'秤好了！手感依然在線。\n不過，磨豆機可不會因為快遲到就轉得比較快。'},
 3:{title:'手磨時光',rule:'親手研磨咖啡豆，完成研磨即可過關。',clear:'終於磨完了！手有點痠，但咖啡香值得。\n好了，接下來動作真的要快一點。'},
-4:{title:'沖煮工作檯',rule:'自由移動桌上的器具，依照正確順序完成沖煮前的準備。',clear:'從濾紙到咖啡粉，一切終於各就各位。\n你拿起手沖壺，準備正式注水。'},
+4:{title:'沖煮工作檯',rule:'自由移動桌上的器具，依照正確順序完成沖煮前的準備。',clear:'從濾紙到咖啡粉，一切終於各就各位。\n你拿起了手沖壺⋯\n接下來，才是最關鍵的步驟！'},
 5:{title:'黃金悶蒸',rule:'在 30 秒內完成 35–45g 的悶蒸注水。過程中可能發生突發狀況，請留意畫面提示。',clear:'呼，電話終於掛了，咖啡也剛好完成悶蒸。\n只是……小剛叫你去辦公室。今天真的不能再慢慢來了。'},
 6:{title:'黃金螺旋',rule:'記住示範的注水軌跡，從中心向外畫出螺旋，相似度達到 75% 即可過關。',clear:'最後一道水流完成！咖啡慢慢滴進分享壺。\n你看了看時間，又看了看咖啡。嗯，還來得及……吧？'},
 7:{title:'最終萃取',rule:'等待咖啡滴濾完成，移開濾杯，再將分享壺中的咖啡倒入杯中。',clear:'恭喜你，終於完成了今天的這杯咖啡！\n早上的時間總是不夠用。\n明明可以多睡十分鐘，\n卻還是願意為一杯咖啡早起。\n有些習慣，別人可能不太理解。\n但那就是你，認真對待喜歡的事物的樣子。\n今日咖啡，沖煮完成。'}
@@ -970,25 +974,29 @@ adaptViews();setCamera('hub');resetAll();document.getElementById('ptStrict').che
  const paragraph=intro?.querySelector('.inner p');
  const button=intro?.querySelector('#oneStart');
  if(!paragraph||!button)return;
- const lines=['早晨的陽光照進房間。','9:25，明明應該出門了','你卻還站在咖啡桌前。','畢竟，出門可以趕。','咖啡，不能隨便。'];
+ const pairs=[
+  ['早晨的陽光透過窗戶，悄悄灑在咖啡桌上。','牆上的時鐘指向 9:25。'],
+  ['距離 9:30 出門，','只剩最後五分鐘。'],
+  ['可你還是站在咖啡桌前，準備沖上一杯咖啡。','畢竟，出門可以趕。','咖啡，可不能隨便。']
+ ];
  paragraph.textContent='';
- button.style.visibility='hidden'; // preserves the original V55 layout and button footprint
- let i=0;
- function next(){
+ paragraph.style.transition='opacity .32s ease';
+ button.style.visibility='hidden';
+ let index=0;
+ function show(){
   if(!intro.isConnected||intro.style.display==='none')return;
-  if(i>=lines.length){button.style.visibility='visible';return;}
-  const line=lines[i++];let pos=0;
-  paragraph.textContent='';paragraph.style.opacity='1';
-  function type(){
-   if(!intro.isConnected||intro.style.display==='none')return;
-   pos++;
-   paragraph.textContent=line.slice(0,pos);
-   if(pos<line.length)setTimeout(type,90);
-   else if(i===lines.length)button.style.visibility='visible';
-   else setTimeout(()=>{paragraph.style.opacity='0';setTimeout(next,280)},1050);
-  }
-  type();
+  const lines=pairs[index];
+  paragraph.replaceChildren(...lines.flatMap((line,i)=>{
+   const span=document.createElement(i===lines.length-1&&index===2?'strong':'span');
+   span.textContent=line;
+   return i===0?[span]:[document.createElement('br'),span];
+  }));
+  paragraph.style.opacity='0';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{paragraph.style.opacity='1'}));
+  if(index===pairs.length-1){button.style.visibility='visible';return;}
+  index++;
+  setTimeout(()=>{paragraph.style.opacity='0';setTimeout(show,350)},1650);
  }
- next();
+ show();
 })();
 </script></body></html>
